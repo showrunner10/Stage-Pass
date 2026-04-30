@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 
@@ -6,9 +7,16 @@ export function PublicNavbar() {
   return (
     <nav className="sticky top-0 w-full z-50 bg-dark/80 backdrop-blur-md border-b border-white/10">
       <div className="page-shell h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-white">S</div>
-          <span className="text-2xl font-bold tracking-tight text-white">Stagepass</span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/assets/branding/logo-wordmark.svg"
+            alt="Stagepass logo"
+            width={248}
+            height={64}
+            sizes="248px"
+            priority
+            className="h-12 w-auto object-contain"
+          />
         </Link>
         
         <div className="hidden md:flex items-center gap-8">

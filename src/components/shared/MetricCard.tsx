@@ -25,7 +25,8 @@ function useCountUp(target: number, duration = 900) {
 
     const frame = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
-      setCount(Math.round(target * progress));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(target * eased);
       if (progress < 1) frameId = requestAnimationFrame(frame);
     };
 
@@ -53,9 +54,25 @@ export function MetricCard({
   const animatedValue = useCountUp(Number.isFinite(numericValue) ? numericValue : 0);
 
   const renderedValue = useMemo(() => {
-    if (typeof value === 'number') return animatedValue.toLocaleString();
-    if (value.includes('$')) return `$${animatedValue.toLocaleString()}`;
-    if (value.includes('%')) return `${animatedValue.toLocaleString()}%`;
+    if (typeof value === 'number') {
+      return Number.isInteger(value)
+        ? Math.round(animatedValue).toLocaleString()
+        : animatedValue.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
+    const stripped = value.replace(/[^\d.]/g, '');
+    const decimals = stripped.includes('.') ? stripped.split('.')[1].length : 0;
+    if (value.includes('$')) {
+      return `$${animatedValue.toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}`;
+    }
+    if (value.includes('%')) {
+      return `${animatedValue.toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}%`;
+    }
     return value;
   }, [value, animatedValue]);
 

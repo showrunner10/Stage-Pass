@@ -15,6 +15,11 @@ const editorial = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: "Stagepass | Earn from what you love going to",
   description: "A premium creator marketplace for live events.",
+  icons: {
+    icon: "/assets/branding/logo-icon.svg",
+    shortcut: "/assets/branding/logo-icon.svg",
+    apple: "/assets/branding/logo-icon.svg",
+  },
 };
 
 export default function RootLayout({

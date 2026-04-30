@@ -82,7 +82,7 @@ body {
 }
 
 .section-stack {
-  @apply space-y-16 md:space-y-24;
+  @apply space-y-0;
 }
 
 .premium-vignette {

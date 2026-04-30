@@ -48,7 +48,7 @@ export default function Home() {
         <div className="absolute inset-0 light-particles" />
 
         <div className="page-shell relative z-10 text-center">
-          <div className="inline-block px-4 py-1.5 mb-7 rounded-full bg-primary/20 border border-primary/35 text-primary font-semibold text-sm tracking-wide">
+          <div className="inline-block px-4 py-1.5 mb-7 rounded-full bg-black/45 border border-white/30 text-white/90 shadow-[0_6px_20px_-12px_rgba(0,0,0,0.9)] font-semibold text-sm tracking-wide">
             Creator-first Event Marketplace
           </div>
           <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[112px] font-black text-white mb-8 tracking-[-0.03em] leading-[0.9] text-balance">
@@ -118,7 +118,13 @@ export default function Home() {
               <div>
                 <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">How it works for creators</h3>
                 <div className="space-y-7">
-                  {["Pick events that fit your audience", "Publish tracked links or white-label pages", "Get paid per verified ticket sale"].map((item, idx) => (
+                  {[
+                    "Pick events that fit your audience",
+                    "Publish tracked links or white-label pages",
+                    "Get paid per verified ticket sale",
+                    "Track performance in real time",
+                    "Scale campaigns with proven playbooks",
+                  ].map((item, idx) => (
                     <div key={item} className="flex gap-4">
                       <div className="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center font-bold shrink-0">{idx + 1}</div>
                       <p className="text-2xl font-semibold text-dark/85 leading-relaxed">{item}</p>
@@ -140,7 +146,7 @@ export default function Home() {
 
         <EarningsCalculator />
 
-        <section className="app-section bg-dark border-t border-white/10">
+        <section className="app-section pt-8 md:pt-10 lg:pt-12 pb-10 md:pb-12 lg:pb-14 bg-dark border-t border-white/10">
           <div className="page-shell">
             <div className="flex items-end justify-between mb-12 gap-5">
               <div>
@@ -166,7 +172,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="app-section bg-dark">
+        <section className="app-section pt-10 md:pt-12 lg:pt-14 bg-dark">
           <div className="page-shell max-w-3xl">
             <h2 className="text-5xl font-extrabold text-white mb-12 text-center">Frequently Asked Questions</h2>
             <div className="space-y-4">
@@ -236,7 +242,7 @@ function EarningsCalculator() {
   const earnings = useMemo(() => tickets * price * (commission / 100), [tickets, price, commission]);
 
   return (
-    <section id="pricing" className="app-section overflow-hidden relative">
+    <section id="pricing" className="app-section py-12 md:py-14 lg:py-16 overflow-hidden relative">
       <div className="absolute inset-0 premium-gradient opacity-95" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48" />
       <div className="page-shell relative z-10">

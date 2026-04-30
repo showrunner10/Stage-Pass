@@ -1,0 +1,16 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="360" height="96" viewBox="0 0 360 96" role="img" aria-label="Stagepass wordmark">
+  <defs>
+    <filter id="softGlow" x="-30%" y="-60%" width="160%" height="220%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#534AB7" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g transform="translate(6 14)">
+    <rect x="0" y="2" rx="12" ry="12" width="66" height="44" fill="#FFFFFF" fill-opacity="0.96"/>
+    <path d="M14 16h38v16H14z" fill="none" stroke="#534AB7" stroke-width="2.6"/>
+    <path d="M50 16l8 8-8 8" fill="none" stroke="#534AB7" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="18" cy="24" r="1.9" fill="#534AB7"/>
+  </g>
+
+  <text x="84" y="54" font-family="Montserrat, Futura, Roboto, Arial, sans-serif" font-size="46" font-weight="800" letter-spacing="0.2" fill="#FFFFFF" filter="url(#softGlow)">Stagepass</text>
+</svg>

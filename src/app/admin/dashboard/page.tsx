@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AdminShell } from '@/components/layout/AdminShell';
 import { events, creators } from '@/data/mock';
 import { formatCurrency } from '@/lib/utils';
@@ -66,10 +66,10 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Stat title="Total sales" value={formatCurrency(totalSales)} />
-          <Stat title="Commission payable" value={formatCurrency(commissionPayable)} accent />
-          <Stat title="Active creators" value={activeCreators.toString()} />
-          <Stat title="Conversion rate" value={`${conversionRate}%`} />
+          <Stat title="Total sales" value={totalSales} prefix="$" decimals={2} />
+          <Stat title="Commission payable" value={commissionPayable} prefix="$" decimals={2} accent />
+          <Stat title="Active creators" value={activeCreators} />
+          <Stat title="Conversion rate" value={conversionRate} suffix="%" decimals={1} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -198,11 +198,52 @@ export default function AdminDashboard() {
   );
 }
 
-function Stat({ title, value, accent }: { title: string; value: string; accent?: boolean }) {
+function useCountUp(target: number, duration = 1000) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const start = performance.now();
+    let frameId = 0;
+
+    const frame = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(target * eased);
+      if (progress < 1) frameId = requestAnimationFrame(frame);
+    };
+
+    frameId = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(frameId);
+  }, [target, duration]);
+
+  return count;
+}
+
+function Stat({
+  title,
+  value,
+  accent,
+  prefix = '',
+  suffix = '',
+  decimals = 0,
+}: {
+  title: string;
+  value: number;
+  accent?: boolean;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+}) {
+  const animatedValue = useCountUp(value);
+  const formattedValue = `${prefix}${animatedValue.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}${suffix}`;
+
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
       <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest mb-2">{title}</div>
-      <div className={`text-3xl font-black ${accent ? 'text-accent-green' : 'text-white'}`}>{value}</div>
+      <div className={`text-3xl font-black ${accent ? 'text-accent-green' : 'text-white'}`}>{formattedValue}</div>
     </div>
   );
 }
