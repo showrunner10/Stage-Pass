@@ -23,6 +23,7 @@ export function EventCard({ event, href, showApplyButton = false }: EventCardPro
             src={event.image}
             alt={event.title}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.08]"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-primary/20" />

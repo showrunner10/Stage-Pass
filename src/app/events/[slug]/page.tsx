@@ -25,7 +25,7 @@ export default function EventDetails() {
 
       <main className="pb-24">
         <div className="relative h-[66vh] min-h-[520px] w-full">
-          <Image src={event.image} alt={event.title} fill className="object-cover" priority />
+          <Image src={event.image} alt={event.title} fill sizes="100vw" className="object-cover" priority />
           <div className="absolute inset-0 premium-hero-overlay" />
 
           <div className="absolute bottom-0 left-0 w-full p-8 md:p-16">

@@ -71,7 +71,7 @@ export default async function WhiteLabelLanding({ params }: { params: Promise<Pa
 
         <section className="relative rounded-3xl overflow-hidden border border-white/10">
           <div className="relative aspect-[4/5] sm:aspect-[16/10]">
-            <Image src={event.image} alt={event.title} fill className="object-cover" priority />
+            <Image src={event.image} alt={event.title} fill sizes="(max-width: 640px) 100vw, 768px" className="object-cover" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
             <div className="absolute inset-0 premium-vignette" />
             <div className="absolute bottom-0 left-0 p-5 sm:p-7 max-w-xl">
@@ -86,7 +86,7 @@ export default async function WhiteLabelLanding({ params }: { params: Promise<Pa
 
         <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 flex items-center gap-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary/60 shrink-0 shadow-[0_0_0_4px_rgba(83,74,183,0.15)]">
-            <Image src={creator.avatar} alt={creator.name} fill className="object-cover" />
+            <Image src={creator.avatar} alt={creator.name} fill sizes="64px" className="object-cover" />
           </div>
           <div className="min-w-0">
             <div className="font-extrabold text-white text-lg truncate">{creator.name}</div>

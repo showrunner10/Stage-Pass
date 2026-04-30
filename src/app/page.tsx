@@ -33,16 +33,16 @@ export default function Home() {
       <PublicNavbar />
 
       <section className="relative h-screen min-h-[760px] flex items-center justify-center overflow-hidden border-b border-white/10">
-        {heroImages.map((src, i) => (
-          <div
-            key={src}
-            className={`absolute inset-0 z-0 transition-opacity duration-[1400ms] ${
-              heroIndex === i ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <Image src={src} alt="Stagepass event hero" fill className="object-cover hero-zoom blur-[1.5px]" priority={i === 0} />
-          </div>
-        ))}
+        <div key={heroImages[heroIndex]} className="absolute inset-0 z-0 transition-opacity duration-[1400ms] opacity-100">
+          <Image
+            src={heroImages[heroIndex]}
+            alt="Stagepass event hero"
+            fill
+            sizes="100vw"
+            className="object-cover hero-zoom blur-[1.5px]"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 premium-hero-overlay" />
         <div className="absolute inset-0 premium-vignette" />
         <div className="absolute inset-0 light-particles" />
@@ -152,7 +152,7 @@ export default function Home() {
               {featuredCreators.map((creator) => (
                 <div key={creator.id} className="rounded-2xl border border-white/10 bg-white/5 p-6 hover-lift">
                   <div className="relative w-14 h-14 rounded-full overflow-hidden border border-white/20 mb-4">
-                    <Image src={creator.avatar} alt={creator.name} fill className="object-cover" />
+                    <Image src={creator.avatar} alt={creator.name} fill sizes="56px" className="object-cover" />
                   </div>
                   <div className="text-white font-extrabold text-lg">{creator.name}</div>
                   <div className="text-sm text-offwhite/50">{creator.niche}</div>
