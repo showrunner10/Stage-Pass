@@ -1,0 +1,49 @@
+{
+  "name": "stagepass",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "node --max-old-space-size=4096 node_modules/next/dist/bin/next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.7.0",
+    "@trpc/client": "^11.0.0",
+    "@trpc/server": "^11.0.0",
+    "superjson": "^2.2.1",
+    "zod": "^3.24.1",
+    "next": "15.0.0",
+    "react": "19.0.0-rc-65a56d0e-20241020",
+    "react-dom": "19.0.0-rc-65a56d0e-20241020",
+    "@radix-ui/react-slot": "^1.0.2",
+    "lucide-react": "^0.453.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4",
+    "class-variance-authority": "^0.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "autoprefixer": "^10.4.19",
+    "prisma": "^6.7.0",
+    "tailwindcss": "^3.4.1",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.0",
+    "storybook": "^8.5.0",
+    "@storybook/nextjs": "^8.5.0",
+    "@storybook/addon-essentials": "^8.5.0",
+    "@storybook/addon-interactions": "^8.5.0"
+  }
+}

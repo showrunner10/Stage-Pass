@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #1a1a1a;
+  --foreground: #f8f7f4;
+  --surface: #1f1f23;
+  --surface-elevated: #27272e;
+  --border: rgba(248, 247, 244, 0.14);
+  --primary: #534ab7;
+  --primary-strong: #665ce0;
+  --accent-green: #1d9e75;
+  --offwhite: #f8f7f4;
+  --charcoal: #1a1a1a;
+  --muted: #aaaaaa;
+}
+
+[data-theme='dark'] {
+  --background: #0f0f12;
+  --foreground: #f8f7f4;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter), sans-serif;
+  text-rendering: geometricPrecision;
+  background-image:
+    radial-gradient(circle at 15% -10%, rgba(83, 74, 183, 0.2), transparent 35%),
+    radial-gradient(circle at 85% 120%, rgba(83, 74, 183, 0.12), transparent 40%);
+  background-attachment: fixed;
+}
+
+* {
+  transition-timing-function: ease-in-out;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-editorial {
+    font-family: var(--font-editorial), "Times New Roman", serif;
+  }
+
+  .page-shell {
+    @apply mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-10;
+  }
+
+  .app-section {
+    @apply py-20 md:py-24 lg:py-28;
+  }
+
+  .surface-panel {
+    @apply rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/95;
+  }
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #534ab7 0%, #312a7d 100%);
+}
+
+.premium-hero-overlay {
+  background: linear-gradient(180deg, rgba(7, 7, 10, 0.18) 0%, rgba(7, 7, 10, 0.72) 54%, rgba(7, 7, 10, 0.97) 100%);
+}
+
+.dark-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.hover-lift {
+  transition: transform 260ms ease-in-out, box-shadow 260ms ease-in-out, border-color 260ms ease-in-out, filter 260ms ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px -12px rgba(6, 6, 7, 0.8);
+  border-color: rgba(102, 92, 224, 0.55);
+}
+
+.section-stack {
+  @apply space-y-16 md:space-y-24;
+}
+
+.premium-vignette {
+  background:
+    radial-gradient(circle at 50% 28%, transparent 30%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(180deg, rgba(6, 6, 8, 0.08) 0%, rgba(6, 6, 8, 0.62) 100%);
+}
+
+.hero-zoom {
+  animation: heroZoom 18s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+.light-particles {
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 14% 24%, rgba(255, 255, 255, 0.2) 0 2px, transparent 3px),
+    radial-gradient(circle at 76% 16%, rgba(83, 74, 183, 0.35) 0 2px, transparent 3px),
+    radial-gradient(circle at 24% 74%, rgba(255, 255, 255, 0.12) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 88% 76%, rgba(83, 74, 183, 0.24) 0 2px, transparent 2.5px);
+  animation: floatParticles 15s ease-in-out infinite alternate;
+  opacity: 0.6;
+}
+
+.button-premium-motion {
+  transition: transform 240ms ease-in-out, box-shadow 240ms ease-in-out, filter 240ms ease-in-out;
+}
+
+.button-premium-motion:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+  box-shadow:
+    0 0 0 1px rgba(83, 74, 183, 0.35),
+    0 18px 30px -14px rgba(83, 74, 183, 0.95);
+}
+
+.loading-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.page-fade-in {
+  animation: pageIn 420ms ease-out both;
+}
+
+@keyframes heroZoom {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.09);
+  }
+}
+
+@keyframes floatParticles {
+  from {
+    transform: translateY(0px);
+    opacity: 0.45;
+  }
+  to {
+    transform: translateY(-12px);
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premium-ring {
+  box-shadow:
+    inset 0 0 0 1px rgba(248, 247, 244, 0.09),
+    0 24px 44px -32px rgba(0, 0, 0, 0.95);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

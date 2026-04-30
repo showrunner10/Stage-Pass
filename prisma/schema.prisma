@@ -1,0 +1,361 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CREATOR
+  PROMOTER
+  ADMIN
+}
+
+enum OrgMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum CreatorTier {
+  DEFAULT
+  ESTABLISHED
+  HEADLINE
+}
+
+enum EventStatus {
+  DRAFT
+  LIVE
+  PAUSED
+  ENDED
+}
+
+enum TicketingProvider {
+  TIXR
+  MOSHTIX
+  HUMANITIX
+  MANUAL
+}
+
+enum CampaignStatus {
+  DRAFT
+  LIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum CampaignFormat {
+  TRACKED_LINK
+  LANDING_PAGE
+}
+
+enum Channel {
+  INSTAGRAM
+  TIKTOK
+  NEWSLETTER
+  PODCAST
+  QR
+  OTHER
+}
+
+enum LandingType {
+  SHORT
+  LANDING
+}
+
+enum LedgerStatus {
+  PENDING
+  CLEARED
+  PAID
+  REVERSED
+}
+
+enum PayoutStatus {
+  DRAFT
+  SCHEDULED
+  PROCESSING
+  PAID
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  creatorProfile    CreatorProfile?
+  orgMemberships    PromoterOrgMember[]
+  createdPromoterOrgs PromoterOrg[] @relation("OrgCreatedBy")
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+model PromoterOrg {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  createdBy User               @relation("OrgCreatedBy", fields: [createdById], references: [id])
+  members   PromoterOrgMember[]
+  events    Event[]
+
+  @@index([createdAt])
+}
+
+model PromoterOrgMember {
+  id        String        @id @default(cuid())
+  orgId     String
+  userId    String
+  role      OrgMemberRole @default(MEMBER)
+  createdAt DateTime      @default(now())
+
+  org  PromoterOrg @relation(fields: [orgId], references: [id])
+  user User       @relation(fields: [userId], references: [id])
+
+  @@unique([orgId, userId])
+  @@index([userId, createdAt])
+}
+
+model CreatorProfile {
+  id                         String      @id @default(cuid())
+  userId                     String      @unique
+  handle                     String      @unique
+  displayName                String
+  bio                        String?
+  avatarUrl                  String?
+  niche                      String?
+  audienceSize               Int?
+  tier                       CreatorTier @default(DEFAULT)
+  stripeAccountId            String?     @unique
+  stripeOnboardingComplete   Boolean     @default(false)
+  createdAt                  DateTime    @default(now())
+  updatedAt                  DateTime    @updatedAt
+  deletedAt                  DateTime?
+
+  user      User      @relation(fields: [userId], references: [id])
+  campaigns Campaign[]
+  clicks    ClickEvent[]
+  orders    Order[]   @relation("CreatorAttributedOrders")
+  ledger    CommissionLedger[]
+  payouts   Payout[]
+
+  @@index([tier])
+  @@index([createdAt])
+}
+
+model Event {
+  id                   String           @id @default(cuid())
+  orgId                String
+  slug                 String           @unique
+  title                String
+  description          String?
+  heroImageUrl         String?
+  city                 String
+  venue                String
+  startsAt             DateTime
+  endsAt               DateTime?
+  status               EventStatus      @default(DRAFT)
+  ticketingProvider    TicketingProvider
+  ticketingUrl         String
+  defaultCommissionBps Int
+  capacity             Int?
+  soldCount            Int              @default(0)
+  inventoryUpdatedAt   DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  deletedAt            DateTime?
+
+  org        PromoterOrg   @relation(fields: [orgId], references: [id])
+  ticketTiers TicketTier[]
+  campaigns  Campaign[]
+  clicks     ClickEvent[]
+  orders     Order[]
+  ledger     CommissionLedger[]
+
+  @@index([status, startsAt])
+  @@index([city, startsAt])
+  @@index([defaultCommissionBps])
+}
+
+model TicketTier {
+  id          String   @id @default(cuid())
+  eventId     String
+  name        String
+  description String?
+  priceCents  Int
+  currency    String   @default("AUD")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@unique([eventId, name])
+  @@index([eventId, sortOrder])
+}
+
+model Campaign {
+  id           String         @id @default(cuid())
+  creatorId    String
+  eventId      String
+  status       CampaignStatus @default(DRAFT)
+  format       CampaignFormat
+  slug         String
+  headline     String?
+  description  String?
+  accentColor  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+
+  creator      CreatorProfile  @relation(fields: [creatorId], references: [id])
+  event        Event           @relation(fields: [eventId], references: [id])
+  channelLinks ChannelLink[]
+  clicks       ClickEvent[]
+  orders       Order[]         @relation("AttributedOrders")
+  ledger       CommissionLedger[]
+
+  @@unique([creatorId, slug])
+  @@index([eventId, status, createdAt])
+  @@index([creatorId, status, createdAt])
+}
+
+model ChannelLink {
+  id          String     @id @default(cuid())
+  campaignId  String
+  channel     Channel
+  landingType LandingType
+  code        String     @unique
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime   @default(now())
+
+  campaign Campaign   @relation(fields: [campaignId], references: [id])
+  clicks   ClickEvent[]
+
+  @@unique([campaignId, channel, landingType])
+  @@index([campaignId, createdAt])
+}
+
+model ClickEvent {
+  id            String   @id @default(cuid())
+  channelLinkId String
+  campaignId    String
+  creatorId     String
+  eventId       String
+  ipHash        String
+  uaHash        String
+  referrer      String?
+  landingUrl    String?
+  createdAt     DateTime @default(now())
+
+  channelLink ChannelLink   @relation(fields: [channelLinkId], references: [id])
+  campaign    Campaign      @relation(fields: [campaignId], references: [id])
+  creator     CreatorProfile @relation(fields: [creatorId], references: [id])
+  event       Event         @relation(fields: [eventId], references: [id])
+  orders      Order[]       @relation("AttributedClick")
+
+  @@index([channelLinkId, createdAt])
+  @@index([campaignId, createdAt])
+  @@index([eventId, createdAt])
+  @@index([creatorId, createdAt])
+}
+
+model Order {
+  id                 String           @id @default(cuid())
+  eventId            String
+  ticketingProvider  TicketingProvider
+  externalId         String
+  currency           String           @default("AUD")
+  grossAmountCents   Int
+  netAmountCents     Int?
+  purchasedAt        DateTime
+  purchaserEmailHash String?
+  rawJson            Json?
+  attributedCampaignId String?
+  attributedClickId    String?
+  attributedCreatorId  String?
+  createdAt          DateTime         @default(now())
+
+  event              Event        @relation(fields: [eventId], references: [id])
+  attributedCampaign Campaign?    @relation("AttributedOrders", fields: [attributedCampaignId], references: [id])
+  attributedClick    ClickEvent?  @relation("AttributedClick", fields: [attributedClickId], references: [id])
+  attributedCreator  CreatorProfile? @relation("CreatorAttributedOrders", fields: [attributedCreatorId], references: [id])
+  ledgerEntry        CommissionLedger?
+
+  @@unique([ticketingProvider, externalId])
+  @@index([eventId, purchasedAt])
+  @@index([attributedCampaignId, purchasedAt])
+  @@index([attributedCreatorId, purchasedAt])
+}
+
+model CommissionLedger {
+  id                   String       @id @default(cuid())
+  creatorId             String
+  eventId               String
+  campaignId            String
+  orderId               String       @unique
+  status                LedgerStatus @default(PENDING)
+  currency              String       @default("AUD")
+  commissionAmountCents Int
+  commissionBps         Int
+  availableAt           DateTime
+  paidAt                DateTime?
+  payoutId              String?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  creator CreatorProfile @relation(fields: [creatorId], references: [id])
+  event   Event          @relation(fields: [eventId], references: [id])
+  campaign Campaign      @relation(fields: [campaignId], references: [id])
+  order   Order          @relation(fields: [orderId], references: [id])
+  payout  Payout?        @relation(fields: [payoutId], references: [id])
+
+  @@index([creatorId, status, availableAt])
+  @@index([payoutId])
+  @@index([eventId, createdAt])
+}
+
+model Payout {
+  id              String       @id @default(cuid())
+  creatorId        String
+  status          PayoutStatus @default(DRAFT)
+  amountCents     Int
+  currency        String       @default("AUD")
+  periodStart     DateTime
+  periodEnd       DateTime
+  stripeTransferId String?     @unique
+  stripePayoutId   String?     @unique
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  creator CreatorProfile      @relation(fields: [creatorId], references: [id])
+  ledger  CommissionLedger[]
+
+  @@index([creatorId, createdAt])
+  @@index([status, createdAt])
+}
+
+model CampaignDraft {
+  id         String   @id @default(cuid())
+  sessionKey String   @unique
+  creatorId  String?
+  campaignId String?  @unique
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([creatorId, updatedAt])
+}
