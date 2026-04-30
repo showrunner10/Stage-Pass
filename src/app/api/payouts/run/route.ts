@@ -21,7 +21,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, payoutsCreated: 0, paidEntries: 0 })
   }
 
-  const grouped = new Map<string, typeof cleared>()
+  type LedgerEntry = (typeof cleared)[number]
+  const grouped = new Map<string, LedgerEntry[]>()
   for (const entry of cleared) {
     const arr = grouped.get(entry.creatorId) ?? []
     arr.push(entry)
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
   const groupedEntries = Array.from(grouped.entries())
   for (const [creatorId, entries] of groupedEntries) {
     const amountCents = entries.reduce(
-      (sum: number, e) => sum + e.commissionAmountCents,
+      (sum: number, e: LedgerEntry) => sum + e.commissionAmountCents,
       0
     )
     if (amountCents <= 0) continue
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
     })
     payoutsCreated += 1
 
-    const ids = entries.map((e) => e.id)
+    const ids = entries.map((e: LedgerEntry) => e.id)
     const result = await prisma.commissionLedger.updateMany({
       where: { id: { in: ids } },
       data: {
