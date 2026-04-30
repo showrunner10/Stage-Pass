@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
@@ -31,12 +32,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="flex">
         <aside className="hidden lg:flex w-72 min-h-screen border-r border-white/10 bg-black/20 p-6 sticky top-0">
           <div className="w-full space-y-8">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-white">
-                S
-              </div>
+            <Link href="/" className="flex items-center gap-3">
+              <Image
+                src="/assets/branding/logo-wordmark.svg"
+                alt="Stagepass logo"
+                width={192}
+                height={50}
+                sizes="192px"
+                className="h-10 w-auto object-contain"
+              />
               <div className="flex flex-col">
-                <span className="text-lg font-bold leading-none">Stagepass</span>
                 <span className="text-xs text-offwhite/40 font-medium">Promoter Admin</span>
               </div>
             </Link>
@@ -68,11 +73,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <header className="h-16 border-b border-white/10 flex items-center justify-between px-6 sticky top-0 bg-dark/80 backdrop-blur-md z-50">
             <div className="flex items-center gap-3">
               <div className="lg:hidden">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-white">
-                    S
-                  </div>
-                  <span className="text-xl font-bold tracking-tight">Stagepass</span>
+                <Link href="/" className="flex items-center">
+                  <Image
+                    src="/assets/branding/logo-wordmark.svg"
+                    alt="Stagepass logo"
+                    width={180}
+                    height={48}
+                    sizes="180px"
+                    className="h-9 w-auto object-contain"
+                  />
                 </Link>
               </div>
               <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">

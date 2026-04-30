@@ -83,8 +83,15 @@ function CampaignBuilderContent() {
   }, [searchParams, step]);
 
   useEffect(() => {
+    const currentStep = searchParams.get('step');
+    const currentCampaign = searchParams.get('campaign') ?? 'default-campaign';
+    const targetStep = stepSlugs[step];
+
+    // Avoid replace-loop: only update URL when values are actually different.
+    if (currentStep === targetStep && currentCampaign === campaignParam) return;
+
     const next = new URLSearchParams(searchParams.toString());
-    next.set('step', stepSlugs[step]);
+    next.set('step', targetStep);
     next.set('campaign', campaignParam);
     router.replace(`/app/builder?${next.toString()}`);
   }, [step, campaignParam, router, searchParams]);
@@ -511,7 +518,6 @@ function CampaignBuilderContent() {
             onClick={() => {
               const nextStep = Math.max(0, step - 1);
               setStep(nextStep);
-              router.push(`/app/builder/${encodeURIComponent(campaignParam)}/${stepSlugs[nextStep]}`);
             }}
           >
             Back
@@ -522,7 +528,6 @@ function CampaignBuilderContent() {
             onClick={() => {
               const nextStep = Math.min(steps.length - 1, step + 1);
               setStep(nextStep);
-              router.push(`/app/builder/${encodeURIComponent(campaignParam)}/${stepSlugs[nextStep]}`);
             }}
           >
             Next

@@ -27,7 +27,54 @@ export default function MyCampaigns() {
           </Link>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <div className="lg:hidden space-y-3">
+          {rows.map((c) => (
+            <div key={c.id} className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+              <div>
+                <div className="text-white font-semibold leading-tight">{c.name}</div>
+                <div className="text-xs text-offwhite/40">{c.eventTitle}</div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <div className="text-[11px] uppercase tracking-wider text-offwhite/40 mb-1">Status</div>
+                  <CampaignStatusBadge status={c.status} />
+                </div>
+                <div>
+                  <div className="text-[11px] uppercase tracking-wider text-offwhite/40 mb-1">Conv.</div>
+                  <div className="text-offwhite/85">{c.conversionRate.toFixed(1)}%</div>
+                </div>
+                <div>
+                  <div className="text-[11px] uppercase tracking-wider text-offwhite/40 mb-1">Clicks</div>
+                  <div className="text-offwhite/85">{c.clicks.toLocaleString()}</div>
+                </div>
+                <div>
+                  <div className="text-[11px] uppercase tracking-wider text-offwhite/40 mb-1">Tickets</div>
+                  <div className="text-offwhite/85">{c.ticketsSold}</div>
+                </div>
+                <div>
+                  <div className="text-[11px] uppercase tracking-wider text-offwhite/40 mb-1">Revenue</div>
+                  <div className="text-offwhite/85">{formatCurrency(c.revenue)}</div>
+                </div>
+                <div>
+                  <div className="text-[11px] uppercase tracking-wider text-offwhite/40 mb-1">Commission</div>
+                  <div className="text-accent-green font-semibold">{formatCurrency(c.commission)}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Link href={`/app/campaigns/${c.id}`}>
+                  <Button variant="outline" className="w-full text-white border-white/10 hover:bg-white/5 h-8 px-3 text-sm">
+                    View
+                  </Button>
+                </Link>
+                <Button variant="ghost" className="w-full text-offwhite/60 hover:text-white h-8 px-3 text-sm">
+                  Archive
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden lg:block rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>

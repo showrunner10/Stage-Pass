@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,8 +38,15 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <header className="h-16 border-b border-white/10 flex items-center justify-between px-6 sticky top-0 bg-dark/80 backdrop-blur-md z-50">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-white">S</div>
-            <span className="text-xl font-bold tracking-tight hidden sm:block">Stagepass</span>
+            <Image
+              src="/assets/branding/logo-wordmark.svg"
+              alt="Stagepass logo"
+              width={200}
+              height={52}
+              sizes="200px"
+              priority
+              className="h-10 w-auto object-contain"
+            />
           </Link>
           
           <div className="hidden md:flex relative w-64">
@@ -76,7 +84,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
           Prototype Mode
         </div>
 
-        <nav className="flex items-center gap-2 mb-8 bg-white/5 p-1 rounded-xl w-fit overflow-x-auto no-scrollbar">
+        <nav className="grid grid-cols-3 sm:grid-cols-3 md:flex items-center gap-2 mb-8 bg-white/5 p-1 rounded-xl w-full md:w-fit">
           {navigation.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/app/dashboard' && pathname.startsWith(item.href));
             return (
@@ -84,7 +92,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 key={item.name} 
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
+                  "flex items-center justify-center md:justify-start gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap min-w-0",
                   isActive 
                   ? "bg-dark text-white shadow-sm" 
                   : "text-offwhite/40 hover:text-offwhite/80"

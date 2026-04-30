@@ -102,17 +102,17 @@ export default function AdminDashboard() {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h2 className="text-xl font-bold text-white mb-2">Pending creator approvals</h2>
               <p className="text-sm text-offwhite/40 mb-4">Approve creators based on fit score and tier.</p>
-              <div className="flex items-center gap-2 mb-4">
-                <Button variant="outline" className="h-8 px-3 text-white border-white/10 hover:bg-white/5" onClick={() => bulkDecision('Rejected')}>
+              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-2 mb-4">
+                <Button variant="outline" className="h-8 px-3 text-white border-white/10 hover:bg-white/5 whitespace-nowrap w-full" onClick={() => bulkDecision('Rejected')}>
                   Reject selected
                 </Button>
-                <Button variant="premium" className="h-8 px-3" onClick={() => bulkDecision('Approved')}>
+                <Button variant="premium" className="h-8 px-3 whitespace-nowrap w-full" onClick={() => bulkDecision('Approved')}>
                   Approve selected
                 </Button>
               </div>
               <div className="space-y-4">
                 {pendingApprovals.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between gap-4">
+                  <div key={c.id} className="grid grid-cols-1 gap-3 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-center">
                     <div className="min-w-0 flex items-start gap-3">
                       <input type="checkbox" className="mt-1 accent-primary" checked={selectedCreatorIds.includes(c.id)} onChange={(e) => toggleSelect(c.id, e.target.checked)} />
                       <div>
@@ -120,13 +120,13 @@ export default function AdminDashboard() {
                         <div className="text-xs text-offwhite/40">{c.niche} · {c.audienceSize} · Fit {c.fitScore}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="grid grid-cols-2 gap-2 2xl:flex 2xl:items-center 2xl:justify-end 2xl:min-w-[178px]">
                       {c.decision === 'Pending' ? (
                         <>
-                          <Button variant="outline" className="h-9 px-3 text-white border-white/10 hover:bg-white/5" onClick={() => setDecision(c.id, 'Rejected')}>
+                          <Button variant="outline" className="h-8 px-2.5 text-sm text-white border-white/10 hover:bg-white/5 whitespace-nowrap w-full 2xl:w-auto 2xl:min-w-[82px]" onClick={() => setDecision(c.id, 'Rejected')}>
                             Reject
                           </Button>
-                          <Button variant="premium" className="h-9 px-3" onClick={() => setDecision(c.id, 'Approved')}>
+                          <Button variant="premium" className="h-8 px-2.5 text-sm whitespace-nowrap w-full 2xl:w-auto 2xl:min-w-[88px]" onClick={() => setDecision(c.id, 'Approved')}>
                             Approve
                           </Button>
                         </>
