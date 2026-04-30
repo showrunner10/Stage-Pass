@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react';
 
 export function PublicNavbar() {
   return (
-    <nav className="fixed top-0 w-full z-50 bg-dark/80 backdrop-blur-md border-b border-white/10">
+    <nav className="sticky top-0 w-full z-50 bg-dark/80 backdrop-blur-md border-b border-white/10">
       <div className="page-shell h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-white">S</div>
