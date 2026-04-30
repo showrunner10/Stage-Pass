@@ -2,7 +2,12 @@ import { redirect } from 'next/navigation';
 
 const allowedSteps = new Set(['brief', 'format', 'customise', 'distribute', 'launch']);
 
-export default function BuilderStepRoute({ params }: { params: { campaign: string; step: string } }) {
-  const step = allowedSteps.has(params.step) ? params.step : 'brief';
-  redirect(`/app/builder?campaign=${encodeURIComponent(params.campaign)}&step=${encodeURIComponent(step)}`);
+export default async function BuilderStepRoute({
+  params,
+}: {
+  params: Promise<{ campaign: string; step: string }>;
+}) {
+  const resolvedParams = await params;
+  const step = allowedSteps.has(resolvedParams.step) ? resolvedParams.step : 'brief';
+  redirect(`/app/builder?campaign=${encodeURIComponent(resolvedParams.campaign)}&step=${encodeURIComponent(step)}`);
 }

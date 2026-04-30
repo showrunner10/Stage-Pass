@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { Stepper } from '@/components/shared/Stepper';
 import { Button } from '@/components/ui/button';
@@ -11,10 +11,21 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type BuilderFormat = 'Tracked link' | 'Landing page';
+type BuilderDraft = {
+  step: number;
+  selectedEventId: string;
+  format: BuilderFormat;
+  slug: string;
+  headline: string;
+  note: string;
+  accent: 'Primary' | 'Green';
+  channels: Record<string, boolean>;
+};
 
-export default function CampaignBuilder() {
-  const steps = ['Brief', 'Format', 'Customise', 'Distribute', 'Launch'];
-  const stepSlugs = ['brief', 'format', 'customise', 'distribute', 'launch'];
+const steps = ['Brief', 'Format', 'Customise', 'Distribute', 'Launch'];
+const stepSlugs = ['brief', 'format', 'customise', 'distribute', 'launch'];
+
+function CampaignBuilderContent() {
   const [step, setStep] = useState(0);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -84,7 +95,7 @@ export default function CampaignBuilder() {
       try {
         const res = await fetch('/api/builder/draft', { cache: 'no-store' });
         if (!res.ok) throw new Error('load_failed');
-        const json = (await res.json()) as { draft: any; updatedAt: string | null };
+        const json = (await res.json()) as { draft: BuilderDraft | null; updatedAt: string | null };
         if (cancelled) return;
         if (json?.draft) {
           const d = json.draft as Partial<{
@@ -523,5 +534,13 @@ export default function CampaignBuilder() {
         </div>
       </div>
     </DashboardShell>
+  );
+}
+
+export default function CampaignBuilder() {
+  return (
+    <Suspense fallback={<DashboardShell><div className="rounded-2xl border border-white/10 bg-white/5 p-6 loading-shimmer">Loading builder...</div></DashboardShell>}>
+      <CampaignBuilderContent />
+    </Suspense>
   );
 }

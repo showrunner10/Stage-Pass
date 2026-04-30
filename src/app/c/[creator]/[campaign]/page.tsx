@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { campaigns, creators, events } from '@/data/mock';
@@ -7,9 +7,10 @@ import { formatCurrency } from '@/lib/utils';
 
 type PageParams = { creator: string; campaign: string };
 
-export async function generateMetadata({ params }: { params: PageParams }): Promise<Metadata> {
-  const creator = creators.find((c) => c.handle === params.creator) ?? creators[0];
-  const campaign = campaigns.find((c) => c.slug === params.campaign) ?? campaigns[0];
+export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const creator = creators.find((c) => c.handle === resolvedParams.creator) ?? creators[0];
+  const campaign = campaigns.find((c) => c.slug === resolvedParams.campaign) ?? campaigns[0];
   const event = events.find((e) => e.id === campaign.eventId) ?? events[0];
   const title = `${creator.name} recommends ${event.title} | Stagepass`;
   const description = `${campaign.headline} Tickets, tiers, and creator picks for ${event.title}.`;
@@ -31,9 +32,10 @@ export async function generateMetadata({ params }: { params: PageParams }): Prom
   };
 }
 
-export default function WhiteLabelLanding({ params }: { params: PageParams }) {
-  const creator = creators.find((c) => c.handle === params.creator) ?? creators[0];
-  const campaign = campaigns.find((c) => c.slug === params.campaign) ?? campaigns[0];
+export default async function WhiteLabelLanding({ params }: { params: Promise<PageParams> }) {
+  const resolvedParams = await params;
+  const creator = creators.find((c) => c.handle === resolvedParams.creator) ?? creators[0];
+  const campaign = campaigns.find((c) => c.slug === resolvedParams.campaign) ?? campaigns[0];
   const event = events.find((e) => e.id === campaign.eventId) ?? events[0];
 
   const eventSchema = {
@@ -88,7 +90,7 @@ export default function WhiteLabelLanding({ params }: { params: PageParams }) {
           </div>
           <div className="min-w-0">
             <div className="font-extrabold text-white text-lg truncate">{creator.name}</div>
-            <div className="text-sm text-offwhite/60 truncate">{creator.niche} � {creator.audienceSize} community</div>
+            <div className="text-sm text-offwhite/60 truncate">{creator.niche} · {creator.audienceSize} community</div>
             <div className="text-xs text-accent-green mt-1">Trusted by 1,200+ ticket buyers in this category</div>
           </div>
         </section>
@@ -155,3 +157,4 @@ export default function WhiteLabelLanding({ params }: { params: PageParams }) {
     </div>
   );
 }
+
