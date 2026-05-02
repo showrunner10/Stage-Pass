@@ -22,9 +22,9 @@ export default function MyCampaigns() {
             <h1 className="text-3xl font-black text-white">My Campaigns</h1>
             <p className="text-offwhite/40">Draft, launch, and track performance.</p>
           </div>
-          <Link href="/app/builder">
-            <Button variant="premium">New campaign</Button>
-          </Link>
+          <Button variant="premium" asChild>
+            <Link href="/app/builder">New campaign</Link>
+          </Button>
         </div>
 
         <div className="lg:hidden space-y-3">

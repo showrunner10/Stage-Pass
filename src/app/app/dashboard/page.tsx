@@ -165,16 +165,12 @@ export default function CreatorDashboard() {
             <h3 className="text-lg font-bold text-white mb-2">Creator profile</h3>
             <p className="text-sm text-offwhite/40 mb-6">Optimise your profile to unlock higher commissions.</p>
             <div className="space-y-3">
-              <Link href="/app/profile">
-                <Button variant="premium" className="w-full">
-                  Update profile
-                </Button>
-              </Link>
-              <Link href="/app/builder">
-                <Button variant="outline" className="w-full text-white border-white/10 hover:bg-white/5">
-                  Open link builder
-                </Button>
-              </Link>
+              <Button variant="premium" className="w-full" asChild>
+                <Link href="/app/profile">Update profile</Link>
+              </Button>
+              <Button variant="outline" className="w-full text-white border-white/10 hover:bg-white/5" asChild>
+                <Link href="/app/builder">Open link builder</Link>
+              </Button>
             </div>
           </div>
         </aside>

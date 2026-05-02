@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --background: #06080c;
-  --foreground: #f8f7f4;
-  --surface: #0d121b;
-  --surface-elevated: #111827;
-  --border: rgba(248, 247, 244, 0.14);
-  --primary: #1969ff;
-  --primary-strong: #3a80ff;
-  --accent-green: #14b87a;
-  --offwhite: #f8f7f4;
-  --charcoal: #1a1a1a;
-  --muted: #aaaaaa;
+  --background: #020202;
+  --foreground: #fafafa;
+  --surface: #0a0a0c;
+  --surface-elevated: #121214;
+  --border: rgba(250, 250, 250, 0.12);
+  --primary: #2563ff;
+  --primary-strong: #5b8cff;
+  --accent-green: #12d395;
+  --offwhite: #f4f4f5;
+  --charcoal: #050505;
+  --muted: #a1a1aa;
 }
 
 [data-theme='dark'] {
@@ -45,6 +45,10 @@ body {
     font-family: var(--font-editorial), "Times New Roman", serif;
   }
 
+  .font-display {
+    font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  }
+
   .page-shell {
     @apply mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-10;
   }
@@ -55,6 +59,24 @@ body {
 
   .surface-panel {
     @apply rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/95;
+  }
+
+  /** Public marketing inner pages — match creators/promoters polish */
+  .marketing-panel {
+    @apply rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-sm;
+  }
+
+  /* Plain CSS: @apply cannot resolve hover:border-primary/30 when primary is a nested theme color */
+  .marketing-panel-hover {
+    transition-property: color, background-color, border-color, box-shadow, transform;
+    transition-duration: 300ms;
+    transition-timing-function: ease-in-out;
+  }
+
+  .marketing-panel-hover:hover {
+    border-color: rgba(25, 105, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 20px 50px -24px rgba(83, 74, 183, 0.45);
   }
 }
 
@@ -187,4 +209,52 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.experience-marquee-track {
+  animation: experience-marquee-rtl 52s linear infinite;
+}
+
+.partner-marquee-speed {
+  animation-duration: 38s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-marquee-track {
+    animation: none;
+  }
+}
+
+@keyframes experience-marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Homepage category strip: smooth horizontal scroll + touch snap */
+.category-discover-scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .category-discover-scroller {
+    overflow-x: visible;
+    scroll-snap-type: none;
+  }
+}
+
+/* Category cards: stronger “lift toward viewer” when pointer is over */
+.category-tilt-face--hot {
+  border-color: rgba(37, 99, 255, 0.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 255, 0.2),
+    0 36px 72px -28px rgba(37, 99, 255, 0.45),
+    0 48px 90px -40px rgba(0, 0, 0, 0.85) !important;
 }

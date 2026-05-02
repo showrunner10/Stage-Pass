@@ -17,9 +17,9 @@ export default function Profile() {
             <p className="text-offwhite/40">Your public presence, brand kit, and payout placeholders.</p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/app/builder">
-              <Button variant="outline" className="text-white border-white/10 hover:bg-white/5">Open Link Builder</Button>
-            </Link>
+            <Button variant="outline" className="text-white border-white/10 hover:bg-white/5" asChild>
+              <Link href="/app/builder">Open Link Builder</Link>
+            </Button>
             <Button variant="premium">Save</Button>
           </div>
         </div>
@@ -35,6 +35,13 @@ export default function Profile() {
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-6">
+          <div className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-offwhite/80">
+            <span className="text-white font-semibold">Public page:</span>{' '}
+            <span className="text-primary">{creator.handle}.stage.page</span>
+            <span className="text-offwhite/45"> · resolves to </span>
+            <span className="text-offwhite/70">/c/{creator.handle}/…</span> in this prototype (wildcard DNS later).
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <div className="text-sm text-offwhite/60 mb-2">Display name</div>
@@ -44,20 +51,45 @@ export default function Profile() {
               />
             </div>
             <div>
-              <div className="text-sm text-offwhite/60 mb-2">Subdomain</div>
+              <div className="text-sm text-offwhite/60 mb-2">Subdomain (handle)</div>
               <input
-                defaultValue="maya.stage.page"
+                defaultValue={`${creator.handle}.stage.page`}
                 className="w-full bg-dark border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary"
               />
             </div>
           </div>
 
+          <div>
+            <div className="text-sm text-offwhite/60 mb-2">Bio</div>
+            <textarea
+              rows={3}
+              defaultValue="DJ & festival creator · Sydney. I only promote events I actually attend."
+              className="w-full bg-dark border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary resize-none"
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="text-sm text-offwhite/60 mb-2">Social handles</div>
+              <div className="text-sm text-offwhite/60 mb-2">Instagram</div>
               <input
                 defaultValue="@maya.rodriguez"
                 className="w-full bg-dark border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <div className="text-sm text-offwhite/60 mb-2">TikTok</div>
+              <input
+                defaultValue="@mayarodriguez"
+                className="w-full bg-dark border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="text-sm text-offwhite/60 mb-2">YouTube</div>
+              <input
+                placeholder="Channel URL"
+                className="w-full bg-dark border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-primary placeholder:text-offwhite/35"
               />
             </div>
             <div>
@@ -75,7 +107,8 @@ export default function Profile() {
               Upload avatar, cover image, and approved copy in production phase.
             </div>
             <div className="text-xs text-offwhite/40 mt-3">
-              Asset sources: event promoter uploads, creator uploads, and approved stock placeholders.
+              Creators get official assets from each listing&apos;s <strong className="text-offwhite/60">promoter asset pack</strong> (logos,
+              banners, copy, UTM guidance). Download from the event page or marketplace brief. You can add your own avatar and cover here.
             </div>
             <div className="mt-4 flex gap-3">
               <Button variant="outline" className="text-white border-white/10 hover:bg-white/5">

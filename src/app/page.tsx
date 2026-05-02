@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
 import { EventCard } from '@/components/shared/EventCard';
+import { PromoterBrandMarquee } from '@/components/marketing/PromoterBrandMarquee';
+import { CategoryDiscoverStrip } from '@/components/marketing/CategoryDiscoverStrip';
 import { creators, events } from '@/data/mock';
 import { ArrowRight, Music, Users, BarChart3, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
@@ -48,16 +50,16 @@ export default function Home() {
         <div className="absolute inset-0 light-particles" />
 
         <div className="page-shell relative z-10 text-center">
-          <div className="inline-block px-4 py-1.5 mb-7 rounded-full bg-black/45 border border-white/30 text-white/90 shadow-[0_6px_20px_-12px_rgba(0,0,0,0.9)] font-semibold text-sm tracking-wide">
-            Creator-first Event Marketplace
+          <div className="inline-block px-4 py-1.5 mb-7 rounded-full bg-black/55 border border-white/20 text-white/90 font-semibold text-xs uppercase tracking-[0.2em]">
+            Experience commerce
           </div>
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[112px] font-black text-white mb-8 tracking-[-0.03em] leading-[0.9] text-balance">
-            Own the <span className="text-primary">moment.</span>
-            <br />
-            Sell the <span className="text-primary">experience.</span>
+          <h1 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[clamp(4rem,9vw,7.5rem)] font-bold text-white mb-8 tracking-[0.02em] leading-[0.95] text-balance uppercase">
+            The future of selling{' '}
+            <span className="text-primary">experiences.</span>
           </h1>
-          <p className="text-lg md:text-2xl text-[#aaaaaa] mb-12 max-w-3xl mx-auto leading-relaxed text-balance">
-            Stagepass blends premium event discovery with creator-driven commerce for festivals, nightlife, and culture.
+          <p className="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed text-balance font-medium">
+            Fashion, beauty, clothing, wellness, and live events — curated campaigns with promoter asset packs, tracked links, and
+            white-label pages.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/apply/creator">
@@ -74,21 +76,18 @@ export default function Home() {
         </div>
       </section>
 
+      <CategoryDiscoverStrip />
+
+      <section className="border-y border-white/10 bg-black/45 overflow-hidden">
+        <div className="page-shell pt-10 md:pt-12 pb-4">
+          <p className="text-center text-offwhite/40 text-sm font-semibold uppercase tracking-[0.22em]">
+            Trusted by Australia&apos;s Leading Promoters
+          </p>
+        </div>
+        <PromoterBrandMarquee />
+      </section>
+
       <div className="section-stack">
-        <section className="app-section border-y border-white/10 bg-black/45">
-          <div className="page-shell">
-            <p className="text-center text-offwhite/40 text-sm font-semibold uppercase tracking-[0.22em] mb-10">
-              Trusted by Australia&apos;s Leading Promoters
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-10 md:gap-14 opacity-60 grayscale contrast-125">
-              {['SECRET SOUNDS', 'PULSE', 'VINO', 'HORIZON', 'LANEWAY'].map((name) => (
-                <span key={name} className="text-3xl md:text-4xl font-black text-white/70 tracking-tight">
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
 
         <section className="app-section bg-dark">
           <div className="page-shell">

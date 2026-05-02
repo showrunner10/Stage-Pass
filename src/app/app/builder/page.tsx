@@ -94,6 +94,13 @@ function CampaignBuilderContent() {
     };
   }, []);
 
+  const eventIdFromQuery = searchParams.get('event');
+  useEffect(() => {
+    if (!eventIdFromQuery) return;
+    const match = events.find((e) => e.id === eventIdFromQuery);
+    if (match) setSelectedEventId(match.id);
+  }, [eventIdFromQuery, events]);
+
   useEffect(() => {
     if (initialisedFromQueryRef.current) return;
     const stepParam = searchParams.get('step');
@@ -116,7 +123,12 @@ function CampaignBuilderContent() {
     const next = new URLSearchParams(searchParams.toString());
     next.set('step', targetStep);
     next.set('campaign', campaignParam);
-    router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+    const url = `${pathname}?${next.toString()}`;
+    // Defer navigation to after mount/commit so internal search-param state never updates too early (React 19 / Next 16).
+    const t = window.setTimeout(() => {
+      router.replace(url, { scroll: false });
+    }, 0);
+    return () => window.clearTimeout(t);
   }, [step, campaignParam, pathname, router, searchParams]);
 
   useEffect(() => {

@@ -2,18 +2,20 @@
 
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
+import { PublicInteriorHero } from '@/components/layout/PublicInteriorHero';
 
 export default function CookiesPage() {
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-dark page-fade-in">
       <PublicNavbar />
 
-      <section className="py-20 md:py-28">
-        <div className="page-shell max-w-3xl">
-          <h1 className="text-5xl font-black text-white mb-4">Cookie Policy</h1>
-          <p className="text-[#aaaaaa] mb-10">Last updated: May 2026</p>
+      <PublicInteriorHero eyebrow="Legal" title="Cookie Policy" narrow>
+        <p className="text-offwhite/55 text-sm font-medium">Last updated: May 2026</p>
+      </PublicInteriorHero>
 
-          <div className="prose prose-invert max-w-none space-y-8">
+      <section className="app-section border-b border-white/10">
+        <div className="page-shell max-w-3xl">
+          <div className="marketing-panel p-8 md:p-12 prose prose-invert max-w-none space-y-8">
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">1. What Are Cookies?</h2>
               <p className="text-[#aaaaaa] leading-relaxed">

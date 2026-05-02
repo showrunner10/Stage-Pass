@@ -3,20 +3,43 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { accessTokenFromAuthPayload, setAuthCookies, supabaseSignIn, supabaseSignUp } from '@/lib/auth/session';
 
-const BodySchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  displayName: z.string().min(2).max(80),
-  handle: z.string().min(2).max(40).regex(/^[a-zA-Z0-9._-]+$/),
-  accountType: z.enum(['creator', 'promoter']).default('creator'),
-  orgName: z.string().min(2).max(120).optional(),
-});
+const BodySchema = z
+  .object({
+    email: z.string().trim().email('Enter a valid email.'),
+    password: z.string().min(6, 'Password must be at least 6 characters.'),
+    displayName: z.string().trim().min(2, 'Display name must be at least 2 characters.').max(80),
+    handle: z
+      .string()
+      .trim()
+      .min(2, 'Handle must be at least 2 characters.')
+      .max(40)
+      .regex(/^[a-zA-Z0-9._-]+$/, 'Handle: use letters, numbers, dots, underscores or hyphens only.'),
+    accountType: z.enum(['creator', 'promoter']).default('creator'),
+    /** Client often sends ""; treat as missing for creators */
+    orgName: z.string().max(120).optional(),
+  })
+  .transform((data) => ({
+    ...data,
+    orgName: data.orgName?.trim() ? data.orgName.trim() : undefined,
+  }))
+  .superRefine((data, ctx) => {
+    if (data.accountType === 'promoter' && (!data.orgName || data.orgName.length < 2)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Organisation name is required for promoter accounts (min 2 characters).',
+        path: ['orgName'],
+      });
+    }
+  });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => null);
     const parsed = BodySchema.safeParse(body);
-    if (!parsed.success) return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    if (!parsed.success) {
+      const first = parsed.error.issues[0]?.message ?? 'Check the form and try again.';
+      return NextResponse.json({ error: first }, { status: 400 });
+    }
 
     const { email, password, displayName, handle, accountType, orgName } = parsed.data;
     const auth = await supabaseSignUp(email, password);

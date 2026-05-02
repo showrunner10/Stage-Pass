@@ -4,7 +4,8 @@ import { DashboardShell } from '@/components/layout/DashboardShell';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { MetricCard } from '@/components/shared/MetricCard';
-import { Lock, Download, Upload, Key, Bell } from 'lucide-react';
+import { Lock, Download, Upload, Key, Bell, Plug, Cookie } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function CreatorSettingsPage() {
@@ -138,11 +139,28 @@ export default function CreatorSettingsPage() {
           </div>
         </Card>
 
+        {/* Integrations */}
+        <Card className="p-8 bg-white/5 border-white/10">
+          <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+            <Plug className="w-6 h-6" /> Integrations
+          </h2>
+          <p className="text-sm text-offwhite/45 mb-6">Connect tools for social verification, email, and ticketing (Phase 2+).</p>
+          <div className="space-y-3">
+            <Button variant="outline" className="w-full h-12 text-white border-white/30 hover:bg-white/10 justify-start" disabled>
+              Instagram Graph (coming soon)
+            </Button>
+            <Button variant="outline" className="w-full h-12 text-white border-white/30 hover:bg-white/10 justify-start" disabled>
+              TikTok Display API (coming soon)
+            </Button>
+          </div>
+        </Card>
+
         {/* Preferences Section */}
         <Card className="p-8 bg-white/5 border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Bell className="w-6 h-6" /> Notifications
+          <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+            <Bell className="w-6 h-6" /> Notifications &amp; email
           </h2>
+          <p className="text-sm text-offwhite/45 mb-6">Control product and marketing email separately (Spam Act opt-in).</p>
           <div className="space-y-4">
             {[
               { label: 'New event launches', enabled: true },
@@ -178,7 +196,7 @@ export default function CreatorSettingsPage() {
 
         {/* Data Management */}
         <Card className="p-8 bg-white/5 border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-6">Data & Privacy</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Data, privacy &amp; cookies</h2>
           <div className="space-y-4">
             <Button variant="outline" className="w-full h-12 text-white border-white/30 hover:bg-white/10 justify-start flex items-center gap-2">
               <Download className="w-5 h-5" /> Download My Data
@@ -186,6 +204,14 @@ export default function CreatorSettingsPage() {
             <Button variant="outline" className="w-full h-12 text-white border-white/30 hover:bg-white/10 justify-start flex items-center gap-2">
               <Upload className="w-5 h-5" /> Export Campaign History
             </Button>
+            <Link href="/legal/cookies" className="block">
+              <Button variant="outline" className="w-full h-12 text-white border-white/30 hover:bg-white/10 justify-start flex items-center gap-2">
+                <Cookie className="w-5 h-5" /> Cookie &amp; tracking preferences
+              </Button>
+            </Link>
+            <Link href="/legal/privacy" className="block text-sm text-primary hover:underline px-1">
+              Privacy policy &amp; data deletion requests →
+            </Link>
           </div>
         </Card>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { campaigns, creators, events } from '@/data/mock';
@@ -28,7 +28,7 @@ function buildPartnerUrl(
   }
 }
 
-export default function ShortLinkRedirect() {
+function ShortLinkRedirect() {
   const params = useParams<{ creator: string; campaign: string }>();
   const search = useSearchParams();
   const [showFallback, setShowFallback] = useState(false);
@@ -117,5 +117,17 @@ export default function ShortLinkRedirect() {
         .
       </p>
     </div>
+  );
+}
+
+export default function ShortLinkRedirectPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-dark flex items-center justify-center text-offwhite/60 text-sm">Loading…</div>
+      }
+    >
+      <ShortLinkRedirect />
+    </Suspense>
   );
 }

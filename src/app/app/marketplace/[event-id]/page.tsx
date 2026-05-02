@@ -4,10 +4,11 @@ import { DashboardShell } from '@/components/layout/DashboardShell';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { events } from '@/data/mock';
-import { ArrowRight, Clock, MapPin, Users, Zap, TrendingUp } from 'lucide-react';
+import { ArrowRight, Clock, Download, MapPin, Users, Zap, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import { assetPackUrlForSlug } from '@/lib/asset-pack';
 
 interface EventDetailProps {
   params: {
@@ -22,6 +23,10 @@ export default function EventDetailPage({ params }: EventDetailProps) {
     notFound();
   }
 
+  const ticketsRemaining = Math.max(0, event.inventoryCap - event.soldCount);
+  const youthTilt = /festival|warehouse|techno|nightlife|club|party/i.test(event.category);
+  const packHref = event.assetPackUrl ?? assetPackUrlForSlug(event.slug);
+
   const briefingItems = [
     {
       title: 'Event Overview',
@@ -29,7 +34,9 @@ export default function EventDetailPage({ params }: EventDetailProps) {
     },
     {
       title: 'Target Audience',
-      content: event.audienceType === 'Gen Z' ? '18-24 year olds interested in nightlife and culture' : 'Adults interested in premium experiences',
+      content: youthTilt
+        ? '18–34 year olds interested in nightlife, music, and culture'
+        : 'Adults interested in premium experiences and curated outings',
     },
     {
       title: 'Commission Rate',
@@ -37,7 +44,7 @@ export default function EventDetailPage({ params }: EventDetailProps) {
     },
     {
       title: 'Inventory',
-      content: `${event.inventory} tickets available`,
+      content: `${ticketsRemaining.toLocaleString()} tickets still available (cap ${event.inventoryCap.toLocaleString()})`,
     },
   ];
 
@@ -53,11 +60,11 @@ export default function EventDetailPage({ params }: EventDetailProps) {
 
         {/* Event Card */}
         <Card className="mb-10 overflow-hidden bg-white/5 border-white/10">
-          <div className="relative h-64 w-full bg-gradient-to-br from-primary/20 to-transparent flex items-center justify-center">
-            <span className="text-6xl">{event.emoji}</span>
+          <div className="relative h-64 w-full bg-gradient-to-br from-primary/20 to-transparent">
+            <Image src={event.image} alt={event.title} fill className="object-cover opacity-90" sizes="(max-width: 896px) 100vw, 896px" />
           </div>
           <div className="p-8 md:p-12">
-            <h1 className="text-5xl font-black text-white mb-4">{event.name}</h1>
+            <h1 className="text-5xl font-black text-white mb-4">{event.title}</h1>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10 py-8 border-t border-b border-white/10">
               <div>
@@ -78,7 +85,7 @@ export default function EventDetailPage({ params }: EventDetailProps) {
               </div>
               <div>
                 <p className="text-sm text-[#aaaaaa] uppercase tracking-wider mb-2">Available Spots</p>
-                <p className="text-xl font-semibold text-white">{event.inventory}</p>
+                <p className="text-xl font-semibold text-white">{ticketsRemaining.toLocaleString()}</p>
               </div>
             </div>
 
@@ -90,11 +97,22 @@ export default function EventDetailPage({ params }: EventDetailProps) {
               <p className="text-[#aaaaaa] mb-6">
                 Create a campaign to get tracked links and white-label pages. Earn {event.commission}% commission on every ticket sold.
               </p>
-              <Link href={`/app/builder?event=${event.id}`}>
-                <Button variant="premium" className="h-12 px-8">
-                  Create Campaign <ArrowRight className="w-5 h-5 ml-2" />
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+                <Button variant="premium" className="h-12 px-8" asChild>
+                  <Link href={`/app/builder?event=${event.id}`}>
+                    Create Campaign <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
                 </Button>
-              </Link>
+                <Button variant="outline" className="h-12 px-6 text-white border-white/15 hover:bg-white/5" asChild>
+                  <a href={packHref} download>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download asset pack
+                  </a>
+                </Button>
+              </div>
+              <p className="text-sm text-zinc-500 mt-4">
+                Asset packs are supplied by the promoter — logos, hero crops, captions, and brand notes for compliant posts.
+              </p>
             </div>
           </div>
         </Card>
@@ -119,7 +137,7 @@ export default function EventDetailPage({ params }: EventDetailProps) {
             {[
               {
                 title: 'Understand Your Audience',
-                desc: `${event.name} appeals to ${event.audienceType} audiences. Tailor your promotion to match their interests.`,
+                desc: `${event.title} draws ${event.category.toLowerCase()} crowds. Tailor your promotion to match what they care about.`,
                 icon: <Users className="w-6 h-6" />,
               },
               {
@@ -150,12 +168,16 @@ export default function EventDetailPage({ params }: EventDetailProps) {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center">
-          <Link href={`/app/builder?event=${event.id}`}>
-            <Button variant="premium" size="lg" className="h-14 px-10 text-lg">
-              Create Campaign & Start Earning
-            </Button>
-          </Link>
+        <div className="text-center flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button variant="premium" size="lg" className="h-14 px-10 text-lg" asChild>
+            <Link href={`/app/builder?event=${event.id}`}>Create Campaign & Start Earning</Link>
+          </Button>
+          <Button variant="outline" size="lg" className="h-14 px-8 text-lg text-white border-white/15" asChild>
+            <a href={packHref} download>
+              <Download className="w-5 h-5 mr-2" />
+              Asset pack
+            </a>
+          </Button>
         </div>
       </div>
     </DashboardShell>

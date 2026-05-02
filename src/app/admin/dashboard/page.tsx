@@ -201,18 +201,23 @@ function useCountUp(target: number, duration = 1000) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     const start = performance.now();
     let frameId = 0;
 
     const frame = (now: number) => {
+      if (cancelled) return;
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(target * eased);
-      if (progress < 1) frameId = requestAnimationFrame(frame);
+      if (progress < 1 && !cancelled) frameId = requestAnimationFrame(frame);
     };
 
     frameId = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(frameId);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frameId);
+    };
   }, [target, duration]);
 
   return count;

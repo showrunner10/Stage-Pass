@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
 import { EventCard } from '@/components/shared/EventCard';
@@ -12,7 +13,8 @@ import Link from 'next/link';
 
 type SortOption = 'commission' | 'date' | 'newest' | 'promoted';
 
-export default function Marketplace() {
+function MarketplaceContent() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
@@ -20,6 +22,11 @@ export default function Marketplace() {
   const [sortBy, setSortBy] = useState<SortOption>('commission');
   const [showFilters, setShowFilters] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    const cat = searchParams.get('category');
+    if (cat) setSelectedCategory(decodeURIComponent(cat));
+  }, [searchParams]);
 
   useEffect(() => {
     let active = true;
@@ -52,7 +59,7 @@ export default function Marketplace() {
   } else if (sortBy === 'newest') {
     filteredEvents = [...filteredEvents].reverse();
   } else if (sortBy === 'promoted') {
-    filteredEvents = [...filteredEvents].sort((a, b) => (b.promoted || 0) - (a.promoted || 0));
+    filteredEvents = [...filteredEvents].sort((a, b) => b.soldCount - a.soldCount);
   }
 
   const activeFilters = [
@@ -69,8 +76,13 @@ export default function Marketplace() {
         <div className="page-shell">
           <div className="mb-8 rounded-2xl border border-white/10 bg-[linear-gradient(120deg,rgba(7,13,22,0.92),rgba(8,8,9,0.85)),repeating-linear-gradient(0deg,rgba(255,255,255,0.05)_0,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_36px),repeating-linear-gradient(90deg,rgba(255,255,255,0.05)_0,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_36px)] p-6 md:p-8">
             <p className="text-xs uppercase tracking-[0.24em] text-primary/90 mb-3">Experience Commerce</p>
-            <h2 className="text-2xl md:text-3xl font-black text-white mb-3">Fashion, beauty, clothing, events, and wellness campaigns in one marketplace.</h2>
-            <p className="text-offwhite/65 max-w-3xl">Every listing includes campaign-ready positioning and downloadable assets so creators can launch faster.</p>
+            <h2 className="text-2xl md:text-3xl font-black text-white mb-3 font-display uppercase tracking-wide">
+              Fashion, beauty, clothing, wellness &amp; live events — one marketplace.
+            </h2>
+            <p className="text-offwhite/65 max-w-3xl">
+              Every listing includes a promoter <strong className="text-offwhite/85">asset pack</strong> (logos, banners, copy) plus commission-ready
+              positioning so creators can launch in minutes.
+            </p>
           </div>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
@@ -118,7 +130,7 @@ export default function Marketplace() {
                   <option value="commission">Highest commission</option>
                   <option value="date">Ending soonest</option>
                   <option value="newest">Newest</option>
-                  <option value="promoted">Most promoted</option>
+                  <option value="promoted">Trending (most tickets sold)</option>
                 </select>
               </div>
               <Button 
@@ -195,7 +207,7 @@ export default function Marketplace() {
                       { value: 'commission' as SortOption, label: 'Highest commission' },
                       { value: 'date' as SortOption, label: 'Ending soonest' },
                       { value: 'newest' as SortOption, label: 'Newest' },
-                      { value: 'promoted' as SortOption, label: 'Most promoted' },
+                      { value: 'promoted' as SortOption, label: 'Trending (sales)' },
                     ].map((option) => (
                       <label key={option.value} className="flex items-center gap-3 cursor-pointer">
                         <input
@@ -280,5 +292,13 @@ export default function Marketplace() {
 
       <PublicFooter />
     </div>
+  );
+}
+
+export default function Marketplace() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#030303]" />}>
+      <MarketplaceContent />
+    </Suspense>
   );
 }

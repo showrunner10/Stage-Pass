@@ -82,6 +82,7 @@ export const events: Event[] = [
     ],
     ticketingUrl: 'https://tickets.example.com/solstice-festival-2026',
     ticketingPartner: 'Moshtix',
+    assetPackUrl: '/assets/packs/solstice-festival-2026-asset-pack.txt',
   },
   {
     id: '2',
@@ -106,6 +107,7 @@ export const events: Event[] = [
     ],
     ticketingUrl: 'https://tickets.example.com/pulse-warehouse',
     ticketingPartner: 'Moshtix',
+    assetPackUrl: '/assets/packs/warehouse-techno-sydney-asset-pack.txt',
   },
   {
     id: '3',
@@ -127,7 +129,8 @@ export const events: Event[] = [
     ticketTiers: [
       { name: 'Standard Tasting', price: 95, description: 'Includes 10 tasting tokens' },
       { name: 'Connoisseur Pass', price: 165, description: 'Unlimited tastings + masterclass' }
-    ]
+    ],
+    assetPackUrl: '/assets/packs/melbourne-wine-wildflower-asset-pack.txt',
   },
   {
     id: '4',
@@ -149,7 +152,8 @@ export const events: Event[] = [
     ticketTiers: [
       { name: 'Delegate Pass', price: 899, description: 'Full access to all sessions' },
       { name: 'Startup Pass', price: 450, description: 'Discounted for early stage founders' }
-    ]
+    ],
+    assetPackUrl: '/assets/packs/brisbane-tech-summit-asset-pack.txt',
   },
   {
     id: '5',
@@ -171,7 +175,8 @@ export const events: Event[] = [
     ticketTiers: [
       { name: 'Seated Admission', price: 120, description: 'Guaranteed seat + drink' },
       { name: 'Standing Room', price: 75, description: 'Bar access' }
-    ]
+    ],
+    assetPackUrl: '/assets/packs/rooftop-jazz-sydney-asset-pack.txt',
   },
   {
     id: '6',
@@ -193,7 +198,8 @@ export const events: Event[] = [
     ticketTiers: [
       { name: 'General Admission', price: 189, description: 'Single day entry' },
       { name: 'VIP', price: 320, description: 'Express entry + VIP area' }
-    ]
+    ],
+    assetPackUrl: '/assets/packs/laneway-melbourne-2026-asset-pack.txt',
   },
   {
     id: '7',
@@ -214,7 +220,8 @@ export const events: Event[] = [
     soldCount: 120,
     ticketTiers: [
       { name: 'General Entry', price: 45, description: 'Includes 1 drink' }
-    ]
+    ],
+    assetPackUrl: '/assets/packs/underground-art-brisbane-asset-pack.txt',
   },
   {
     id: '8',

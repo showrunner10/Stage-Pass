@@ -40,7 +40,7 @@ export default function AdminEventDetailPage({ params }: EventDetailProps) {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-black text-white mb-2">{event.name}</h1>
+              <h1 className="text-4xl font-black text-white mb-2">{event.title}</h1>
               <p className="text-[#aaaaaa]">
                 {event.date} • {event.location}
               </p>
@@ -100,8 +100,8 @@ export default function AdminEventDetailPage({ params }: EventDetailProps) {
                 <div>
                   <div className="space-y-6">
                     <div>
-                      <p className="text-[#aaaaaa] text-sm mb-2">Audience Type</p>
-                      <p className="text-white font-semibold">{event.audienceType}</p>
+                      <p className="text-[#aaaaaa] text-sm mb-2">Category</p>
+                      <p className="text-white font-semibold">{event.category}</p>
                     </div>
                     <div>
                       <p className="text-[#aaaaaa] text-sm mb-2">Commission Rate</p>
@@ -242,7 +242,7 @@ export default function AdminEventDetailPage({ params }: EventDetailProps) {
                     <Button variant="outline" className="h-10 px-6 text-white border-white/30 hover:bg-white/10">
                       Decline
                     </Button>
-                    <Button variant="primary" className="h-10 px-6">
+                    <Button variant="default" className="h-10 px-6">
                       Approve
                     </Button>
                   </div>

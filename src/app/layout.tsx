@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter, Oswald } from "next/font/google";
 import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import "./globals.css";
 
@@ -11,6 +11,11 @@ const editorial = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-editorial",
+});
+const display = Oswald({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${editorial.variable}`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${editorial.variable} ${display.variable}`} suppressHydrationWarning>
         {children}
         <CookieConsentBanner />
       </body>

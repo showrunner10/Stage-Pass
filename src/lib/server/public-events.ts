@@ -1,4 +1,5 @@
 ﻿import { events as mockEvents } from '@/data/mock';
+import { assetPackUrlForSlug } from '@/lib/asset-pack';
 import { prisma } from '@/lib/prisma';
 
 export type PublicEventCard = {
@@ -19,6 +20,8 @@ export type PublicEventCard = {
   inventoryCap: number;
   soldCount: number;
   ticketTiers: { name: string; price: number; description: string }[];
+  /** Creator kit ZIP/txt; promoters upload packs in production */
+  assetPackUrl: string;
 };
 
 function fmtDate(startsAt: Date, endsAt: Date | null) {
@@ -41,9 +44,11 @@ function inferCategory(slug: string, title: string) {
   if (text.includes('beauty') || text.includes('glow')) return 'Beauty Products';
   if (text.includes('clothing') || text.includes('stitch')) return 'Clothing';
   if (text.includes('wellness') || text.includes('yoga') || text.includes('retreat')) return 'Wellness';
+  if (text.includes('jazz') || text.includes('skyline jazz')) return 'Live Music';
   if (text.includes('conference') || text.includes('summit')) return 'Conference';
   if (text.includes('wine')) return 'Wine Event';
   if (text.includes('warehouse')) return 'Warehouse Party';
+  if (text.includes('art') && text.includes('canvas')) return 'Live Events';
   return 'Festival';
 }
 
@@ -84,10 +89,14 @@ export async function getPublicEvents(): Promise<PublicEventCard[]> {
           price: t.priceCents / 100,
           description: t.description ?? '',
         })),
+        assetPackUrl: assetPackUrlForSlug(row.slug),
       };
     });
   } catch {
-    return mockEvents;
+    return mockEvents.map((e) => ({
+      ...e,
+      assetPackUrl: e.assetPackUrl ?? assetPackUrlForSlug(e.slug),
+    }));
   }
 }
 
@@ -129,8 +138,14 @@ export async function getPublicEventBySlug(slug: string): Promise<PublicEventCar
         price: t.priceCents / 100,
         description: t.description ?? '',
       })),
+      assetPackUrl: assetPackUrlForSlug(row.slug),
     };
   } catch {
-    return mockEvents.find((e) => e.slug === slug) ?? null;
+    const found = mockEvents.find((e) => e.slug === slug);
+    if (!found) return null;
+    return {
+      ...found,
+      assetPackUrl: found.assetPackUrl ?? assetPackUrlForSlug(found.slug),
+    };
   }
 }

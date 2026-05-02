@@ -7,6 +7,7 @@ import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
 import { Mail, MapPin, Facebook, Twitter, Instagram } from 'lucide-react';
 import Link from 'next/link';
+import { PublicInteriorHero } from '@/components/layout/PublicInteriorHero';
 
 function ContactFormInner() {
   const search = useSearchParams();
@@ -49,51 +50,48 @@ function ContactFormInner() {
   };
 
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-dark page-fade-in">
       <PublicNavbar />
 
-      <section className="py-24 md:py-32 border-b border-white/10">
-        <div className="page-shell">
-          <h1 className="text-6xl md:text-7xl font-black text-white mb-6 tracking-[-0.03em]">Contact</h1>
-          <p className="text-xl text-[#aaaaaa] max-w-3xl leading-relaxed">
-            Demos for promoters, creator support, and press. Prefer email?{' '}
-            <a href="mailto:hello@stagepass.com.au" className="text-primary hover:underline">
-              hello@stagepass.com.au
-            </a>
-          </p>
-          {intent === 'demo' && (
-            <div className="mt-6 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-offwhite/90 max-w-2xl">
-              You&apos;re booking a <strong className="text-white">promoter demo</strong>. Tell us your org and events—we&apos;ll
-              reply to schedule.
-            </div>
-          )}
-        </div>
-      </section>
+      <PublicInteriorHero eyebrow="Contact" title="Let’s talk events & creators." narrow>
+        <p className="text-lg md:text-xl text-offwhite/70 leading-relaxed">
+          Demos for promoters, support for creators, press & partnerships. Email{' '}
+          <a href="mailto:hello@stagepass.com.au" className="text-primary font-semibold hover:underline">
+            hello@stagepass.com.au
+          </a>
+        </p>
+        {intent === 'demo' ? (
+          <div className="mt-8 marketing-panel border-primary/30 bg-primary/[0.07] px-5 py-4 text-sm text-offwhite/90 max-w-2xl">
+            You&apos;re booking a <strong className="text-white">promoter demo</strong>. Include org name, events, and timeline—we&apos;ll
+            reply to schedule.
+          </div>
+        ) : null}
+      </PublicInteriorHero>
 
-      <section className="py-20 md:py-28">
+      <section className="app-section border-b border-white/10">
         <div className="page-shell">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
-            <div className="text-center lg:text-left">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto lg:mx-0 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+            <div className="marketing-panel marketing-panel-hover p-8 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary mx-auto lg:mx-0 mb-5">
                 <Mail className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Support email</h3>
+              <h3 className="text-lg font-bold text-white mb-2">Support email</h3>
               <a href="mailto:hello@stagepass.com.au" className="text-lg text-primary font-semibold hover:underline">
                 hello@stagepass.com.au
               </a>
-              <p className="text-[#aaaaaa] text-sm mt-2">Creators &amp; promoters · SLA targets in brief</p>
+              <p className="text-offwhite/55 text-sm mt-3">Creators &amp; promoters</p>
             </div>
-            <div className="text-center lg:text-left">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto lg:mx-0 mb-4">
+            <div className="marketing-panel marketing-panel-hover p-8 text-center lg:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary mx-auto lg:mx-0 mb-5">
                 <MapPin className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Location</h3>
+              <h3 className="text-lg font-bold text-white mb-2">Location</h3>
               <p className="text-lg text-white font-semibold">Sydney, Australia</p>
-              <p className="text-[#aaaaaa] text-sm mt-2">Primary region: APAC</p>
+              <p className="text-offwhite/55 text-sm mt-3">Primary region · APAC</p>
             </div>
-            <div className="text-center lg:text-left">
-              <h3 className="text-xl font-bold text-white mb-4">Social</h3>
-              <div className="flex items-center justify-center lg:justify-start gap-4">
+            <div className="marketing-panel marketing-panel-hover p-8 text-center lg:text-left">
+              <h3 className="text-lg font-bold text-white mb-5">Social</h3>
+              <div className="flex items-center justify-center lg:justify-start gap-3">
                 <a
                   href="https://www.facebook.com/stagepass/?fref=ts"
                   target="_blank"
@@ -122,15 +120,15 @@ function ContactFormInner() {
                   <Instagram className="w-5 h-5" />
                 </a>
               </div>
-              <p className="text-[#aaaaaa] text-sm mt-3">Replace Instagram URL with your official handle.</p>
+              <p className="text-offwhite/45 text-sm mt-4">Update Instagram link to your official handle.</p>
             </div>
           </div>
 
-          <div className="max-w-2xl mx-auto" id="form">
+          <div className="max-w-2xl mx-auto marketing-panel p-8 sm:p-10" id="form">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
-              <h2 className="text-4xl font-bold text-white">Send a message</h2>
+              <h2 className="text-3xl sm:text-4xl font-black text-white">Send a message</h2>
               <Link href="/contact?intent=demo#form">
-                <Button variant="outline_premium" className="border-primary/50">
+                <Button variant="outline_premium" className="border-primary/50 shrink-0">
                   Book a demo
                 </Button>
               </Link>
@@ -145,7 +143,7 @@ function ContactFormInner() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white placeholder-white/45 focus:outline-none focus:border-primary transition-colors"
                     placeholder="Your name"
                   />
                 </div>
@@ -157,7 +155,7 @@ function ContactFormInner() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white placeholder-white/45 focus:outline-none focus:border-primary transition-colors"
                     placeholder="you@email.com"
                   />
                 </div>
@@ -170,7 +168,7 @@ function ContactFormInner() {
                   value={formData.companyRole}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white placeholder-white/45 focus:outline-none focus:border-primary transition-colors"
                   placeholder="e.g. Secret Sounds · Marketing Lead"
                 />
               </div>
@@ -185,7 +183,7 @@ function ContactFormInner() {
                       setFormData((p) => ({ ...p, audience: v }));
                     }
                   }}
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white focus:outline-none focus:border-primary transition-colors"
                 >
                   <option value="creator">Creator</option>
                   <option value="promoter">Promoter</option>
@@ -200,7 +198,7 @@ function ContactFormInner() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white placeholder-white/45 focus:outline-none focus:border-primary transition-colors"
                   placeholder="What is this about?"
                 />
               </div>
@@ -212,7 +210,7 @@ function ContactFormInner() {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-primary transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white placeholder-white/45 focus:outline-none focus:border-primary transition-colors resize-none"
                   placeholder="Events, timelines, integrations…"
                 />
               </div>

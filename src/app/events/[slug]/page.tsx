@@ -142,11 +142,11 @@ export default function EventDetails() {
                         <li>✓ Brand guidelines</li>
                       </ul>
                     </div>
-                    <a href={event.assetPackUrl ?? `/assets/packs/${event.slug}-asset-pack.txt`} download className="mt-4">
-                      <Button variant="outline" className="w-full h-11 text-white border-white/10 hover:bg-white/5 font-bold text-sm">
-                        <Download className="w-4 h-4 mr-2" /> Download All Assets
-                      </Button>
-                    </a>
+                    <Button variant="outline" className="mt-4 w-full h-11 text-white border-white/10 hover:bg-white/5 font-bold text-sm" asChild>
+                      <a href={event.assetPackUrl ?? `/assets/packs/${event.slug}-asset-pack.txt`} download>
+                        <Download className="w-4 h-4 mr-2" /> Download asset pack
+                      </a>
+                    </Button>
                   </div>
                 </div>
               </section>
@@ -197,16 +197,12 @@ export default function EventDetails() {
                       <h3 className="text-white font-bold mb-2">Sign in to Promote</h3>
                       <p className="text-offwhite/60 text-sm mb-5">Create a free account to start earning commission on event promotions.</p>
                       <div className="space-y-2">
-                        <Link href={`/login?next=/events/${slug}`}>
-                          <Button variant="primary" className="w-full h-11 text-base font-bold">
-                            Sign In
-                          </Button>
-                        </Link>
-                        <Link href={`/signup?mode=signup&next=/events/${slug}`}>
-                          <Button variant="outline" className="w-full h-11 text-white border-white/30 hover:bg-white/5 font-bold">
-                            Create Account
-                          </Button>
-                        </Link>
+                        <Button variant="default" className="w-full h-11 text-base font-bold" asChild>
+                          <Link href={`/login?next=/events/${slug}`}>Sign In</Link>
+                        </Button>
+                        <Button variant="outline" className="w-full h-11 text-white border-white/30 hover:bg-white/5 font-bold" asChild>
+                          <Link href={`/signup?mode=signup&next=/events/${slug}`}>Create Account</Link>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -228,22 +224,18 @@ export default function EventDetails() {
                 <div className="space-y-3">
                   {isLoggedIn ? (
                     <>
-                      <Link href={`/app/builder?event=${event.id}`}>
-                        <Button variant="premium" className="w-full h-12 text-base font-bold">
-                          Promote This Event
-                        </Button>
-                      </Link>
+                      <Button variant="premium" className="w-full h-12 text-base font-bold" asChild>
+                        <Link href={`/app/builder?event=${event.id}`}>Promote This Event</Link>
+                      </Button>
                       <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
                         <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Link href={`/login?next=/events/${slug}`}>
-                        <Button variant="premium" className="w-full h-12 text-base font-bold">
-                          Sign In to Promote
-                        </Button>
-                      </Link>
+                      <Button variant="premium" className="w-full h-12 text-base font-bold" asChild>
+                        <Link href={`/login?next=/events/${slug}`}>Sign In to Promote</Link>
+                      </Button>
                       <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
                         <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
                       </Button>

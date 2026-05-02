@@ -1,11 +1,11 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 
 type Mode = 'signin' | 'signup';
 
@@ -16,6 +16,20 @@ const slides = [
 ];
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-dark flex items-center justify-center text-white/60 text-sm">
+          Loading…
+        </main>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
+  );
+}
+
+function LoginPageContent() {
   const router = useRouter();
   const search = useSearchParams();
 
@@ -32,6 +46,7 @@ export default function LoginPage() {
   const [info, setInfo] = useState<string | null>(null);
   const [slideIndex, setSlideIndex] = useState(0);
   const [devBypass, setDevBypass] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const next = search.get('next') ?? '/app/dashboard';
 
@@ -61,9 +76,17 @@ export default function LoginPage() {
     setInfo(null);
 
     const endpoint = mode === 'signin' ? '/api/auth/login' : '/api/auth/signup';
-    const payload = mode === 'signin'
-      ? { email, password }
-      : { email, password, displayName, handle, accountType, orgName };
+    const payload =
+      mode === 'signin'
+        ? { email, password }
+        : {
+            email,
+            password,
+            displayName,
+            handle,
+            accountType,
+            ...(accountType === 'promoter' && orgName.trim() ? { orgName: orgName.trim() } : {}),
+          };
 
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -204,7 +227,24 @@ export default function LoginPage() {
               </>
             )}
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] px-4 text-[#111827]" />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] px-4 text-[#111827]" />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password (min 6 characters)"
+                autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] pl-4 pr-12 text-[#111827]"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-[#4d5565] hover:bg-[#eef0f4] hover:text-[#111827] transition-colors"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
           {error && <div className="text-sm text-red-600 mt-3">{error}</div>}

@@ -33,8 +33,17 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
           </div>
           <h1 className="text-5xl font-black text-white mb-4">Order Confirmed!</h1>
           <p className="text-xl text-[#aaaaaa] mb-2">Your tickets are on the way.</p>
-          <p className="text-[#aaaaaa]">Confirmation email sent to your@email.com</p>
+          <p className="text-[#aaaaaa]">Confirmation email sent to your@email.com (ticketing partner branding).</p>
         </div>
+
+        <Card className="p-6 bg-primary/10 border-primary/25 mb-8">
+          <h2 className="text-lg font-bold text-white mb-2">Creator attribution</h2>
+          <p className="text-sm text-offwhite/75 leading-relaxed">
+            This purchase is attributed to the creator campaign that referred you. Commission is recorded internally (pending →
+            cleared after the refund window). You don&apos;t need to do anything — the creator sees performance in their
+            dashboard.
+          </p>
+        </Card>
 
         {/* Order Details */}
         <Card className="p-10 bg-white/5 border-white/10 mb-10">
@@ -109,7 +118,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
 
         {/* Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-          <Button variant="primary" className="h-14 px-8 flex items-center justify-center gap-2">
+          <Button variant="default" className="h-14 px-8 flex items-center justify-center gap-2">
             <Download className="w-5 h-5" /> Download Tickets
           </Button>
           <Button variant="outline" className="h-14 px-8 text-white border-white/30 hover:bg-white/10 flex items-center justify-center gap-2">

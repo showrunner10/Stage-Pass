@@ -49,8 +49,13 @@ export default function CheckoutPage({ params }: CheckoutProps) {
           <Link href="/" className="text-primary hover:text-primary/80 mb-6 inline-block">
             ← Back
           </Link>
-          <h1 className="text-4xl font-black text-white mb-2">Secure Checkout</h1>
-          <p className="text-[#aaaaaa]">Order ID: {params['order-id']}</p>
+          <h1 className="text-4xl font-black text-white mb-2">Checkout</h1>
+          <p className="text-[#aaaaaa] mb-4">Order session: {params['order-id']}</p>
+          <div className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-offwhite/85">
+            <strong className="text-white">MVP:</strong> Embedded checkout is out of scope. Production redirects to the ticketing
+            partner with <code className="text-primary">sp_creator</code>, <code className="text-primary">sp_campaign</code>, and
+            UTM params preserved. This page is a UI placeholder only.
+          </div>
         </div>
 
         {/* Progress Steps */}
@@ -117,7 +122,7 @@ export default function CheckoutPage({ params }: CheckoutProps) {
               </div>
             </Card>
 
-            <Button variant="primary" size="lg" onClick={() => setStep('payment')} className="w-full h-14 text-lg">
+            <Button variant="default" size="lg" onClick={() => setStep('payment')} className="w-full h-14 text-lg">
               Proceed to Payment <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
@@ -225,7 +230,7 @@ export default function CheckoutPage({ params }: CheckoutProps) {
               </label>
 
               <div className="space-y-3">
-                <Button type="submit" variant="primary" size="lg" className="w-full h-14 text-lg">
+                <Button type="submit" variant="default" size="lg" className="w-full h-14 text-lg">
                   Complete Payment ${total.toFixed(2)}
                 </Button>
                 <Button
