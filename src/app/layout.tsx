@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${editorial.variable}`} suppressHydrationWarning>
         {children}
+        <CookieConsentBanner />
       </body>
     </html>
   );

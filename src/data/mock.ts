@@ -20,6 +20,10 @@ export interface Event {
     price: number;
     description: string;
   }[];
+  assetPackUrl?: string;
+  /** MVP: partner checkout base URL for short-link redirect */
+  ticketingUrl?: string;
+  ticketingPartner?: string;
 }
 
 export interface Creator {
@@ -50,6 +54,8 @@ export interface Campaign {
   commission: number;
   conversionRate: number;
   createdAt: string;
+  accentColor?: string;
+  testimonial?: { quote: string; attribution: string };
 }
 
 export const events: Event[] = [
@@ -73,7 +79,9 @@ export const events: Event[] = [
     ticketTiers: [
       { name: 'GA Weekend', price: 349, description: '3-day access to all stages' },
       { name: 'VIP Garden', price: 599, description: 'Premium viewing and private bars' }
-    ]
+    ],
+    ticketingUrl: 'https://tickets.example.com/solstice-festival-2026',
+    ticketingPartner: 'Moshtix',
   },
   {
     id: '2',
@@ -95,7 +103,9 @@ export const events: Event[] = [
     ticketTiers: [
       { name: 'Early Bird', price: 65, description: 'Limited release' },
       { name: 'General Admission', price: 85, description: 'Standard entry' }
-    ]
+    ],
+    ticketingUrl: 'https://tickets.example.com/pulse-warehouse',
+    ticketingPartner: 'Moshtix',
   },
   {
     id: '3',
@@ -219,13 +229,106 @@ export const events: Event[] = [
     promoter: 'Zenith Wellness',
     commission: 15,
     commissionFixed: 150,
-    category: 'Conference',
+    category: 'Wellness',
     status: 'Live',
     inventoryCap: 100,
     soldCount: 45,
     ticketTiers: [
       { name: 'All-Inclusive', price: 1250, description: 'Accommodation + meals + sessions' }
-    ]
+    ],
+    assetPackUrl: '/assets/packs/byron-yoga-retreat-asset-pack.txt'
+  },
+  {
+    id: '9',
+    slug: 'runway-nocturne-fashion-weekender',
+    title: 'Runway Nocturne: Fashion Weekender',
+    description: 'A two-night fashion showcase with emerging designers, live styling sets, and premium streetwear drops.',
+    image: 'https://images.unsplash.com/photo-1464863979621-258859e62245?auto=format&fit=crop&w=2070&q=80',
+    date: 'Nov 14-15, 2026',
+    location: 'Carriageworks',
+    city: 'Sydney',
+    venue: 'Carriageworks',
+    promoter: 'Nocturne Collective',
+    commission: 14,
+    commissionFixed: 38,
+    category: 'Fashion',
+    status: 'Live',
+    inventoryCap: 1800,
+    soldCount: 420,
+    ticketTiers: [
+      { name: 'General Runway Pass', price: 190, description: 'Evening runway + designer pop-ups' },
+      { name: 'Backstage Preview', price: 340, description: 'Early access + backstage walkthrough' }
+    ],
+    assetPackUrl: '/assets/packs/runway-nocturne-fashion-weekender-asset-pack.txt'
+  },
+  {
+    id: '10',
+    slug: 'glow-house-beauty-lab',
+    title: 'Glow House Beauty Lab',
+    description: 'A beauty-first creator event with product sampling, shade matching bars, and live tutorials.',
+    image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=2070&q=80',
+    date: 'Sept 27, 2026',
+    location: 'White Bay Studio',
+    city: 'Sydney',
+    venue: 'White Bay Studio',
+    promoter: 'Glow House',
+    commission: 16,
+    commissionFixed: 22,
+    category: 'Beauty Products',
+    status: 'Live',
+    inventoryCap: 900,
+    soldCount: 310,
+    ticketTiers: [
+      { name: 'Beauty Lab Pass', price: 95, description: 'Full access + product tote' },
+      { name: 'Pro Creator Pass', price: 180, description: 'Creator lounge + masterclass seats' }
+    ],
+    assetPackUrl: '/assets/packs/glow-house-beauty-lab-asset-pack.txt'
+  },
+  {
+    id: '11',
+    slug: 'stitch-social-clothing-market',
+    title: 'Stitch Social Clothing Market',
+    description: 'A curated clothing market with independent labels, resale drops, and live customization booths.',
+    image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=2070&q=80',
+    date: 'Oct 18, 2026',
+    location: 'The Timber Yard',
+    city: 'Melbourne',
+    venue: 'The Timber Yard',
+    promoter: 'Stitch Social',
+    commission: 13,
+    commissionFixed: 19,
+    category: 'Clothing',
+    status: 'Live',
+    inventoryCap: 1300,
+    soldCount: 500,
+    ticketTiers: [
+      { name: 'General Entry', price: 60, description: 'Market floor + talks' },
+      { name: 'Collector Access', price: 125, description: 'Early entry + limited collab item' }
+    ],
+    assetPackUrl: '/assets/packs/stitch-social-clothing-market-asset-pack.txt'
+  },
+  {
+    id: '12',
+    slug: 'aurora-wellness-weekend',
+    title: 'Aurora Wellness Weekend',
+    description: 'A premium wellness escape with breathwork, movement classes, and recovery sessions.',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=2070&q=80',
+    date: 'Nov 7-8, 2026',
+    location: 'Mornington Peninsula Retreat Grounds',
+    city: 'Melbourne',
+    venue: 'Mornington Peninsula Retreat Grounds',
+    promoter: 'Aurora Wellbeing',
+    commission: 15,
+    commissionFixed: 95,
+    category: 'Wellness',
+    status: 'Live',
+    inventoryCap: 400,
+    soldCount: 128,
+    ticketTiers: [
+      { name: 'Weekend Pass', price: 640, description: 'All sessions + recovery circuit' },
+      { name: 'VIP Restore', price: 980, description: 'Weekend pass + private coaching block' }
+    ],
+    assetPackUrl: '/assets/packs/aurora-wellness-weekend-asset-pack.txt'
   }
 ];
 
@@ -311,6 +414,11 @@ export const campaigns: Campaign[] = [
     slug: 'maya-solstice',
     headline: 'Join me at the most magical festival of the year!',
     note: "I've been going to Solstice for 3 years and it's literally life-changing. Use my link for a special creator discount!",
+    accentColor: '#534AB7',
+    testimonial: {
+      quote: 'Maya’s rec sold us on camping upgrades—we trusted her because she actually goes every year.',
+      attribution: 'Sam K., punter (survey)',
+    },
     clicks: 1240,
     ticketsSold: 86,
     revenue: 30014,

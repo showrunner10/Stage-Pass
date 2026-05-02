@@ -5,10 +5,10 @@ import { DashboardShell } from '@/components/layout/DashboardShell';
 import { Stepper } from '@/components/shared/Stepper';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { events } from '@/data/mock';
+import { events as seedEvents } from '@/data/mock';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type BuilderFormat = 'Tracked link' | 'Landing page';
 type BuilderDraft = {
@@ -32,7 +32,8 @@ function CampaignBuilderContent() {
   const saveTimerRef = useRef<number | null>(null);
   const didLoadRef = useRef(false);
 
-  const [selectedEventId, setSelectedEventId] = useState(events[0]?.id ?? '');
+  const [events, setEvents] = useState(seedEvents);
+  const [selectedEventId, setSelectedEventId] = useState(seedEvents[0]?.id ?? '');
   const [format, setFormat] = useState<BuilderFormat>('Tracked link');
   const [slug, setSlug] = useState('maya-solstice');
   const [headline, setHeadline] = useState('Join me at this one.');
@@ -72,17 +73,39 @@ function CampaignBuilderContent() {
   const canBack = step > 0;
   const canNext = step < steps.length - 1;
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const campaignParam = searchParams.get('campaign') ?? 'default-campaign';
+  const initialisedFromQueryRef = useRef(false);
 
   useEffect(() => {
+    let active = true;
+    (async () => {
+      const res = await fetch('/api/public/events', { cache: 'no-store' });
+      if (!res.ok) return;
+      const json = (await res.json()) as { items?: typeof seedEvents };
+      const items = json.items ?? [];
+      if (!active || items.length === 0) return;
+      setEvents(items);
+      setSelectedEventId((prev) => prev || items[0].id);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (initialisedFromQueryRef.current) return;
     const stepParam = searchParams.get('step');
-    if (!stepParam) return;
-    const nextIndex = stepSlugs.indexOf(stepParam);
-    if (nextIndex >= 0 && nextIndex !== step) setStep(nextIndex);
-  }, [searchParams, step]);
+    if (stepParam) {
+      const nextIndex = stepSlugs.indexOf(stepParam);
+      if (nextIndex >= 0) setStep(nextIndex);
+    }
+    initialisedFromQueryRef.current = true;
+  }, [searchParams]);
 
   useEffect(() => {
+    if (!initialisedFromQueryRef.current) return;
     const currentStep = searchParams.get('step');
     const currentCampaign = searchParams.get('campaign') ?? 'default-campaign';
     const targetStep = stepSlugs[step];
@@ -93,8 +116,8 @@ function CampaignBuilderContent() {
     const next = new URLSearchParams(searchParams.toString());
     next.set('step', targetStep);
     next.set('campaign', campaignParam);
-    router.replace(`/app/builder?${next.toString()}`);
-  }, [step, campaignParam, router, searchParams]);
+    router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+  }, [step, campaignParam, pathname, router, searchParams]);
 
   useEffect(() => {
     let cancelled = false;

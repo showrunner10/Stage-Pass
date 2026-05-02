@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -12,11 +12,13 @@ import {
   Palette,
   Settings,
   ChevronDown,
-  Info,
+  User,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const nav = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -26,6 +28,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     { name: 'Brand', href: '/admin/brand', icon: Palette },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+  }
 
   return (
     <div className="min-h-screen bg-dark text-white">
@@ -90,11 +97,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest">
-                <Info className="w-3.5 h-3.5" />
-                Prototype Mode
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-[10px] font-bold text-offwhite/40 uppercase tracking-widest">Admin</span>
+                <span className="text-sm font-semibold text-white">Secret Sounds</span>
               </div>
-              <div className="w-9 h-9 rounded-full bg-white/10 border border-white/10" />
+              <button
+                type="button"
+                className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center overflow-hidden"
+                aria-label="Admin profile"
+              >
+                <User className="w-5 h-5 text-primary" />
+              </button>
+              <Button variant="outline" className="text-white border-white/10 hover:bg-white/5 h-9" onClick={logout}>
+                Logout
+              </Button>
             </div>
           </header>
 

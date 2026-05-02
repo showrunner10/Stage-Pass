@@ -1,22 +1,62 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
-import { events } from '@/data/mock';
+import type { Event } from '@/data/mock';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Clock, Ticket, Users, ShieldCheck, Share2 } from 'lucide-react';
+import { MapPin, Calendar, Clock, Ticket, Users, ShieldCheck, Share2, TrendingUp, Download, LogIn } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
 
 export default function EventDetails() {
   const { slug } = useParams<{ slug: string }>();
-  const event = events.find((e) => e.slug === slug);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [notFound, setNotFound] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/session', { cache: 'no-store' });
+        if (res.ok) {
+          setIsLoggedIn(true);
+        }
+      } catch {
+        setIsLoggedIn(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const res = await fetch(`/api/public/events/${encodeURIComponent(slug)}`, { cache: 'no-store' });
+      if (!active) return;
+      if (res.status === 404) {
+        setNotFound(true);
+        return;
+      }
+      if (!res.ok) return;
+      const json = (await res.json()) as Event;
+      setEvent(json);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
+  if (notFound) {
+    return <div className="min-h-screen bg-dark flex items-center justify-center text-white text-2xl">Event not found</div>;
+  }
 
   if (!event) {
-    return <div className="min-h-screen bg-dark flex items-center justify-center text-white text-2xl">Event not found</div>;
+    return <div className="min-h-screen bg-dark flex items-center justify-center text-white text-2xl">Loading event...</div>;
   }
 
   return (
@@ -80,6 +120,61 @@ export default function EventDetails() {
                 </div>
               </section>
 
+              <section>
+                <h2 className="text-2xl font-bold text-white mb-5">Brand Assets</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                  <div className="relative h-48 rounded-2xl overflow-hidden bg-white/5 border border-white/10">
+                    <Image 
+                      src={event.image} 
+                      alt="Event banner" 
+                      fill 
+                      className="object-cover" 
+                    />
+                  </div>
+                  <div className="rounded-2xl bg-white/5 border border-white/10 p-6 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-white font-bold mb-3">Included in Asset Pack:</h3>
+                      <ul className="space-y-2 text-offwhite/60 text-sm">
+                        <li>✓ Event banner (1200x630px)</li>
+                        <li>✓ Square logo (500x500px)</li>
+                        <li>✓ Social media templates</li>
+                        <li>✓ Pre-written copy & CTAs</li>
+                        <li>✓ Brand guidelines</li>
+                      </ul>
+                    </div>
+                    <a href={event.assetPackUrl ?? `/assets/packs/${event.slug}-asset-pack.txt`} download className="mt-4">
+                      <Button variant="outline" className="w-full h-11 text-white border-white/10 hover:bg-white/5 font-bold text-sm">
+                        <Download className="w-4 h-4 mr-2" /> Download All Assets
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </section>
+
+              <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary/10 to-transparent p-7">
+                <div className="flex items-center gap-3 mb-5">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  <h2 className="text-xl font-bold text-white">Performance Benchmarks</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm">
+                  <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
+                    <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">Avg. Conversion Rate</div>
+                    <div className="text-2xl font-black text-primary">4.2%</div>
+                    <div className="text-xs text-offwhite/60 mt-1">across similar events</div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
+                    <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">Avg. Clicks per Creator</div>
+                    <div className="text-2xl font-black text-primary">1,248</div>
+                    <div className="text-xs text-offwhite/60 mt-1">in first 2 weeks</div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
+                    <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">Avg. Earnings</div>
+                    <div className="text-2xl font-black text-primary">$420</div>
+                    <div className="text-xs text-offwhite/60 mt-1">per top creator</div>
+                  </div>
+                </div>
+              </section>
+
               <section className="rounded-3xl border border-white/10 bg-white/5 p-7">
                 <div className="flex items-center gap-3 mb-5">
                   <Users className="w-5 h-5 text-primary" />
@@ -94,6 +189,29 @@ export default function EventDetails() {
             </div>
 
             <aside className="space-y-6">
+              {!isLoggedIn && (
+                <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 p-7">
+                  <div className="flex items-start gap-3 mb-4">
+                    <LogIn className="w-6 h-6 text-primary mt-0.5" />
+                    <div>
+                      <h3 className="text-white font-bold mb-2">Sign in to Promote</h3>
+                      <p className="text-offwhite/60 text-sm mb-5">Create a free account to start earning commission on event promotions.</p>
+                      <div className="space-y-2">
+                        <Link href={`/login?next=/events/${slug}`}>
+                          <Button variant="primary" className="w-full h-11 text-base font-bold">
+                            Sign In
+                          </Button>
+                        </Link>
+                        <Link href={`/signup?mode=signup&next=/events/${slug}`}>
+                          <Button variant="outline" className="w-full h-11 text-white border-white/30 hover:bg-white/5 font-bold">
+                            Create Account
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="rounded-3xl border border-white/10 bg-white/5 p-7 sticky top-28">
                 <div className="mb-8">
                   <div className="text-sm font-bold text-offwhite/40 uppercase tracking-widest mb-2">Commission Rate</div>
@@ -108,19 +226,35 @@ export default function EventDetails() {
                 </div>
 
                 <div className="space-y-3">
-                  <Link href="/app/dashboard">
-                    <Button variant="premium" className="w-full h-12 text-base font-bold">
-                      Promote This Event
-                    </Button>
-                  </Link>
-                  <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
-                    <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
-                  </Button>
+                  {isLoggedIn ? (
+                    <>
+                      <Link href={`/app/builder?event=${event.id}`}>
+                        <Button variant="premium" className="w-full h-12 text-base font-bold">
+                          Promote This Event
+                        </Button>
+                      </Link>
+                      <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
+                        <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href={`/login?next=/events/${slug}`}>
+                        <Button variant="premium" className="w-full h-12 text-base font-bold">
+                          Sign In to Promote
+                        </Button>
+                      </Link>
+                      <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
+                        <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
+                      </Button>
+                    </>
+                  )}
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-white/10">
                   <div className="text-xs text-offwhite/45 uppercase tracking-widest mb-1">Promoter</div>
                   <div className="text-white font-semibold">{event.promoter}</div>
+                  <div className="text-xs text-offwhite/45 mt-3">Assets sourced from promoter brand kits and approved stock placeholders.</div>
                 </div>
               </div>
             </aside>

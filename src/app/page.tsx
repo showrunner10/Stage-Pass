@@ -60,12 +60,12 @@ export default function Home() {
             Stagepass blends premium event discovery with creator-driven commerce for festivals, nightlife, and culture.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/app/dashboard">
+            <Link href="/apply/creator">
               <Button variant="premium" size="lg" className="w-full sm:w-auto h-14 px-10 text-lg">
                 Apply as Creator
               </Button>
             </Link>
-            <Link href="/admin/dashboard">
+            <Link href="/contact?intent=demo">
               <Button variant="outline" size="lg" className="w-full sm:w-auto h-14 px-10 text-lg text-white border-white/30 hover:bg-white/10">
                 List your Event
               </Button>

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
@@ -18,18 +18,21 @@ export function PublicNavbar() {
             className="h-12 w-auto object-contain"
           />
         </Link>
-        
+
         <div className="hidden md:flex items-center gap-8">
           <Link href="/events" className="text-offwhite/80 hover:text-white transition-colors">Marketplace</Link>
-          <Link href="/#how-it-works" className="text-offwhite/80 hover:text-white transition-colors">How it Works</Link>
-          <Link href="/#pricing" className="text-offwhite/80 hover:text-white transition-colors">Pricing</Link>
+          <Link href="/creators" className="text-offwhite/80 hover:text-white transition-colors">For Creators</Link>
+          <Link href="/promoters" className="text-offwhite/80 hover:text-white transition-colors">For Promoters</Link>
+          <Link href="/about" className="text-offwhite/80 hover:text-white transition-colors">About</Link>
+          <Link href="/contact" className="text-offwhite/80 hover:text-white transition-colors">Contact</Link>
+          <Link href="/apply/creator" className="text-offwhite/80 hover:text-white transition-colors">Apply</Link>
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/app/dashboard" className="hidden sm:block">
+          <Link href="/login?next=%2Fapp%2Fdashboard" className="hidden sm:block">
             <Button variant="ghost" className="text-white hover:bg-white/10">Creator Login</Button>
           </Link>
-          <Link href="/admin/dashboard">
+          <Link href="/login?next=%2Fadmin%2Fdashboard">
             <Button variant="premium">List Event</Button>
           </Link>
           <Button variant="ghost" size="icon" className="md:hidden text-white">

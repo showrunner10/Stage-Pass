@@ -1,4 +1,7 @@
-﻿import Image from 'next/image';
+﻿'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,18 +17,24 @@ interface EventCardProps {
 
 export function EventCard({ event, href, showApplyButton = false }: EventCardProps) {
   const linkHref = href || `/events/${event.slug}`;
+  const [imageFailed, setImageFailed] = useState(false);
 
   return (
     <Link href={linkHref} className="block group page-fade-in">
       <Card className="overflow-hidden rounded-2xl hover-lift premium-ring border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.03] transition-all duration-300 group-hover:shadow-[0_26px_44px_-20px_rgba(0,0,0,0.95)] group-hover:border-primary/45 group-hover:[box-shadow:0_0_0_1px_rgba(83,74,183,0.28),0_26px_44px_-20px_rgba(0,0,0,0.95)]">
         <div className="relative aspect-[16/10] overflow-hidden">
-          <Image
-            src={event.image}
-            alt={event.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.08]"
-          />
+          {!imageFailed ? (
+            <Image
+              src={event.image}
+              alt={event.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-[1.08]"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-[linear-gradient(130deg,#111827,#0b254d_55%,#111827)]" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-primary/20" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/30 to-transparent" />
 

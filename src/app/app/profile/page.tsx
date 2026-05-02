@@ -3,6 +3,7 @@
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { creators } from '@/data/mock';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function Profile() {
   const creator = creators[0];
@@ -15,7 +16,12 @@ export default function Profile() {
             <h1 className="text-3xl font-black text-white">Creator Profile</h1>
             <p className="text-offwhite/40">Your public presence, brand kit, and payout placeholders.</p>
           </div>
-          <Button variant="premium">Save</Button>
+          <div className="flex items-center gap-3">
+            <Link href="/app/builder">
+              <Button variant="outline" className="text-white border-white/10 hover:bg-white/5">Open Link Builder</Button>
+            </Link>
+            <Button variant="premium">Save</Button>
+          </div>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 flex items-center gap-6">
@@ -67,6 +73,9 @@ export default function Profile() {
             <div className="text-white font-bold mb-2">Brand kit</div>
             <div className="text-sm text-offwhite/50">
               Upload avatar, cover image, and approved copy in production phase.
+            </div>
+            <div className="text-xs text-offwhite/40 mt-3">
+              Asset sources: event promoter uploads, creator uploads, and approved stock placeholders.
             </div>
             <div className="mt-4 flex gap-3">
               <Button variant="outline" className="text-white border-white/10 hover:bg-white/5">

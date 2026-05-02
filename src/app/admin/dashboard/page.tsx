@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AdminShell } from '@/components/layout/AdminShell';
 import { events, creators } from '@/data/mock';
-import { formatCurrency } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

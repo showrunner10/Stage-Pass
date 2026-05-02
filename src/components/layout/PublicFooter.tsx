@@ -27,19 +27,20 @@ export function PublicFooter() {
             <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">For Creators</h4>
             <ul className="space-y-4 text-offwhite/60">
               <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/events" className="hover:text-primary transition-colors">Browse Events</Link></li>
-              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#" className="hover:text-primary transition-colors">Creator Guide</Link></li>
-              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#" className="hover:text-primary transition-colors">Success Stories</Link></li>
-              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#pricing" className="hover:text-primary transition-colors">Earnings Calculator</Link></li>
+              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/apply/creator" className="hover:text-primary transition-colors">Apply as creator</Link></li>
+              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/creators" className="hover:text-primary transition-colors">For Creators</Link></li>
+              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/app/dashboard" className="hover:text-primary transition-colors">Creator Dashboard</Link></li>
+              <li className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/app/marketplace" className="hover:text-primary transition-colors">Event Marketplace</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">For Promoters</h4>
             <ul className="space-y-4 text-offwhite/60">
+              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/promoters" className="hover:text-primary transition-colors">For Promoters</Link></li>
               <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/dashboard" className="hover:text-primary transition-colors">List your Event</Link></li>
-              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#" className="hover:text-primary transition-colors">Promoter Portal</Link></li>
-              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#" className="hover:text-primary transition-colors">Attribution Docs</Link></li>
-              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#" className="hover:text-primary transition-colors">Case Studies</Link></li>
+              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/events" className="hover:text-primary transition-colors">Manage Events</Link></li>
+              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/creators" className="hover:text-primary transition-colors">Creator Approvals</Link></li>
             </ul>
           </div>
 
@@ -48,7 +49,8 @@ export function PublicFooter() {
             <ul className="space-y-4 text-offwhite/60">
               <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/legal/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/legal/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-              <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="#" className="hover:text-primary transition-colors">Cookie Policy</Link></li>
+              <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/legal/cookies" className="hover:text-primary transition-colors">Cookie Policy</Link></li>
+              <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/legal/refunds" className="hover:text-primary transition-colors">Refunds &amp; commissions</Link></li>
             </ul>
           </div>
         </div>

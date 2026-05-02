@@ -3,15 +3,17 @@
 import { useMemo, useState } from 'react';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { EventCard } from '@/components/shared/EventCard';
-import { events } from '@/data/mock';
+import type { Event } from '@/data/mock';
 import { Button } from '@/components/ui/button';
 import { Search, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { useEffect } from 'react';
 
 type SortType = 'Highest commission' | 'Ending soonest' | 'Newest' | 'Most promoted';
 type DateRangeType = 'Any date' | 'Next 30 days' | 'Next 90 days';
 type CommissionType = 'Any commission' | '10%+' | '12%+' | '15%+';
 
 export default function CreatorMarketplace() {
+  const [events, setEvents] = useState<Event[]>([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'All' | string>('All');
   const [city, setCity] = useState<'All cities' | string>('All cities');
@@ -19,7 +21,19 @@ export default function CreatorMarketplace() {
   const [commissionFilter, setCommissionFilter] = useState<CommissionType>('Any commission');
   const [sortBy, setSortBy] = useState<SortType>('Highest commission');
 
-  const categories = ['All', 'Festival', 'Warehouse Party', 'Wine Event', 'Conference', 'Live Music'];
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const res = await fetch('/api/public/events', { cache: 'no-store' });
+      const json = (await res.json()) as { items?: Event[] };
+      if (active) setEvents(json.items ?? []);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const categories = ['All', ...Array.from(new Set(events.map((e) => e.category)))];
   const cities = ['All cities', ...Array.from(new Set(events.map((e) => e.city)))];
 
   const filtered = useMemo(() => {
@@ -163,7 +177,9 @@ export default function CreatorMarketplace() {
             <div className="text-xs text-offwhite/50 uppercase tracking-widest">Quick action</div>
             <div className="text-sm text-white font-semibold">Build a tracked campaign in under 2 minutes</div>
           </div>
-          <Button variant="premium" className="h-10 whitespace-nowrap">Launch builder</Button>
+          <a href="/app/builder">
+            <Button variant="premium" className="h-10 whitespace-nowrap">Launch builder</Button>
+          </a>
         </div>
       </div>
     </DashboardShell>

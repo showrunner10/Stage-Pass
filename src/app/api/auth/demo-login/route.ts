@@ -1,0 +1,25 @@
+﻿import { NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const BodySchema = z.object({
+  role: z.enum(['creator', 'promoter', 'admin']),
+});
+
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => null);
+  const parsed = BodySchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
+  }
+
+  const res = NextResponse.json({ ok: true, role: parsed.data.role });
+  res.cookies.set('sp_role', parsed.data.role, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  return res;
+}

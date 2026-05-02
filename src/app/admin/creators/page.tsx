@@ -1,15 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AdminShell } from '@/components/layout/AdminShell';
 import { creators } from '@/data/mock';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+type PromoterRequest = {
+  requestId: string;
+  userId: string;
+  email: string;
+  displayName: string;
+  orgName: string;
+  status: string;
+  requestedAt: string;
+};
+
 export default function AdminCreators() {
   const [rows, setRows] = useState<Array<(typeof creators)[number] & { approval: 'Pending' | 'Approved' | 'Rejected' }>>(() =>
     creators.map((c) => ({ ...c, approval: 'Pending' as const }))
   );
+  const [promoterRequests, setPromoterRequests] = useState<PromoterRequest[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
+
+  async function loadPromoterRequests() {
+    setLoadingRequests(true);
+    try {
+      const res = await fetch('/api/admin/promoter-requests', { cache: 'no-store' });
+      const json = (await res.json()) as { items?: PromoterRequest[] };
+      setPromoterRequests(json.items ?? []);
+    } finally {
+      setLoadingRequests(false);
+    }
+  }
+
+  useEffect(() => {
+    loadPromoterRequests();
+  }, []);
+
+  async function decidePromoterRequest(requestId: string, decision: 'approve' | 'reject') {
+    await fetch('/api/admin/promoter-requests', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ requestId, decision }),
+    });
+    await loadPromoterRequests();
+  }
 
   function setApproval(id: string, approval: 'Approved' | 'Rejected') {
     setRows((prev) => prev.map((c) => (c.id === id ? { ...c, approval } : c)));
@@ -25,6 +61,47 @@ export default function AdminCreators() {
         <div>
           <h1 className="text-3xl font-black text-white">Creators</h1>
           <p className="text-offwhite/40">Approve creators, assign tiers, and review performance mock data.</p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-white">Promoter Access Requests</h2>
+            <Button variant="outline" className="text-white border-white/10 hover:bg-white/5" onClick={loadPromoterRequests}>
+              Refresh
+            </Button>
+          </div>
+          {loadingRequests ? (
+            <div className="text-sm text-offwhite/50">Loading requests...</div>
+          ) : promoterRequests.length === 0 ? (
+            <div className="text-sm text-offwhite/50">No promoter requests yet.</div>
+          ) : (
+            <div className="space-y-3">
+              {promoterRequests.map((r) => (
+                <div key={r.requestId} className="rounded-xl border border-white/10 bg-dark/60 p-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                      <div className="text-white font-semibold">{r.displayName || 'Promoter Applicant'}</div>
+                      <div className="text-xs text-offwhite/45">{r.email}</div>
+                      <div className="text-sm text-offwhite/75 mt-1">Org: {r.orgName || '-'}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs uppercase tracking-wide text-offwhite/45 mr-1">{r.status}</span>
+                      {r.status === 'PENDING' && (
+                        <>
+                          <Button variant="outline" className="h-8 text-white border-white/10 hover:bg-white/5" onClick={() => decidePromoterRequest(r.requestId, 'reject')}>
+                            Reject
+                          </Button>
+                          <Button variant="premium" className="h-8" onClick={() => decidePromoterRequest(r.requestId, 'approve')}>
+                            Approve
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="lg:hidden space-y-3">

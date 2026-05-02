@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #1a1a1a;
+  --background: #06080c;
   --foreground: #f8f7f4;
-  --surface: #1f1f23;
-  --surface-elevated: #27272e;
+  --surface: #0d121b;
+  --surface-elevated: #111827;
   --border: rgba(248, 247, 244, 0.14);
-  --primary: #534ab7;
-  --primary-strong: #665ce0;
-  --accent-green: #1d9e75;
+  --primary: #1969ff;
+  --primary-strong: #3a80ff;
+  --accent-green: #14b87a;
   --offwhite: #f8f7f4;
   --charcoal: #1a1a1a;
   --muted: #aaaaaa;
@@ -27,8 +27,8 @@ body {
   font-family: var(--font-inter), sans-serif;
   text-rendering: geometricPrecision;
   background-image:
-    radial-gradient(circle at 15% -10%, rgba(83, 74, 183, 0.2), transparent 35%),
-    radial-gradient(circle at 85% 120%, rgba(83, 74, 183, 0.12), transparent 40%);
+    radial-gradient(circle at 15% -10%, rgba(25, 105, 255, 0.22), transparent 35%),
+    radial-gradient(circle at 85% 120%, rgba(25, 105, 255, 0.12), transparent 40%);
   background-attachment: fixed;
 }
 
@@ -59,7 +59,7 @@ body {
 }
 
 .premium-gradient {
-  background: linear-gradient(135deg, #534ab7 0%, #312a7d 100%);
+  background: linear-gradient(135deg, #1969ff 0%, #113ea6 100%);
 }
 
 .premium-hero-overlay {
