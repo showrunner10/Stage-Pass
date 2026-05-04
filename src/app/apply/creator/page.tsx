@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
@@ -13,6 +13,14 @@ const inputClass =
   'w-full h-12 rounded-xl bg-black/35 border border-white/15 px-4 text-white placeholder:text-offwhite/40 focus:outline-none focus:border-primary';
 
 export default function ApplyCreatorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-dark" />}>
+      <ApplyCreatorPageContent />
+    </Suspense>
+  );
+}
+
+function ApplyCreatorPageContent() {
   const search = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
