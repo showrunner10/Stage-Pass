@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { PublicNavbar } from '@/components/layout/PublicNavbar';
 import { PublicFooter } from '@/components/layout/PublicFooter';
 import { PublicInteriorHero } from '@/components/layout/PublicInteriorHero';
@@ -12,6 +13,7 @@ const inputClass =
   'w-full h-12 rounded-xl bg-black/35 border border-white/15 px-4 text-white placeholder:text-offwhite/40 focus:outline-none focus:border-primary';
 
 export default function ApplyCreatorPage() {
+  const search = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -31,6 +33,19 @@ export default function ApplyCreatorPage() {
   function update<K extends keyof typeof form>(key: K, value: string) {
     setForm((p) => ({ ...p, [key]: value }));
   }
+
+  useEffect(() => {
+    const handle = search.get('handle') ?? '';
+    const city = search.get('city') ?? '';
+    const category = search.get('category') ?? '';
+    if (!handle && !city && !category) return;
+    setForm((prev) => ({
+      ...prev,
+      instagram: prev.instagram || handle,
+      cityRegion: prev.cityRegion || city,
+      niche: prev.niche || category,
+    }));
+  }, [search]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

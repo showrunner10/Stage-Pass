@@ -38,7 +38,7 @@ export function PublicFooter() {
             <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-sm">For Promoters</h4>
             <ul className="space-y-4 text-offwhite/60">
               <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/promoters" className="hover:text-primary transition-colors">For Promoters</Link></li>
-              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/dashboard" className="hover:text-primary transition-colors">List your Event</Link></li>
+              <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/dashboard" className="hover:text-primary transition-colors">List Event</Link></li>
               <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/events" className="hover:text-primary transition-colors">Manage Events</Link></li>
               <li className="flex items-center gap-2"><Ticket className="w-3.5 h-3.5 text-primary/80 shrink-0" /><Link href="/admin/creators" className="hover:text-primary transition-colors">Creator Approvals</Link></li>
             </ul>

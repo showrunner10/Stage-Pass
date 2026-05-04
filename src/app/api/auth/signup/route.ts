@@ -42,11 +42,22 @@ export async function POST(req: Request) {
     }
 
     const { email, password, displayName, handle, accountType, orgName } = parsed.data;
-    const auth = await supabaseSignUp(email, password);
+    const normalizedEmail = email.toLowerCase();
+    const normalizedHandle = handle.toLowerCase();
+
+    const existingHandle = await prisma.creatorProfile.findUnique({
+      where: { handle: normalizedHandle },
+      select: { id: true },
+    }).catch(() => null);
+    if (existingHandle) {
+      return NextResponse.json({ error: 'This handle is already taken. Try another one.' }, { status: 409 });
+    }
+
+    const auth = await supabaseSignUp(normalizedEmail, password);
     let accessToken = accessTokenFromAuthPayload(auth as Record<string, unknown>);
     if (!accessToken) {
       try {
-        const signedIn = await supabaseSignIn(email, password);
+        const signedIn = await supabaseSignIn(normalizedEmail, password);
         accessToken = signedIn.access_token;
       } catch {
         /* e.g. email confirmation required before first sign-in */
@@ -55,13 +66,13 @@ export async function POST(req: Request) {
 
     // Best-effort app DB registration. If DB isn't ready, auth login still works.
     try {
-      const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+      const existing = await prisma.user.findUnique({ where: { email: normalizedEmail }, select: { id: true } });
       let userId = existing?.id;
       if (!userId) {
         const created = await prisma.user.create({
           data: {
             clerkId: `supabase_${auth.user?.id ?? handle}_${Date.now()}`,
-            email,
+            email: normalizedEmail,
             role: 'CREATOR',
           },
           select: { id: true },
@@ -70,11 +81,11 @@ export async function POST(req: Request) {
       }
 
       await prisma.creatorProfile.upsert({
-        where: { handle },
+        where: { handle: normalizedHandle },
         update: { displayName },
         create: {
           userId: userId!,
-          handle,
+          handle: normalizedHandle,
           displayName,
           tier: 'DEFAULT',
         },
@@ -87,7 +98,7 @@ export async function POST(req: Request) {
             sessionKey: `promoter_request:${userId}`,
             creatorId: userId,
             data: {
-              email,
+              email: normalizedEmail,
               displayName,
               requestedRole: 'PROMOTER',
               orgName: orgName ?? `${displayName} Events`,
@@ -97,7 +108,7 @@ export async function POST(req: Request) {
           },
           update: {
             data: {
-              email,
+              email: normalizedEmail,
               displayName,
               requestedRole: 'PROMOTER',
               orgName: orgName ?? `${displayName} Events`,

@@ -54,12 +54,10 @@ export default function Home() {
             Experience commerce
           </div>
           <h1 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[clamp(4rem,9vw,7.5rem)] font-bold text-white mb-8 tracking-[0.02em] leading-[0.95] text-balance uppercase">
-            The future of selling{' '}
-            <span className="text-primary">experiences.</span>
+            The future of selling <span className="text-primary">experiences.</span>
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed text-balance font-medium">
-            Fashion, beauty, clothing, wellness, and live events — curated campaigns with promoter asset packs, tracked links, and
-            white-label pages.
+            Events, festivals, nightlife, and wellness campaigns for creators who move real ticket sales.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/apply/creator">
@@ -69,7 +67,7 @@ export default function Home() {
             </Link>
             <Link href="/contact?intent=demo">
               <Button variant="outline" size="lg" className="w-full sm:w-auto h-14 px-10 text-lg text-white border-white/30 hover:bg-white/10">
-                List your Event
+                List Event
               </Button>
             </Link>
           </div>
@@ -88,7 +86,6 @@ export default function Home() {
       </section>
 
       <div className="section-stack">
-
         <section className="app-section bg-dark">
           <div className="page-shell">
             <div className="flex justify-between items-end mb-14">
@@ -115,28 +112,38 @@ export default function Home() {
           <div className="page-shell">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">How it works for creators</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">Why creators use Stagepass</h3>
                 <div className="space-y-7">
                   {[
-                    "Pick events that fit your audience",
-                    "Publish tracked links or white-label pages",
-                    "Get paid per verified ticket sale",
-                    "Track performance in real time",
-                    "Scale campaigns with proven playbooks",
+                    {
+                      title: 'One payout, every promoter',
+                      body: 'You promote ten events from ten promoters and get one weekly payment from Stagepass. No chasing invoices or ten different bank transfers.',
+                    },
+                    {
+                      title: 'Curated supply, not a free-for-all',
+                      body: 'Every campaign is vetted by Stagepass. No dropshipping junk, no scammy events. Built for creators who care what they put their name to.',
+                    },
+                    {
+                      title: 'Built for live events, not generic affiliate',
+                      body: 'Discount codes that work on ticketing platforms, asset packs sized for stories and TikToks, and attribution that handles refund windows fairly.',
+                    },
                   ].map((item, idx) => (
-                    <div key={item} className="flex gap-4">
+                    <div key={item.title} className="flex gap-4">
                       <div className="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center font-bold shrink-0">{idx + 1}</div>
-                      <p className="text-2xl font-semibold text-dark/85 leading-relaxed">{item}</p>
+                      <div>
+                        <p className="text-xl font-bold text-dark/90">{item.title}</p>
+                        <p className="text-base font-medium text-dark/75 leading-relaxed mt-1">{item.body}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">How it works for promoters</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">What creators can publish</h3>
                 <div className="space-y-6">
-                  <FeatureLine title="Launch an event" desc="Set commission tiers, inventory, and payout rules." icon={<Music className="w-5 h-5" />} />
-                  <FeatureLine title="Approve creators" desc="Curate creators by fit score and audience type." icon={<Users className="w-5 h-5" />} />
-                  <FeatureLine title="Track performance" desc="Measure clicks, conversion, and attributed revenue." icon={<BarChart3 className="w-5 h-5" />} />
+                  <FeatureLine title="Ticketed event promotions" desc="Promote upcoming events that match your city, category, and audience." icon={<Music className="w-5 h-5" />} />
+                  <FeatureLine title="Events I'm Attending" desc="Creator profile pages can highlight events you are attending, with direct conversion links." icon={<Users className="w-5 h-5" />} />
+                  <FeatureLine title="Video-first campaign assets" desc="Post reels, stories, and TikToks with event-ready packs and trackable attribution." icon={<BarChart3 className="w-5 h-5" />} />
                 </div>
               </div>
             </div>
@@ -144,6 +151,8 @@ export default function Home() {
         </section>
 
         <EarningsCalculator />
+
+        <QuickApplyBar />
 
         <section className="app-section pt-8 md:pt-10 lg:pt-12 pb-10 md:pb-12 lg:pb-14 bg-dark border-t border-white/10">
           <div className="page-shell">
@@ -165,6 +174,12 @@ export default function Home() {
                   <div className="mt-1 text-xs text-offwhite/45 leading-relaxed">
                     {creator.name.split(' ')[0]} earned ${Math.round(creator.fitScore * 43).toLocaleString()} promoting featured events.
                   </div>
+                  <Link
+                    href={`/creators/${creator.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="inline-flex mt-4 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                  >
+                    View creator page
+                  </Link>
                 </div>
               ))}
             </div>
@@ -176,40 +191,20 @@ export default function Home() {
             <h2 className="text-5xl font-extrabold text-white mb-12 text-center">Frequently Asked Questions</h2>
             <div className="space-y-4">
               <FAQItem
-                question="How do creator commissions work?"
-                answer="Each event includes a fixed commission rate. Every verified ticket purchase from your tracked link or landing page is automatically attributed and paid out."
+                question="How and when do I get paid?"
+                answer="Creators receive one weekly payout from Stagepass across all approved promoter campaigns. Payouts settle after the promoter's refund window closes, typically 7 to 14 days after the event."
               />
               <FAQItem
-                question="Can promoters control who promotes their events?"
-                answer="Yes. Promoters can set creator approval flows, commission tiers, and campaign access per event."
+                question="Do I need a minimum follower count?"
+                answer="There is no fixed minimum. Stagepass reviews creators based on audience fit, location, content quality, and whether their audience matches active campaigns."
               />
               <FAQItem
-                question="Do I need a website to promote?"
-                answer="No. You can start with a tracked link in seconds or launch a white-labeled mobile landing page with your editorial note."
+                question="What happens if my audience buys and then refunds?"
+                answer="Refunded tickets are excluded from final commission. Stagepass uses the promoter's refund window so creators are not unfairly clawed back after settlement."
               />
               <FAQItem
-                question="When do payouts arrive?"
-                answer="Payout timing follows promoter settlement. Most cleared commissions are paid out weekly through Stripe Connect."
-              />
-              <FAQItem
-                question="Can I promote multiple events at once?"
-                answer="Yes. You can run multiple campaigns in parallel, each with its own links, landing pages, and reporting."
-              />
-              <FAQItem
-                question="Do promoters see my performance?"
-                answer="Promoters see attributed clicks, sales, and conversion performance for each approved campaign."
-              />
-              <FAQItem
-                question="Can I pause a campaign without deleting it?"
-                answer="Yes. Campaigns can be paused and resumed while keeping historical attribution and earnings data."
-              />
-              <FAQItem
-                question="What happens if an event is canceled?"
-                answer="If ticket sales are reversed by the ticketing partner, related commissions are adjusted in your ledger."
-              />
-              <FAQItem
-                question="How do approvals work for creators?"
-                answer="Some events are instant-approve. Others require promoter approval based on audience fit and content niche."
+                question="Can I be rejected from a campaign even if I am approved as a creator?"
+                answer="Yes. Some campaigns have limited spots or specific audience, city, or category requirements. You can still apply for other campaigns in the marketplace."
               />
             </div>
           </div>
@@ -237,8 +232,11 @@ function EarningsCalculator() {
   const [tickets, setTickets] = useState(50);
   const [price, setPrice] = useState(150);
   const [commission, setCommission] = useState(12);
+  const [mode, setMode] = useState<'single' | 'monthly'>('single');
+  const [campaignsPerMonth, setCampaignsPerMonth] = useState(4);
 
-  const earnings = useMemo(() => tickets * price * (commission / 100), [tickets, price, commission]);
+  const baseEarnings = useMemo(() => tickets * price * (commission / 100), [tickets, price, commission]);
+  const earnings = mode === 'single' ? baseEarnings : baseEarnings * campaignsPerMonth;
 
   return (
     <section id="pricing" className="app-section py-12 md:py-14 lg:py-16 overflow-hidden relative">
@@ -248,25 +246,140 @@ function EarningsCalculator() {
         <div className="max-w-5xl mx-auto bg-dark rounded-[2.5rem] p-8 md:p-16 shadow-2xl border border-white/10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-5xl font-extrabold mb-6 leading-tight">Estimate your monthly commission.</h2>
+              <h2 className="text-5xl font-extrabold mb-6 leading-tight">How the money works.</h2>
               <p className="text-[#bcbccb] mb-10 text-lg leading-relaxed">
-                Model your event income based on average ticket price, volume, and commission rate.
+                Most creators in our beta earn $400 to $2,800 per campaign depending on audience size and category.
               </p>
 
+              <div className="grid grid-cols-2 gap-2 mb-8">
+                <button
+                  type="button"
+                  onClick={() => setMode('single')}
+                  className={`h-10 rounded-xl text-sm font-semibold transition-colors ${mode === 'single' ? 'bg-primary text-white' : 'bg-white/10 text-white/75'}`}
+                >
+                  Single campaign
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('monthly')}
+                  className={`h-10 rounded-xl text-sm font-semibold transition-colors ${mode === 'monthly' ? 'bg-primary text-white' : 'bg-white/10 text-white/75'}`}
+                >
+                  Monthly across multiple campaigns
+                </button>
+              </div>
+
               <RangeInput label="Tickets Sold" value={tickets} setValue={setTickets} min={1} max={500} suffix="" />
-              <RangeInput label="Avg Ticket Price" value={price} setValue={setPrice} min={20} max={1000} suffix="$" />
+              <RangeInput label="Average Ticket Price" value={price} setValue={setPrice} min={20} max={1000} suffix="$" />
               <RangeInput label="Commission" value={commission} setValue={setCommission} min={5} max={25} suffix="%" />
+              {mode === 'monthly' && (
+                <RangeInput
+                  label="Campaigns per month"
+                  value={campaignsPerMonth}
+                  setValue={setCampaignsPerMonth}
+                  min={1}
+                  max={12}
+                  suffix=""
+                />
+              )}
             </div>
 
             <div className="bg-primary/5 border border-primary/20 rounded-3xl p-10 text-center flex flex-col justify-center">
-              <span className="text-sm uppercase tracking-widest font-bold text-offwhite/60 mb-2">Projected Monthly Earnings</span>
+              <span className="text-sm uppercase tracking-widest font-bold text-offwhite/60 mb-2">
+                {mode === 'single' ? 'Projected campaign earnings' : 'Projected monthly earnings'}
+              </span>
               <div className="text-6xl md:text-8xl font-black text-white mb-6">
                 ${earnings.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
-              <p className="text-offwhite/40 text-sm">Projection only. Actual payout depends on conversion and event settlement timing.</p>
+              <p className="text-offwhite/40 text-sm">
+                Payouts settle after the promoter refund window closes, typically 7 to 14 days post-event.
+              </p>
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function QuickApplyBar() {
+  const [handle, setHandle] = useState('');
+  const [city, setCity] = useState('');
+  const [category, setCategory] = useState('Events');
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function submitLead(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitError(null);
+    const normalizedHandle = handle.trim();
+    const normalizedCity = city.trim();
+    if (!normalizedHandle || !normalizedCity || !category.trim()) {
+      setSubmitError('Please fill all fields before continuing.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await fetch('/api/public/creator-lead', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          handle: normalizedHandle,
+          city: normalizedCity,
+          category: category.trim(),
+        }),
+      });
+    } catch {
+      // Non-blocking capture: route to full application even if lead save fails.
+    } finally {
+      setSubmitting(false);
+    }
+
+    const params = new URLSearchParams({
+      handle: normalizedHandle,
+      city: normalizedCity,
+      category: category.trim(),
+    });
+    window.location.href = `/apply/creator?${params.toString()}`;
+  }
+
+  return (
+    <section className="app-section py-8 md:py-10 bg-dark border-t border-white/10 border-b border-white/10">
+      <div className="page-shell">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Start your creator application</h2>
+        <p className="text-offwhite/60 mb-6">
+          Share three details first, then continue to the full application with fields pre-filled.
+        </p>
+        <form onSubmit={submitLead} className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input
+            required
+            value={handle}
+            onChange={(e) => setHandle(e.target.value)}
+            placeholder="Instagram or TikTok handle"
+            className="h-12 rounded-xl bg-white/5 border border-white/15 px-4 text-white placeholder:text-offwhite/45 focus:outline-none focus:border-primary"
+          />
+          <input
+            required
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Primary city"
+            className="h-12 rounded-xl bg-white/5 border border-white/15 px-4 text-white placeholder:text-offwhite/45 focus:outline-none focus:border-primary"
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="h-12 rounded-xl bg-white/5 border border-white/15 px-4 text-white focus:outline-none focus:border-primary"
+          >
+            <option value="Events" className="bg-white text-black">Events</option>
+            <option value="Festivals" className="bg-white text-black">Festivals</option>
+            <option value="Nightlife" className="bg-white text-black">Nightlife</option>
+            <option value="Wellness" className="bg-white text-black">Wellness</option>
+          </select>
+          <Button type="submit" variant="premium" className="h-12 w-full">
+            {submitting ? 'Continuing...' : 'Continue application'}
+          </Button>
+        </form>
+        {submitError ? <p className="text-sm text-red-400 mt-3">{submitError}</p> : null}
       </div>
     </section>
   );

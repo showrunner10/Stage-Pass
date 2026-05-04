@@ -77,7 +77,7 @@ function MarketplaceContent() {
           <div className="mb-8 rounded-2xl border border-white/10 bg-[linear-gradient(120deg,rgba(7,13,22,0.92),rgba(8,8,9,0.85)),repeating-linear-gradient(0deg,rgba(255,255,255,0.05)_0,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_36px),repeating-linear-gradient(90deg,rgba(255,255,255,0.05)_0,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_36px)] p-6 md:p-8">
             <p className="text-xs uppercase tracking-[0.24em] text-primary/90 mb-3">Experience Commerce</p>
             <h2 className="text-2xl md:text-3xl font-black text-white mb-3 font-display uppercase tracking-wide">
-              Fashion, beauty, clothing, wellness &amp; live events — one marketplace.
+              Events, festivals, nightlife, and wellness campaigns in one marketplace.
             </h2>
             <p className="text-offwhite/65 max-w-3xl">
               Every listing includes a promoter <strong className="text-offwhite/85">asset pack</strong> (logos, banners, copy) plus commission-ready

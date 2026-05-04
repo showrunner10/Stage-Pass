@@ -8,7 +8,8 @@ export function PromoterBrandMarquee() {
 
   return (
     <div className="bg-[#020202] overflow-hidden" aria-label="Partner promoters">
-      <div className="experience-marquee-track partner-marquee-speed flex w-max items-center py-8 md:py-10">
+      <div className="px-6 md:px-10">
+        <div className="experience-marquee-track partner-marquee-speed flex w-max items-center py-8 md:py-10">
         {track.map((name, i) => (
           <span
             key={`${name}-${i}`}
@@ -20,6 +21,7 @@ export function PromoterBrandMarquee() {
             <span className="h-1.5 w-1.5 rounded-full bg-primary/70 shrink-0" aria-hidden />
           </span>
         ))}
+        </div>
       </div>
     </div>
   );

@@ -5,12 +5,10 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef } from 'react';
 
 const experienceCategories = [
+  { label: 'Events', href: '/events?category=Events', image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=640&q=80' },
   { label: 'Festivals', href: '/events?category=Festival', image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=640&q=80' },
-  { label: 'Fashion', href: '/events?category=Fashion', image: 'https://images.unsplash.com/photo-1464863979621-258859e62245?auto=format&fit=crop&w=640&q=80' },
-  { label: 'Beauty', href: '/events?category=Beauty%20Products', image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=640&q=80' },
-  { label: 'Clothing', href: '/events?category=Clothing', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=640&q=80' },
-  { label: 'Wellness', href: '/events?category=Wellness', image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=640&q=80' },
   { label: 'Nightlife', href: '/events?category=Warehouse%20Party', image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=640&q=80' },
+  { label: 'Wellness', href: '/events?category=Wellness', image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=640&q=80' },
 ];
 
 type TiltVars = { rx: string; ry: string; tz: string; sc: string };
@@ -177,7 +175,7 @@ export function CategoryDiscoverStrip() {
             aria-hidden
           />
 
-          <div className="category-discover-scroller flex gap-4 md:gap-6 md:justify-center px-4 sm:px-0 pb-2 scroll-smooth">
+          <div className="category-discover-scroller flex gap-4 md:gap-6 md:justify-center px-6 sm:px-2 md:px-0 pb-2 scroll-smooth">
             {experienceCategories.map((cat, index) => (
               <CategoryTiltCard key={cat.label} cat={cat} baseRyDeg={index % 2 === 0 ? 5 : -5} />
             ))}

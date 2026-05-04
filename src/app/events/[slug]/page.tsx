@@ -1,37 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { PublicNavbar } from '@/components/layout/PublicNavbar';
-import { PublicFooter } from '@/components/layout/PublicFooter';
-import type { Event } from '@/data/mock';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Clock, Ticket, Users, ShieldCheck, Share2, TrendingUp, Download, LogIn } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { PublicNavbar } from '@/components/layout/PublicNavbar';
+import { PublicFooter } from '@/components/layout/PublicFooter';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import type { Event } from '@/data/mock';
+import { Calendar, MapPin, Ticket, Users, Sparkles, ShieldCheck } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
-export default function EventDetails() {
+export default function EventDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [notFound, setNotFound] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check if user is logged in
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/session', { cache: 'no-store' });
-        if (res.ok) {
-          setIsLoggedIn(true);
-        }
-      } catch {
-        setIsLoggedIn(false);
-      }
-    };
-    checkAuth();
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -51,10 +35,20 @@ export default function EventDetails() {
     };
   }, [slug]);
 
+  const avgTicketPrice = useMemo(() => {
+    if (!event || event.ticketTiers.length === 0) return 0;
+    const total = event.ticketTiers.reduce((sum, tier) => sum + tier.price, 0);
+    return Math.round(total / event.ticketTiers.length);
+  }, [event]);
+
+  const estimatedPerSale = useMemo(() => {
+    if (!event) return 0;
+    return Math.max(event.commissionFixed, Math.round(avgTicketPrice * (event.commission / 100)));
+  }, [event, avgTicketPrice]);
+
   if (notFound) {
     return <div className="min-h-screen bg-dark flex items-center justify-center text-white text-2xl">Event not found</div>;
   }
-
   if (!event) {
     return <div className="min-h-screen bg-dark flex items-center justify-center text-white text-2xl">Loading event...</div>;
   }
@@ -62,217 +56,108 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-dark">
       <PublicNavbar />
-
-      <main className="pb-24">
-        <div className="relative h-[66vh] min-h-[520px] w-full">
+      <main className="pb-20">
+        <section className="relative min-h-[500px] border-b border-white/10">
           <Image src={event.image} alt={event.title} fill sizes="100vw" className="object-cover" priority />
           <div className="absolute inset-0 premium-hero-overlay" />
-
-          <div className="absolute bottom-0 left-0 w-full p-8 md:p-16">
-            <div className="page-shell">
-              <div className="max-w-3xl">
-                <Badge variant="premium" className="mb-6 bg-primary text-white border-none px-4 py-1.5 text-base font-bold">
-                  {event.commission}% · {formatCurrency(event.commissionFixed)} per sale
-                </Badge>
-                <h1 className="text-4xl md:text-7xl font-black text-white mb-6 leading-tight">{event.title}</h1>
-                <div className="flex flex-wrap gap-6 text-offwhite/85 font-medium">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    {event.date}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    {event.venue}, {event.city}
-                  </div>
-                </div>
-              </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/65 to-black/25" />
+          <div className="page-shell relative z-10 pt-24 pb-14 md:pt-32 md:pb-20">
+            <Badge variant="premium" className="mb-5 bg-primary text-white border-primary/20">
+              {event.category}
+            </Badge>
+            <h1 className="text-4xl md:text-6xl font-black text-white max-w-4xl leading-tight">{event.title}</h1>
+            <div className="mt-5 flex flex-wrap gap-5 text-offwhite/85">
+              <div className="inline-flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" />{event.date}</div>
+              <div className="inline-flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" />{event.city} · {event.venue}</div>
+              <div className="inline-flex items-center gap-2"><Users className="w-4 h-4 text-primary" />Promoter: {event.promoter}</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="page-shell mt-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2 space-y-12">
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-5">Event Overview</h2>
-                <p className="text-offwhite/65 text-lg leading-relaxed whitespace-pre-line">{event.description}</p>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-5">Ticket Tiers</h2>
-                <div className="space-y-4">
-                  {event.ticketTiers.map((tier) => (
-                    <div key={tier.name} className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-primary/35 transition-colors">
-                      <div className="flex items-start justify-between gap-5">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">{tier.name}</h3>
-                          <p className="text-offwhite/50 text-sm mt-2">{tier.description}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-black text-primary">{formatCurrency(tier.price)}</div>
-                          <div className="text-xs font-semibold uppercase tracking-widest text-accent-green mt-1">
-                            Commission: {formatCurrency(tier.price * (event.commission / 100))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-5">Brand Assets</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                  <div className="relative h-48 rounded-2xl overflow-hidden bg-white/5 border border-white/10">
-                    <Image 
-                      src={event.image} 
-                      alt="Event banner" 
-                      fill 
-                      className="object-cover" 
-                    />
-                  </div>
-                  <div className="rounded-2xl bg-white/5 border border-white/10 p-6 flex flex-col justify-between">
-                    <div>
-                      <h3 className="text-white font-bold mb-3">Included in Asset Pack:</h3>
-                      <ul className="space-y-2 text-offwhite/60 text-sm">
-                        <li>✓ Event banner (1200x630px)</li>
-                        <li>✓ Square logo (500x500px)</li>
-                        <li>✓ Social media templates</li>
-                        <li>✓ Pre-written copy & CTAs</li>
-                        <li>✓ Brand guidelines</li>
-                      </ul>
-                    </div>
-                    <Button variant="outline" className="mt-4 w-full h-11 text-white border-white/10 hover:bg-white/5 font-bold text-sm" asChild>
-                      <a href={event.assetPackUrl ?? `/assets/packs/${event.slug}-asset-pack.txt`} download>
-                        <Download className="w-4 h-4 mr-2" /> Download asset pack
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </section>
-
-              <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-primary/10 to-transparent p-7">
-                <div className="flex items-center gap-3 mb-5">
-                  <TrendingUp className="w-5 h-5 text-primary" />
-                  <h2 className="text-xl font-bold text-white">Performance Benchmarks</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm">
-                  <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
-                    <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">Avg. Conversion Rate</div>
-                    <div className="text-2xl font-black text-primary">4.2%</div>
-                    <div className="text-xs text-offwhite/60 mt-1">across similar events</div>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
-                    <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">Avg. Clicks per Creator</div>
-                    <div className="text-2xl font-black text-primary">1,248</div>
-                    <div className="text-xs text-offwhite/60 mt-1">in first 2 weeks</div>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
-                    <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">Avg. Earnings</div>
-                    <div className="text-2xl font-black text-primary">$420</div>
-                    <div className="text-xs text-offwhite/60 mt-1">per top creator</div>
-                  </div>
-                </div>
-              </section>
-
-              <section className="rounded-3xl border border-white/10 bg-white/5 p-7">
-                <div className="flex items-center gap-3 mb-5">
-                  <Users className="w-5 h-5 text-primary" />
-                  <h2 className="text-xl font-bold text-white">Audience Fit</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm">
-                  <Meta title="Category" value={event.category} />
-                  <Meta title="Age Bracket" value="21-35" />
-                  <Meta title="Top Interests" value="Music, Nightlife, Culture" />
-                </div>
-              </section>
-            </div>
-
-            <aside className="space-y-6">
-              {!isLoggedIn && (
-                <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 p-7">
-                  <div className="flex items-start gap-3 mb-4">
-                    <LogIn className="w-6 h-6 text-primary mt-0.5" />
-                    <div>
-                      <h3 className="text-white font-bold mb-2">Sign in to Promote</h3>
-                      <p className="text-offwhite/60 text-sm mb-5">Create a free account to start earning commission on event promotions.</p>
-                      <div className="space-y-2">
-                        <Button variant="default" className="w-full h-11 text-base font-bold" asChild>
-                          <Link href={`/login?next=/events/${slug}`}>Sign In</Link>
-                        </Button>
-                        <Button variant="outline" className="w-full h-11 text-white border-white/30 hover:bg-white/5 font-bold" asChild>
-                          <Link href={`/signup?mode=signup&next=/events/${slug}`}>Create Account</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-7 sticky top-28">
-                <div className="mb-8">
-                  <div className="text-sm font-bold text-offwhite/40 uppercase tracking-widest mb-2">Commission Rate</div>
-                  <div className="text-5xl font-black text-primary mb-1">{event.commission}%</div>
-                  <div className="text-offwhite/60">per ticket sold</div>
-                </div>
-
-                <div className="space-y-4 mb-8">
-                  <InfoLine icon={<ShieldCheck className="w-5 h-5 text-accent-green" />} text="Verified promoter" />
-                  <InfoLine icon={<Clock className="w-5 h-5 text-primary" />} text="Fast creator approval" />
-                  <InfoLine icon={<Ticket className="w-5 h-5 text-primary" />} text="Assets and copy included" />
-                </div>
-
-                <div className="space-y-3">
-                  {isLoggedIn ? (
-                    <>
-                      <Button variant="premium" className="w-full h-12 text-base font-bold" asChild>
-                        <Link href={`/app/builder?event=${event.id}`}>Promote This Event</Link>
-                      </Button>
-                      <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
-                        <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button variant="premium" className="w-full h-12 text-base font-bold" asChild>
-                        <Link href={`/login?next=/events/${slug}`}>Sign In to Promote</Link>
-                      </Button>
-                      <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5 font-bold">
-                        <Share2 className="w-4 h-4 mr-2" /> Buy Tickets
-                      </Button>
-                    </>
-                  )}
-                </div>
-
-                <div className="mt-8 pt-8 border-t border-white/10">
-                  <div className="text-xs text-offwhite/45 uppercase tracking-widest mb-1">Promoter</div>
-                  <div className="text-white font-semibold">{event.promoter}</div>
-                  <div className="text-xs text-offwhite/45 mt-3">Assets sourced from promoter brand kits and approved stock placeholders.</div>
-                </div>
+        <div className="page-shell mt-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="lg:col-span-2 space-y-8">
+            <Section title="Campaign overview">
+              <p className="text-offwhite/70 leading-relaxed">{event.description}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+                <Meta label="Ticket price range" value={event.ticketTiers.length > 1 ? `${formatCurrency(event.ticketTiers[0].price)} - ${formatCurrency(event.ticketTiers[event.ticketTiers.length - 1].price)}` : formatCurrency(event.ticketTiers[0]?.price ?? 0)} />
+                <Meta label="Commission rate" value={`${event.commission}%`} />
+                <Meta label="Estimated earning per sale" value={formatCurrency(estimatedPerSale)} />
+                <Meta label="Refund window" value="7 to 14 days post-event" />
               </div>
-            </aside>
+            </Section>
+
+            <Section title="Why promote this event">
+              <ul className="space-y-3 text-offwhite/70">
+                <li className="flex gap-2"><Sparkles className="w-4 h-4 text-primary mt-1" />High-intent audience actively buying ticketed experiences.</li>
+                <li className="flex gap-2"><Sparkles className="w-4 h-4 text-primary mt-1" />Strong creative assets provided for stories, reels, and TikToks.</li>
+                <li className="flex gap-2"><Sparkles className="w-4 h-4 text-primary mt-1" />Clear payout policy after refund window settlement.</li>
+              </ul>
+            </Section>
+
+            <Section title="Creator brief">
+              <p className="text-offwhite/70 leading-relaxed">
+                Share an authentic event recommendation, include your code and campaign link, and explain why your audience should attend.
+                Include event date and city in the first frame or caption.
+              </p>
+              <div className="mt-4 text-sm text-offwhite/60">Creator requirements: event-fit content, local audience relevance, and brand-safe presentation.</div>
+            </Section>
+
+            <Section title="Assets included">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-offwhite/70">
+                <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">Story templates (9:16)</li>
+                <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">TikTok/Reel cover art</li>
+                <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">Caption hooks and CTA copy</li>
+                <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">Event key visual and logos</li>
+              </ul>
+              <p className="text-sm text-offwhite/55 mt-4">Example discount code: <span className="text-white font-semibold">MAYA10</span></p>
+            </Section>
+
+            <Section title="Payout and refund window">
+              <p className="text-offwhite/70 leading-relaxed">
+                Payouts settle after the promoter&apos;s refund window closes, typically 7 to 14 days post-event.
+                Refunded tickets are excluded from final commission to keep attribution fair.
+              </p>
+            </Section>
           </div>
+
+          <aside>
+            <div className="sticky top-24 rounded-3xl border border-white/10 bg-white/5 p-6">
+              <h3 className="text-xl font-bold text-white mb-4">Apply to promote</h3>
+              <div className="space-y-3 mb-6 text-sm text-offwhite/70">
+                <div className="flex items-center gap-2"><Ticket className="w-4 h-4 text-primary" />Average ticket price: {formatCurrency(avgTicketPrice)}</div>
+                <div className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-primary" />Commission: {event.commission}% ({formatCurrency(estimatedPerSale)} est.)</div>
+                <div className="flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" />Event date: {event.date}</div>
+              </div>
+              <Button variant="premium" className="w-full h-12 mb-3" asChild>
+                <Link href={`/apply/creator?event=${event.slug}`}>Apply to Promote</Link>
+              </Button>
+              <Button variant="outline" className="w-full h-11 text-white border-white/20 hover:bg-white/10" asChild>
+                <Link href="/events">Back to Marketplace</Link>
+              </Button>
+              <p className="text-xs text-offwhite/55 mt-4">Apply flow goes to creator application first.</p>
+            </div>
+          </aside>
         </div>
       </main>
-
       <PublicFooter />
     </div>
   );
 }
 
-function Meta({ title, value }: { title: string; value: string }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-dark/30 p-4">
-      <div className="text-xs text-offwhite/40 uppercase tracking-widest mb-2">{title}</div>
-      <div className="text-white font-semibold">{value}</div>
-    </div>
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 className="text-2xl font-bold text-white mb-4">{title}</h2>
+      {children}
+    </section>
   );
 }
 
-function InfoLine({ icon, text }: { icon: React.ReactNode; text: string }) {
+function Meta({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 text-offwhite/85">
-      {icon}
-      <span>{text}</span>
+    <div className="rounded-xl border border-white/10 bg-dark/35 px-4 py-3">
+      <p className="text-xs uppercase tracking-[0.16em] text-offwhite/40 mb-1">{label}</p>
+      <p className="text-white font-semibold">{value}</p>
     </div>
   );
 }

@@ -70,12 +70,13 @@ function LoginPageContent() {
     };
   }, []);
 
-  async function submit() {
+async function submit() {
     setLoading(true);
     setError(null);
     setInfo(null);
 
     const endpoint = mode === 'signin' ? '/api/auth/login' : '/api/auth/signup';
+    const normalizedHandle = handle.trim().replace(/^@+/, '').replace(/\s+/g, '');
     const payload =
       mode === 'signin'
         ? { email, password }
@@ -83,7 +84,7 @@ function LoginPageContent() {
             email,
             password,
             displayName,
-            handle,
+            handle: normalizedHandle,
             accountType,
             ...(accountType === 'promoter' && orgName.trim() ? { orgName: orgName.trim() } : {}),
           };
