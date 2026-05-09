@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { canSendMail, sendMail, supportInbox } from '@/lib/server/mail';
 
 function requireAdmin(req: Request) {
   const cookie = req.headers.get('cookie') ?? '';
@@ -77,6 +78,8 @@ export async function POST(req: Request) {
 
   const data = (draft.data as Record<string, unknown>) ?? {};
   const orgName = String(data.orgName ?? 'Promoter Org');
+  const email = String(data.email ?? '');
+  const displayName = String(data.displayName ?? 'there');
 
   if (decision === 'approve') {
     const user = await prisma.user.update({
@@ -119,5 +122,29 @@ export async function POST(req: Request) {
     },
   });
 
+  if (canSendMail() && email) {
+    const inbox = supportInbox();
+    const approved = decision === 'approve';
+    await sendMail({
+      to: email,
+      subject: approved ? 'Your Stagepass promoter access is approved' : 'Your Stagepass promoter request update',
+      text: approved
+        ? `Hi ${displayName},\n\nYour Stagepass promoter request for ${orgName} has been approved. You can now sign in and access promoter admin.\n\nQuestions? Reply to ${inbox}.\n\nStagepass`
+        : `Hi ${displayName},\n\nWe reviewed your Stagepass promoter request for ${orgName}. It was not approved at this stage.\n\nIf you need help or want to provide more context, reply to ${inbox}.\n\nStagepass`,
+      html: approved
+        ? `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>Promoter access approved</h2><p>Hi ${escapeHtml(displayName)},</p><p>Your Stagepass promoter request for <strong>${escapeHtml(orgName)}</strong> has been approved.</p><p>You can now sign in and access promoter admin.</p><p>Questions? Reply to <strong>${escapeHtml(inbox)}</strong>.</p><p style="margin-top:24px">Stagepass</p></div>`
+        : `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>Promoter request update</h2><p>Hi ${escapeHtml(displayName)},</p><p>We reviewed your Stagepass promoter request for <strong>${escapeHtml(orgName)}</strong>. It was not approved at this stage.</p><p>If you need help or want to provide more context, reply to <strong>${escapeHtml(inbox)}</strong>.</p><p style="margin-top:24px">Stagepass</p></div>`,
+    }).catch(() => null);
+  }
+
   return NextResponse.json({ ok: true });
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }

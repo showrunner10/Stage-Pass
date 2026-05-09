@@ -19,7 +19,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">1. Introduction</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                StagePass ("we," "us," "our," or "Company") operates the stagepass.com.au website and related services (the "Service"). This Privacy Policy explains our data practices and your rights.
+                StagePass (&quot;we,&quot; &quot;us,&quot; &quot;our,&quot; or &quot;Company&quot;) operates the stagepass.com.au website and related services (the &quot;Service&quot;). This Privacy Policy explains our data practices and your rights.
               </p>
               <p className="text-[#aaaaaa] leading-relaxed mt-4">
                 By accessing or using StagePass, you agree to this Privacy Policy. If you do not agree, please do not use our Service.

@@ -39,6 +39,9 @@ function CampaignBuilderContent() {
   const [headline, setHeadline] = useState('Join me at this one.');
   const [note, setNote] = useState('My personal pick — great lineup, great crowd.');
   const [accent, setAccent] = useState<'Primary' | 'Green'>('Primary');
+  const [creatorHandle, setCreatorHandle] = useState('creator');
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
   const [channels, setChannels] = useState<Record<string, boolean>>({
     Instagram: true,
     TikTok: false,
@@ -49,19 +52,19 @@ function CampaignBuilderContent() {
 
   const selectedEvent = useMemo(
     () => events.find((e) => e.id === selectedEventId) ?? events[0],
-    [selectedEventId]
+    [events, selectedEventId]
   );
 
   const checkedChannels = Object.entries(channels)
     .filter(([, v]) => v)
     .map(([k]) => k);
 
-  const mockBase = `https://stagepass.app/go/maya/${slug}`;
-  const mockLanding = `https://stagepass.app/c/maya/${slug}`;
+  const liveBase = `https://stagepass.app/go/${creatorHandle}/${slug}`;
+  const liveLanding = `https://stagepass.app/c/${creatorHandle}/${slug}`;
 
   const utmLinks = checkedChannels.map((ch) => ({
     channel: ch,
-    url: `${mockBase}?utm_source=${encodeURIComponent(ch.toLowerCase())}&utm_medium=creator&utm_campaign=${encodeURIComponent(
+    url: `${liveBase}?utm_source=${encodeURIComponent(ch.toLowerCase())}&utm_medium=creator&utm_campaign=${encodeURIComponent(
       slug
     )}`,
   }));
@@ -88,6 +91,21 @@ function CampaignBuilderContent() {
       if (!active || items.length === 0) return;
       setEvents(items);
       setSelectedEventId((prev) => prev || items[0].id);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/app/profile', { cache: 'no-store' });
+        const json = (await res.json().catch(() => ({}))) as { item?: { handle?: string } };
+        if (!active) return;
+        if (json.item?.handle) setCreatorHandle(json.item.handle);
+      } catch {}
     })();
     return () => {
       active = false;
@@ -213,6 +231,37 @@ function CampaignBuilderContent() {
     if (saveState === 'saved') return 'Saved';
     return 'Auto-save';
   })();
+
+  async function publishCampaign() {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const payload = {
+        selectedEventId,
+        format,
+        slug,
+        headline,
+        note,
+        accent,
+        channels,
+      };
+      const res = await fetch('/api/app/campaigns/publish', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string; campaignId?: string };
+      if (!res.ok || !json.campaignId) {
+        setPublishError(json.error ?? 'Could not publish campaign.');
+        return;
+      }
+      router.push(`/app/campaigns/${json.campaignId}`);
+    } catch {
+      setPublishError('Could not publish campaign.');
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   return (
     <DashboardShell>
@@ -489,7 +538,7 @@ function CampaignBuilderContent() {
                     <div>
                       <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest">Short link</div>
                       <div className="text-sm text-offwhite/80 break-all bg-white/5 border border-white/10 rounded-lg p-3">
-                        {mockBase}
+                        {liveBase}
                       </div>
                     </div>
                     <div>
@@ -497,27 +546,28 @@ function CampaignBuilderContent() {
                         Landing page
                       </div>
                       <div className="text-sm text-offwhite/80 break-all bg-white/5 border border-white/10 rounded-lg p-3">
-                        {mockLanding}
+                        {liveLanding}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button variant="premium" className="h-12 px-8 font-bold">
-                    Publish campaign
+                  <Button variant="premium" className="h-12 px-8 font-bold" onClick={publishCampaign} disabled={publishing}>
+                    {publishing ? 'Publishing...' : 'Publish campaign'}
                   </Button>
-                  <Link href={`/go/maya/${slug}`} className="w-full sm:w-auto">
+                  <Link href={`/go/${creatorHandle}/${slug}`} className="w-full sm:w-auto">
                     <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5">
                       Preview redirect demo
                     </Button>
                   </Link>
-                  <Link href={`/c/maya/${slug}`} className="w-full sm:w-auto">
+                  <Link href={`/c/${creatorHandle}/${slug}`} className="w-full sm:w-auto">
                     <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5">
                       Preview landing page
                     </Button>
                   </Link>
                 </div>
+                {publishError ? <div className="text-sm text-red-300">{publishError}</div> : null}
               </div>
             )}
           </div>

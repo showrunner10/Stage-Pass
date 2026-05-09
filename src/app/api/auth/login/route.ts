@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { setAuthCookies, supabaseSignIn, type AppRole } from '@/lib/auth/session';
+import { setAuthCookies, setAuthIdentityCookie, supabaseSignIn, type AppRole } from '@/lib/auth/session';
 
 const BodySchema = z.object({
   email: z.string().email(),
@@ -33,6 +33,7 @@ export async function POST(req: Request) {
 
     const res = NextResponse.json({ ok: true, role });
     setAuthCookies(res, { role, accessToken: auth.access_token });
+    setAuthIdentityCookie(res, email);
     return res;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Login failed';

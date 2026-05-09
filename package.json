@@ -29,6 +29,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.453.0",
     "next": "^16.2.4",
+    "nodemailer": "^8.0.7",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "superjson": "^2.2.1",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.19",

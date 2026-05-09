@@ -1,11 +1,11 @@
-﻿'use client';
+'use client';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Eye, EyeOff, X } from 'lucide-react';
+import { Apple, Eye, EyeOff, LoaderCircle, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type Mode = 'signin' | 'signup';
 
@@ -15,12 +15,61 @@ const slides = [
   'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop',
 ];
 
+function GoogleMark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path fill="#EA4335" d="M9 7.05v3.62h5.03c-.22 1.16-.9 2.14-1.92 2.8l3.1 2.4c1.8-1.66 2.84-4.1 2.84-6.98 0-.68-.06-1.34-.18-1.97H9Z" />
+      <path fill="#4285F4" d="M9 18c2.57 0 4.73-.85 6.3-2.3l-3.1-2.4c-.86.58-1.96.93-3.2.93-2.46 0-4.54-1.67-5.29-3.91H.5v2.46A9.5 9.5 0 0 0 9 18Z" />
+      <path fill="#FBBC05" d="M3.71 10.32A5.71 5.71 0 0 1 3.41 9c0-.46.08-.91.22-1.32V5.22H.5A9 9 0 0 0 0 9c0 1.45.35 2.83.97 4.06l2.74-2.74Z" />
+      <path fill="#34A853" d="M9 3.58c1.4 0 2.64.48 3.62 1.42l2.7-2.7C13.72.8 11.56 0 9 0A9.5 9.5 0 0 0 .5 5.22l3.13 2.46C4.39 5.24 6.53 3.58 9 3.58Z" />
+    </svg>
+  );
+}
+
+function SsoButton({
+  provider,
+  label,
+  description,
+  loading,
+  disabled,
+  onClick,
+}: {
+  provider: 'google' | 'apple';
+  label: string;
+  description: string;
+  loading: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="group flex h-14 w-full items-center rounded-2xl border border-[#d4dae5] bg-white px-4 text-left shadow-[0_10px_20px_-18px_rgba(16,19,26,0.45)] transition-all hover:-translate-y-0.5 hover:border-[#c3cbdb] hover:shadow-[0_18px_30px_-20px_rgba(16,19,26,0.5)] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f7fb] text-[#111827]">
+        {provider === 'google' ? <GoogleMark /> : <Apple className="h-4.5 w-4.5" />}
+      </span>
+      <span className="ml-3 flex min-w-0 flex-1 flex-col">
+        <span className="text-sm font-semibold text-[#111827]">{label}</span>
+        <span className="text-xs text-[#6a7387]">{description}</span>
+      </span>
+      {loading ? (
+        <LoaderCircle className="h-4 w-4 animate-spin text-[#4f46e5]" />
+      ) : (
+        <span className="text-xs font-medium text-[#798297] transition-colors group-hover:text-[#495266]">SSO</span>
+      )}
+    </button>
+  );
+}
+
 export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-dark flex items-center justify-center text-white/60 text-sm">
-          Loading…
+        <main className="flex min-h-screen items-center justify-center bg-dark text-sm text-white/60">
+          Loading...
         </main>
       }
     >
@@ -47,6 +96,14 @@ function LoginPageContent() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [devBypass, setDevBypass] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [sendingResetCode, setSendingResetCode] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
+  const [resetCodeSent, setResetCodeSent] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<'google' | 'apple' | null>(null);
 
   const next = search.get('next') ?? '/app/dashboard';
 
@@ -70,7 +127,14 @@ function LoginPageContent() {
     };
   }, []);
 
-async function submit() {
+  useEffect(() => {
+    const oauthError = search.get('error');
+    if (oauthError) {
+      setError(oauthError);
+    }
+  }, [search]);
+
+  async function submit() {
     setLoading(true);
     setError(null);
     setInfo(null);
@@ -101,6 +165,7 @@ async function submit() {
       sessionEstablished?: boolean;
       message?: string;
     };
+
     if (!res.ok) {
       setError(json.error ?? 'Request failed');
       setLoading(false);
@@ -130,19 +195,53 @@ async function submit() {
       return;
     }
 
+    setSendingResetCode(true);
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ email }),
     });
     const json = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
+    setSendingResetCode(false);
 
     if (!res.ok) {
-      setError(json.error ?? 'Could not send reset email.');
+      setError(json.error ?? 'Could not send reset code.');
       return;
     }
 
-    setInfo(json.message ?? 'Reset email sent.');
+    setShowReset(true);
+    setResetCodeSent(true);
+    setInfo(json.message ?? 'Reset code sent.');
+  }
+
+  async function confirmReset() {
+    setError(null);
+    setInfo(null);
+    if (!email) {
+      setError('Enter your email first.');
+      return;
+    }
+
+    setResettingPassword(true);
+    const res = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, code: resetCode, newPassword }),
+    });
+    const json = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
+    setResettingPassword(false);
+
+    if (!res.ok) {
+      setError(json.error ?? 'Could not reset password.');
+      return;
+    }
+
+    setInfo(json.message ?? 'Password updated. You can now sign in.');
+    setShowReset(false);
+    setResetCode('');
+    setNewPassword('');
+    setPassword('');
+    setMode('signin');
   }
 
   async function devTestLogin(testRole: 'creator' | 'promoter' | 'admin') {
@@ -170,28 +269,38 @@ async function submit() {
     }
   }
 
+  function startOauth(provider: 'google' | 'apple') {
+    setError(null);
+    setInfo(null);
+    setOauthLoading(provider);
+    window.location.href = `/api/auth/oauth/start?provider=${provider}&next=${encodeURIComponent(next)}`;
+  }
+
   return (
-    <main className="min-h-screen bg-dark text-white relative overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden bg-dark text-white">
       <div className="absolute inset-0">
         <Image key={slides[slideIndex]} src={slides[slideIndex]} alt="Stagepass login background" fill sizes="100vw" className="object-cover transition-opacity duration-1000" priority />
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(25,105,255,0.22),transparent_30%),linear-gradient(180deg,rgba(6,9,14,0.62),rgba(6,8,12,0.92))]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(255,255,255,0.1)_1px,transparent_1px)] [background-size:8px_8px] opacity-20" />
 
-      <div className="relative z-10 h-screen w-full px-4 flex items-center justify-center">
-        <div className="w-full max-w-lg rounded-3xl border border-white/20 bg-[#e8ebf0] text-[#10131a] p-6 md:p-8 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.75)]">
-          <div className="flex items-center justify-between mb-6">
-            <div className="text-sm font-bold uppercase tracking-[0.12em] text-[#2d3340]">Log In or Sign Up</div>
-            <Link href="/" className="w-9 h-9 rounded-full bg-[#d6dae2] flex items-center justify-center hover:bg-[#cfd4de] transition-colors">
-              <X className="w-4 h-4" />
+      <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-8">
+        <div className="w-full max-w-lg rounded-3xl border border-white/20 bg-[#e8ebf0] p-6 text-[#10131a] shadow-[0_30px_80px_-30px_rgba(0,0,0,0.75)] md:p-8">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <div className="text-sm font-bold uppercase tracking-[0.12em] text-[#2d3340]">Log In or Sign Up</div>
+              <div className="mt-1 text-sm text-[#6b7386]">Secure access for creators, promoter teams, and Stagepass Ops.</div>
+            </div>
+            <Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#d6dae2] transition-colors hover:bg-[#cfd4de]">
+              <X className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <button type="button" onClick={() => setMode('signin')} className={`h-10 rounded-xl text-sm font-semibold transition-colors ${mode === 'signin' ? 'bg-[#111827] text-white' : 'bg-white text-[#111827] border border-[#d8dce3]'}`}>
+          <div className="mb-4 grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => setMode('signin')} className={`h-10 rounded-xl text-sm font-semibold transition-colors ${mode === 'signin' ? 'bg-[#111827] text-white' : 'border border-[#d8dce3] bg-white text-[#111827]'}`}>
               Sign in
             </button>
-            <button type="button" onClick={() => setMode('signup')} className={`h-10 rounded-xl text-sm font-semibold transition-colors ${mode === 'signup' ? 'bg-[#111827] text-white' : 'bg-white text-[#111827] border border-[#d8dce3]'}`}>
+            <button type="button" onClick={() => setMode('signup')} className={`h-10 rounded-xl text-sm font-semibold transition-colors ${mode === 'signup' ? 'bg-[#111827] text-white' : 'border border-[#d8dce3] bg-white text-[#111827]'}`}>
               Create account
             </button>
           </div>
@@ -203,31 +312,33 @@ async function submit() {
                   <button
                     type="button"
                     onClick={() => setAccountType('creator')}
-                    className={`h-10 rounded-xl text-sm font-semibold transition-colors ${accountType === 'creator' ? 'bg-[#111827] text-white' : 'bg-white text-[#111827] border border-[#d8dce3]'}`}
+                    className={`h-10 rounded-xl text-sm font-semibold transition-colors ${accountType === 'creator' ? 'bg-[#111827] text-white' : 'border border-[#d8dce3] bg-white text-[#111827]'}`}
                   >
                     Creator
                   </button>
                   <button
                     type="button"
                     onClick={() => setAccountType('promoter')}
-                    className={`h-10 rounded-xl text-sm font-semibold transition-colors ${accountType === 'promoter' ? 'bg-[#111827] text-white' : 'bg-white text-[#111827] border border-[#d8dce3]'}`}
+                    className={`h-10 rounded-xl text-sm font-semibold transition-colors ${accountType === 'promoter' ? 'bg-[#111827] text-white' : 'border border-[#d8dce3] bg-white text-[#111827]'}`}
                   >
                     Promoter
                   </button>
                 </div>
-                <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Display name" className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] px-4 text-[#111827]" />
-                <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="Handle (e.g. maya.rodriguez)" className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] px-4 text-[#111827]" />
+                <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Display name" className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]" />
+                <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="Handle (e.g. maya.rodriguez)" className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]" />
                 {accountType === 'promoter' && (
                   <input
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
                     placeholder="Organisation name"
-                    className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] px-4 text-[#111827]"
+                    className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]"
                   />
                 )}
               </>
             )}
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] px-4 text-[#111827]" />
+
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]" />
+
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -235,29 +346,95 @@ async function submit() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password (min 6 characters)"
                 autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-                className="w-full h-12 rounded-xl bg-white border border-[#d7dce3] pl-4 pr-12 text-[#111827]"
+                className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white pl-4 pr-12 text-[#111827]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-[#4d5565] hover:bg-[#eef0f4] hover:text-[#111827] transition-colors"
+                className="absolute right-2 top-1/2 rounded-lg p-2 text-[#4d5565] transition-colors hover:bg-[#eef0f4] hover:text-[#111827] -translate-y-1/2"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
 
-          {error && <div className="text-sm text-red-600 mt-3">{error}</div>}
-          {info && <div className="text-sm text-emerald-700 mt-3">{info}</div>}
+          {error && <div className="mt-3 text-sm text-red-600">{error}</div>}
+          {info && <div className="mt-3 text-sm text-emerald-700">{info}</div>}
 
-          <Button variant="premium" className="h-12 w-full mt-4" onClick={submit} disabled={loading}>
+          <Button variant="premium" className="mt-4 h-12 w-full" onClick={submit} disabled={loading}>
             {loading ? 'Please wait...' : mode === 'signin' ? 'Continue' : 'Create account'}
           </Button>
 
-          <button type="button" onClick={forgotPassword} className="mt-3 w-full text-sm text-[#3d4f7c] hover:underline">
-            Forgot password?
+          <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b93a5]">
+            <div className="h-px flex-1 bg-[#d2d7e2]" />
+            <span>Or continue with</span>
+            <div className="h-px flex-1 bg-[#d2d7e2]" />
+          </div>
+
+          <div className="space-y-3">
+            <SsoButton
+              provider="google"
+              label={mode === 'signin' ? 'Sign in with Google' : 'Continue with Google'}
+              description="Use your Google identity for a secure one-tap flow"
+              loading={oauthLoading === 'google'}
+              disabled={oauthLoading !== null}
+              onClick={() => startOauth('google')}
+            />
+            <SsoButton
+              provider="apple"
+              label={mode === 'signin' ? 'Sign in with Apple' : 'Continue with Apple'}
+              description="Use Face ID, Touch ID, or your Apple account"
+              loading={oauthLoading === 'apple'}
+              disabled={oauthLoading !== null}
+              onClick={() => startOauth('apple')}
+            />
+          </div>
+
+          <button type="button" onClick={forgotPassword} className="mt-3 w-full text-sm text-[#3d4f7c] hover:underline" disabled={sendingResetCode}>
+            {sendingResetCode ? 'Sending code...' : 'Forgot password?'}
           </button>
+
+          {showReset && (
+            <div className="mt-4 space-y-3 rounded-2xl border border-[#d7dce3] bg-white p-4">
+              <div className="text-sm font-semibold text-[#111827]">Reset with email code</div>
+              <p className="text-xs text-[#4d5565]">
+                {resetCodeSent ? 'Enter the 6-digit code from your email and choose a new password.' : 'Request a reset code first.'}
+              </p>
+              <input
+                value={resetCode}
+                onChange={(e) => setResetCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="6-digit code"
+                className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 tracking-[0.35em] text-[#111827]"
+              />
+              <div className="relative">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="New password"
+                  autoComplete="new-password"
+                  className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white pl-4 pr-12 text-[#111827]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword((v) => !v)}
+                  className="absolute right-2 top-1/2 rounded-lg p-2 text-[#4d5565] transition-colors hover:bg-[#eef0f4] hover:text-[#111827] -translate-y-1/2"
+                  aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                >
+                  {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" className="h-11 bg-white" onClick={forgotPassword} disabled={sendingResetCode}>
+                  Resend code
+                </Button>
+                <Button variant="premium" className="h-11" onClick={confirmReset} disabled={resettingPassword}>
+                  {resettingPassword ? 'Resetting...' : 'Set new password'}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="mt-5 text-center text-sm text-[#4d5565]">
             Promoter access requires Stagepass Ops approval after application.
@@ -270,20 +447,19 @@ async function submit() {
                 <code className="rounded bg-amber-100/80 px-1">STAGEPASS_DEV_AUTH_BYPASS=1</code> is on. Quick entry:
               </p>
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <Button type="button" variant="outline" className="h-9 text-xs border-amber-300 bg-white" disabled={loading} onClick={() => devTestLogin('creator')}>
+                <Button type="button" variant="outline" className="h-9 border-amber-300 bg-white text-xs" disabled={loading} onClick={() => devTestLogin('creator')}>
                   Creator
                 </Button>
-                <Button type="button" variant="outline" className="h-9 text-xs border-amber-300 bg-white" disabled={loading} onClick={() => devTestLogin('promoter')}>
+                <Button type="button" variant="outline" className="h-9 border-amber-300 bg-white text-xs" disabled={loading} onClick={() => devTestLogin('promoter')}>
                   Promoter
                 </Button>
-                <Button type="button" variant="outline" className="h-9 text-xs border-amber-300 bg-white" disabled={loading} onClick={() => devTestLogin('admin')}>
+                <Button type="button" variant="outline" className="h-9 border-amber-300 bg-white text-xs" disabled={loading} onClick={() => devTestLogin('admin')}>
                   Admin
                 </Button>
               </div>
             </div>
           )}
 
-          <div className="mt-4 text-center text-xs text-[#677085]">Google/Apple SSO can be enabled from Supabase Auth providers.</div>
         </div>
       </div>
     </main>

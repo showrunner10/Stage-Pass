@@ -7,7 +7,7 @@ export async function GET(_: Request, context: { params: Promise<{ slug: string 
     const event = await getPublicEventBySlug(slug);
     if (!event) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(event);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to load event' }, { status: 500 });
   }
 }

@@ -128,13 +128,13 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
 
         {/* Next Steps */}
         <Card className="p-8 bg-white/5 border-white/10 mb-10">
-          <h2 className="text-2xl font-bold text-white mb-6">What's Next?</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">What&apos;s Next?</h2>
           <ol className="space-y-4">
             <li className="flex gap-4">
               <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 font-bold">1</span>
               <div>
                 <p className="text-white font-semibold">Download Your Tickets</p>
-                <p className="text-[#aaaaaa] text-sm">Save them on your phone or print them out. You'll need them at the door.</p>
+                <p className="text-[#aaaaaa] text-sm">Save them on your phone or print them out. You&apos;ll need them at the door.</p>
               </div>
             </li>
             <li className="flex gap-4">

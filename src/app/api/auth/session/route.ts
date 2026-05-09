@@ -5,10 +5,11 @@ export async function GET() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('sp_access_token')?.value;
   const role = cookieStore.get('sp_role')?.value ?? null;
+  const email = cookieStore.get('sp_email')?.value ?? null;
 
   if (!accessToken) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 
-  return NextResponse.json({ authenticated: true, role });
+  return NextResponse.json({ authenticated: true, role, email });
 }

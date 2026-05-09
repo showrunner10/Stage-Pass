@@ -26,6 +26,19 @@ export function setAuthCookies(res: NextResponse, params: { role: AppRole; acces
   res.cookies.set('sp_access_token', params.accessToken, base);
 }
 
+export function setAuthIdentityCookie(res: NextResponse, email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) return;
+
+  res.cookies.set('sp_email', normalizedEmail, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  });
+}
+
 export function clearAuthCookies(res: NextResponse) {
   const base = {
     httpOnly: true,
@@ -36,6 +49,7 @@ export function clearAuthCookies(res: NextResponse) {
   };
   res.cookies.set('sp_role', '', base);
   res.cookies.set('sp_access_token', '', base);
+  res.cookies.set('sp_email', '', base);
 }
 
 export async function supabaseSignIn(email: string, password: string) {

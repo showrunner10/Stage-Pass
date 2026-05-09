@@ -1,32 +1,27 @@
-'use client';
-
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { EventCard } from '@/components/shared/EventCard';
-import { campaigns, events, ledgerEntries } from '@/data/mock';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpRight, DollarSign, Ticket, TrendingUp, Activity } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
 import { CampaignStatusBadge } from '@/components/shared/CampaignStatusBadge';
 import { Button } from '@/components/ui/button';
+import { getCreatorAppSnapshot } from '@/lib/server/creator-app';
+import { getPublicEvents } from '@/lib/server/public-events';
 
-export default function CreatorDashboard() {
-  const topCampaigns = [...campaigns]
-    .sort((a, b) => b.commission - a.commission)
-    .slice(0, 4);
-
-  const newInMarketplace = events.slice(0, 3);
-
-  const ticketsSold30d = campaigns.reduce((sum, c) => sum + c.ticketsSold, 0);
-  const commissionEarned = campaigns.reduce((sum, c) => sum + c.commission, 0);
-  const activeCampaigns = campaigns.filter((c) => c.status === 'Live').length;
+export default async function CreatorDashboard() {
+  const [snapshot, publicEvents] = await Promise.all([getCreatorAppSnapshot(), getPublicEvents()]);
+  const topCampaigns = [...snapshot.campaigns].sort((a, b) => b.commission - a.commission).slice(0, 4);
+  const newInMarketplace = publicEvents.slice(0, 3);
+  const ticketsSold30d = snapshot.campaigns.reduce((sum, campaign) => sum + campaign.ticketsSold, 0);
+  const commissionEarned = snapshot.campaigns.reduce((sum, campaign) => sum + campaign.commission, 0);
+  const activeCampaigns = snapshot.campaigns.filter((campaign) => campaign.status === 'Live').length;
   const conversionRate =
-    campaigns.length === 0
+    snapshot.campaigns.length === 0
       ? 0
-      : campaigns.reduce((sum, c) => sum + c.conversionRate, 0) / campaigns.length;
-
-  const activity = ledgerEntries.slice(0, 6);
+      : snapshot.campaigns.reduce((sum, campaign) => sum + campaign.conversionRate, 0) / snapshot.campaigns.length;
+  const activity = snapshot.ledger.slice(0, 6);
 
   return (
     <DashboardShell>
@@ -43,7 +38,7 @@ export default function CreatorDashboard() {
             <MetricCard
               title="Commission earned"
               value={formatCurrency(commissionEarned)}
-              description="Clearing in 2–7 days"
+              description="Clearing in 2-7 days"
               icon={<DollarSign className="w-5 h-5" />}
               trend={{ value: 8, isPositive: true }}
             />
@@ -88,28 +83,25 @@ export default function CreatorDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {topCampaigns.map((c) => {
-                  const event = events.find((e) => e.id === c.eventId);
-                  return (
-                    <TableRow key={c.id}>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-white">{c.name}</span>
-                          <span className="text-xs text-offwhite/40">{event?.title ?? 'Event'}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <CampaignStatusBadge status={c.status} />
-                      </TableCell>
-                      <TableCell className="text-right">{c.clicks.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">{c.ticketsSold}</TableCell>
-                      <TableCell className="text-right">{c.conversionRate.toFixed(1)}%</TableCell>
-                      <TableCell className="text-right text-accent-green font-semibold">
-                        {formatCurrency(c.commission)}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {topCampaigns.map((campaign) => (
+                  <TableRow key={campaign.id}>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-white">{campaign.name}</span>
+                        <span className="text-xs text-offwhite/40">{campaign.eventTitle}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <CampaignStatusBadge status={campaign.status} />
+                    </TableCell>
+                    <TableCell className="text-right">{campaign.clicks.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{campaign.ticketsSold}</TableCell>
+                    <TableCell className="text-right">{campaign.conversionRate.toFixed(1)}%</TableCell>
+                    <TableCell className="text-right text-accent-green font-semibold">
+                      {formatCurrency(campaign.commission)}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -143,18 +135,14 @@ export default function CreatorDashboard() {
             </div>
 
             <div className="space-y-4">
-              {activity.map((a) => (
-                <div key={a.id} className="flex items-start justify-between gap-4 pb-3 border-b border-white/5 last:border-b-0 last:pb-0">
+              {activity.map((entry) => (
+                <div key={entry.id} className="flex items-start justify-between gap-4 pb-3 border-b border-white/5 last:border-b-0 last:pb-0">
                   <div className="min-w-0">
-                    <div className="text-sm text-white font-medium truncate">{a.description}</div>
-                    <div className="text-xs text-offwhite/40">{a.date}</div>
+                    <div className="text-sm text-white font-medium truncate">{entry.description}</div>
+                    <div className="text-xs text-offwhite/40">{entry.date}</div>
                   </div>
-                  <div
-                    className={`text-sm font-semibold ${
-                      a.amount >= 0 ? 'text-accent-green' : 'text-offwhite/70'
-                    }`}
-                  >
-                    {a.amount >= 0 ? formatCurrency(a.amount) : `-${formatCurrency(Math.abs(a.amount))}`}
+                  <div className={`text-sm font-semibold ${entry.amount >= 0 ? 'text-accent-green' : 'text-offwhite/70'}`}>
+                    {entry.amount >= 0 ? formatCurrency(entry.amount) : `-${formatCurrency(Math.abs(entry.amount))}`}
                   </div>
                 </div>
               ))}

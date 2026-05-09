@@ -1,5 +1,6 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { setAuthIdentityCookie } from '@/lib/auth/session';
 
 const BodySchema = z.object({
   role: z.enum(['creator', 'promoter', 'admin']),
@@ -20,6 +21,14 @@ export async function POST(req: Request) {
     path: '/',
     maxAge: 60 * 60 * 24 * 30,
   });
+  setAuthIdentityCookie(
+    res,
+    parsed.data.role === 'promoter'
+      ? 'admin@secretsounds.com'
+      : parsed.data.role === 'admin'
+        ? 'admin@stagepass.app'
+        : 'maya@stagepass.app',
+  );
 
   return res;
 }

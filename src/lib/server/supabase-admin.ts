@@ -1,0 +1,54 @@
+import { prisma } from '@/lib/prisma';
+
+function getAdminConfig() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceRole) {
+    throw new Error('Supabase admin env missing');
+  }
+  return { url, serviceRole };
+}
+
+function extractSupabaseUserId(clerkId: string) {
+  const directUuid = clerkId.match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i);
+  return directUuid?.[0] ?? null;
+}
+
+async function getSupabaseAuthUserIdByEmail(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email: email.trim().toLowerCase() },
+    select: { clerkId: true },
+  });
+
+  if (!user?.clerkId) return null;
+  return extractSupabaseUserId(user.clerkId);
+}
+
+export async function updateSupabasePasswordByEmail(email: string, password: string) {
+  const userId = await getSupabaseAuthUserIdByEmail(email);
+  if (!userId) {
+    throw new Error('No auth user found for this email');
+  }
+
+  const { url, serviceRole } = getAdminConfig();
+  const res = await fetch(`${url}/auth/v1/admin/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      apikey: serviceRole,
+      Authorization: `Bearer ${serviceRole}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password }),
+  });
+
+  const json = (await res.json().catch(() => ({}))) as { msg?: string; error?: string };
+  if (!res.ok) {
+    throw new Error(json.msg || json.error || 'Could not update password');
+  }
+
+  return { userId };
+}
+
+export function canUseSupabaseAdmin() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+}

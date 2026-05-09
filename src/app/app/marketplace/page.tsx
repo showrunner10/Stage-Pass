@@ -7,6 +7,7 @@ import type { Event } from '@/data/mock';
 import { Button } from '@/components/ui/button';
 import { Search, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 type SortType = 'Highest commission' | 'Ending soonest' | 'Newest' | 'Most promoted';
 type DateRangeType = 'Any date' | 'Next 30 days' | 'Next 90 days';
@@ -81,7 +82,7 @@ export default function CreatorMarketplace() {
       });
     }
     return base.sort((a, b) => b.commission - a.commission);
-  }, [query, category, city, dateRange, commissionFilter, sortBy]);
+  }, [events, query, category, city, dateRange, commissionFilter, sortBy]);
 
   return (
     <DashboardShell>
@@ -177,9 +178,9 @@ export default function CreatorMarketplace() {
             <div className="text-xs text-offwhite/50 uppercase tracking-widest">Quick action</div>
             <div className="text-sm text-white font-semibold">Build a tracked campaign in under 2 minutes</div>
           </div>
-          <a href="/app/builder">
+          <Link href="/app/builder">
             <Button variant="premium" className="h-10 whitespace-nowrap">Launch builder</Button>
-          </a>
+          </Link>
         </div>
       </div>
     </DashboardShell>

@@ -42,12 +42,12 @@ export default function TermsPage() {
 
               <h3 className="text-xl font-bold text-white mb-3 mt-6">3.2 Commission Structure</h3>
               <p className="text-[#aaaaaa] leading-relaxed">
-                Commissions are based on the tier system displayed at account creation and are subject to change with 30 days' notice.
+                Commissions are based on the tier system displayed at account creation and are subject to change with 30 days&apos; notice.
               </p>
 
               <h3 className="text-xl font-bold text-white mb-3 mt-6">3.3 Payout Terms</h3>
               <p className="text-[#aaaaaa] leading-relaxed">
-                Verified commissions are paid within 2–7 business days to the bank account specified. Refunds and chargebacks may delay or reverse payouts.
+                Verified commissions are paid within 2-7 business days to the bank account specified. Refunds and chargebacks may delay or reverse payouts.
               </p>
             </section>
 
@@ -95,7 +95,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">7. Limitation of Liability</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                StagePass is provided "as is" without warranty. We are not liable for indirect, incidental, or consequential damages arising from your use of the Service.
+                StagePass is provided &quot;as is&quot; without warranty. We are not liable for indirect, incidental, or consequential damages arising from your use of the Service.
               </p>
             </section>
 

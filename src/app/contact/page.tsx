@@ -22,13 +22,15 @@ function ContactFormInner() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (intent === 'demo') {
       setFormData((p) => ({
         ...p,
         audience: 'promoter',
-        subject: p.subject || 'Book a demo — promoter',
+        subject: p.subject || 'Book a demo - promoter',
         message:
           p.message ||
           'I would like to book a demo to list events on Stagepass and discuss creator approvals + attribution.',
@@ -43,10 +45,26 @@ function ContactFormInner() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: wire to CRM / email API
-    console.log('Contact form:', formData);
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 8000);
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/public/contact', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setError(json.error ?? 'Could not send message right now.');
+        return;
+      }
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 8000);
+    } catch {
+      setError('Could not send message right now.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -62,7 +80,7 @@ function ContactFormInner() {
         </p>
         {intent === 'demo' ? (
           <div className="mt-8 marketing-panel border-primary/30 bg-primary/[0.07] px-5 py-4 text-sm text-offwhite/90 max-w-2xl">
-            You&apos;re booking a <strong className="text-white">promoter demo</strong>. Include org name, events, and timeline—we&apos;ll
+            You&apos;re booking a <strong className="text-white">promoter demo</strong>. Include org name, events, and timeline - we&apos;ll
             reply to schedule.
           </div>
         ) : null}
@@ -211,18 +229,23 @@ function ContactFormInner() {
                   required
                   rows={6}
                   className="w-full px-4 py-3 rounded-xl bg-black/30 border border-white/15 text-white placeholder-white/45 focus:outline-none focus:border-primary transition-colors resize-none"
-                  placeholder="Events, timelines, integrations…"
+                  placeholder="Events, timelines, integrations..."
                 />
               </div>
-              <Button variant="premium" type="submit" className="w-full h-14 text-lg">
-                Send message
+              <Button variant="premium" type="submit" className="w-full h-14 text-lg" disabled={submitting}>
+                {submitting ? 'Sending...' : 'Send message'}
               </Button>
             </form>
-            {submitted && (
+            {submitted ? (
               <div className="mt-6 p-4 rounded-lg bg-primary/10 border border-primary/30 text-primary text-center">
-                Thanks — we&apos;ll reply soon. For urgent promoter onboarding, mention dates in your message.
+                Thanks - we&apos;ll reply soon. For urgent promoter onboarding, mention dates in your message.
               </div>
-            )}
+            ) : null}
+            {error ? (
+              <div className="mt-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-200 text-center">
+                {error}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

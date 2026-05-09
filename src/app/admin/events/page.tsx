@@ -1,28 +1,11 @@
-'use client';
-
-import { useMemo, useState } from 'react';
 import { AdminShell } from '@/components/layout/AdminShell';
-import { events } from '@/data/mock';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { getAdminEvents } from '@/lib/server/admin-events';
 
-export default function AdminEvents() {
-  const [rows, setRows] = useState(() => events.slice());
-  const byId = useMemo(() => new Map(rows.map((e) => [e.id, e])), [rows]);
-
-  function togglePause(id: string) {
-    const existing = byId.get(id);
-    if (!existing) return;
-    setRows((prev) =>
-      prev.map((e) => {
-        if (e.id !== id) return e;
-        if (e.status === 'Live') return { ...e, status: 'Paused' };
-        if (e.status === 'Paused') return { ...e, status: 'Live' };
-        return e;
-      })
-    );
-  }
+export default async function AdminEvents() {
+  const rows = await getAdminEvents();
 
   return (
     <AdminShell>
@@ -50,35 +33,27 @@ export default function AdminEvents() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.map((e) => (
-                <TableRow key={e.id}>
+              {rows.map((event) => (
+                <TableRow key={event.id}>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="text-white font-semibold">{e.title}</span>
+                      <span className="text-white font-semibold">{event.title}</span>
                       <span className="text-xs text-offwhite/40">
-                        {e.city} · {e.date}
+                        {event.city} · {event.date}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-offwhite/60">{e.status}</TableCell>
-                  <TableCell className="text-right text-white font-semibold">{e.commission}%</TableCell>
-                  <TableCell className="text-right text-offwhite/80">{e.inventoryCap.toLocaleString()}</TableCell>
-                  <TableCell className="text-right text-offwhite/80">{e.soldCount.toLocaleString()}</TableCell>
+                  <TableCell className="text-offwhite/60">{event.status}</TableCell>
+                  <TableCell className="text-right text-white font-semibold">{event.commission}%</TableCell>
+                  <TableCell className="text-right text-offwhite/80">{event.inventoryCap.toLocaleString()}</TableCell>
+                  <TableCell className="text-right text-offwhite/80">{event.soldCount.toLocaleString()}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button
-                        asChild
-                        variant="outline"
-                        className="h-9 px-3 text-white border-white/10 hover:bg-white/5"
-                      >
-                        <Link href={`/admin/events/new?edit=${encodeURIComponent(e.id)}`}>Edit</Link>
+                      <Button asChild variant="outline" className="h-9 px-3 text-white border-white/10 hover:bg-white/5">
+                        <Link href={`/admin/events/${event.id}`}>View</Link>
                       </Button>
-                      <Button
-                        variant="ghost"
-                        className="h-9 px-3 text-offwhite/60 hover:text-white"
-                        onClick={() => togglePause(e.id)}
-                      >
-                        {e.status === 'Paused' ? 'Resume' : 'Pause'}
+                      <Button asChild variant="ghost" className="h-9 px-3 text-offwhite/60 hover:text-white">
+                        <Link href={`/admin/events/new?edit=${encodeURIComponent(event.id)}`}>Edit</Link>
                       </Button>
                     </div>
                   </TableCell>

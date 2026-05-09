@@ -1,17 +1,19 @@
-'use client';
-
-import { useParams } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/DashboardShell';
-import { campaigns, events } from '@/data/mock';
 import { formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CampaignStatusBadge } from '@/components/shared/CampaignStatusBadge';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { getCreatorAppSnapshot } from '@/lib/server/creator-app';
 
-export default function CampaignDetail() {
-  const params = useParams<{ id: string }>();
-  const campaign = campaigns.find((c) => c.id === params.id);
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function CampaignDetail({ params }: PageProps) {
+  const resolvedParams = await params;
+  const snapshot = await getCreatorAppSnapshot();
+  const campaign = snapshot.campaigns.find((entry) => entry.id === resolvedParams.id);
 
   if (!campaign) {
     return (
@@ -20,14 +22,6 @@ export default function CampaignDetail() {
       </DashboardShell>
     );
   }
-
-  const event = events.find((e) => e.id === campaign.eventId);
-
-  const channels = [
-    { channel: 'Instagram', clicks: Math.round(campaign.clicks * 0.46), tickets: Math.round(campaign.ticketsSold * 0.52) },
-    { channel: 'TikTok', clicks: Math.round(campaign.clicks * 0.34), tickets: Math.round(campaign.ticketsSold * 0.28) },
-    { channel: 'Newsletter', clicks: Math.round(campaign.clicks * 0.2), tickets: Math.round(campaign.ticketsSold * 0.2) },
-  ];
 
   return (
     <DashboardShell>
@@ -39,14 +33,14 @@ export default function CampaignDetail() {
               <CampaignStatusBadge status={campaign.status} />
             </div>
             <p className="text-offwhite/40">
-              {event?.title ?? 'Event'} · {campaign.format}
+              {campaign.eventTitle} · {campaign.format}
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="text-white border-white/10 hover:bg-white/5">
+            <Button variant="outline" className="text-white border-white/10 hover:bg-white/5" disabled>
               Pause
             </Button>
-            <Button variant="ghost" className="text-offwhite/60 hover:text-white">
+            <Button variant="ghost" className="text-offwhite/60 hover:text-white" disabled>
               Archive
             </Button>
           </div>
@@ -70,12 +64,23 @@ export default function CampaignDetail() {
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-white">Clicks chart</h2>
-              <p className="text-sm text-offwhite/40">Placeholder — production analytics planned.</p>
+              <h2 className="text-xl font-bold text-white">Performance snapshot</h2>
+              <p className="text-sm text-offwhite/40">Live data from tracked clicks, orders, and commission rows.</p>
             </div>
           </div>
-          <div className="h-48 rounded-xl bg-dark border border-white/10 flex items-center justify-center text-offwhite/40">
-            Chart placeholder
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-xl bg-dark border border-white/10 p-4">
+              <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest mb-2">Revenue</div>
+              <div className="text-2xl font-black text-white">{formatCurrency(campaign.revenue)}</div>
+            </div>
+            <div className="rounded-xl bg-dark border border-white/10 p-4">
+              <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest mb-2">Conversion</div>
+              <div className="text-2xl font-black text-white">{campaign.conversionRate.toFixed(1)}%</div>
+            </div>
+            <div className="rounded-xl bg-dark border border-white/10 p-4">
+              <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest mb-2">Landing</div>
+              <div className="text-sm font-semibold text-white break-all">/{campaign.creatorHandle}/{campaign.slug}</div>
+            </div>
           </div>
         </div>
 
@@ -83,7 +88,7 @@ export default function CampaignDetail() {
           <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
             <div className="p-6">
               <h2 className="text-xl font-bold text-white">Channel performance</h2>
-              <p className="text-sm text-offwhite/40">Mock breakdown for demo.</p>
+              <p className="text-sm text-offwhite/40">Breakdown from generated channel links.</p>
             </div>
             <Table>
               <TableHeader>
@@ -94,7 +99,7 @@ export default function CampaignDetail() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {channels.map((row) => (
+                {campaign.channelBreakdown.map((row) => (
                   <TableRow key={row.channel}>
                     <TableCell className="text-white font-medium">{row.channel}</TableCell>
                     <TableCell className="text-right">{row.clicks.toLocaleString()}</TableCell>
@@ -108,13 +113,13 @@ export default function CampaignDetail() {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-6">
             <div>
               <h2 className="text-xl font-bold text-white">Generated links</h2>
-              <p className="text-sm text-offwhite/40">Prototype attribution URLs.</p>
+              <p className="text-sm text-offwhite/40">Campaign URLs ready for creator distribution.</p>
             </div>
 
             <div className="space-y-3">
               <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest">Short link</div>
               <div className="text-sm text-offwhite/80 break-all bg-dark border border-white/10 rounded-xl p-4">
-                {`/go/maya/${campaign.slug}?utm_source=instagram&utm_medium=creator&utm_campaign=${campaign.slug}`}
+                {`/go/${campaign.creatorHandle}/${campaign.slug}?utm_source=instagram&utm_medium=creator&utm_campaign=${campaign.slug}`}
               </div>
             </div>
 
@@ -122,14 +127,14 @@ export default function CampaignDetail() {
               <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest">Landing preview</div>
               <div className="rounded-xl bg-dark border border-white/10 p-4">
                 <div className="text-white font-semibold">{campaign.headline}</div>
-                <div className="text-sm text-offwhite/50 mt-1 line-clamp-3">{campaign.note}</div>
+                <div className="text-sm text-offwhite/50 mt-1 line-clamp-3">{campaign.note || 'No custom note yet.'}</div>
                 <div className="mt-4 flex gap-3">
-                  <Link href={`/c/maya/${campaign.slug}`} className="flex-1">
+                  <Link href={`/c/${campaign.creatorHandle}/${campaign.slug}`} className="flex-1">
                     <Button variant="premium" className="w-full">
                       Open landing page
                     </Button>
                   </Link>
-                  <Link href={`/go/maya/${campaign.slug}`} className="flex-1">
+                  <Link href={`/go/${campaign.creatorHandle}/${campaign.slug}`} className="flex-1">
                     <Button variant="outline" className="w-full text-white border-white/10 hover:bg-white/5">
                       Redirect demo
                     </Button>
@@ -138,10 +143,6 @@ export default function CampaignDetail() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="text-xs text-offwhite/30">
-          Production tracking service planned. Stripe Connect planned. Tixr API connection planned.
         </div>
       </div>
     </DashboardShell>

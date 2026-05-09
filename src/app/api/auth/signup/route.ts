@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { accessTokenFromAuthPayload, setAuthCookies, supabaseSignIn, supabaseSignUp } from '@/lib/auth/session';
+import { accessTokenFromAuthPayload, setAuthCookies, setAuthIdentityCookie, supabaseSignIn, supabaseSignUp } from '@/lib/auth/session';
 
 const BodySchema = z
   .object({
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       if (!userId) {
         const created = await prisma.user.create({
           data: {
-            clerkId: `supabase_${auth.user?.id ?? handle}_${Date.now()}`,
+            clerkId: auth.user?.id ?? `supabase_${normalizedHandle}_${Date.now()}`,
             email: normalizedEmail,
             role: 'CREATOR',
           },
@@ -134,7 +134,10 @@ export async function POST(req: Request) {
               'Account created. If email confirmation is on in Supabase, open the link in your email, then sign in below.',
           }),
     });
-    if (accessToken) setAuthCookies(res, { role: 'creator', accessToken });
+    if (accessToken) {
+      setAuthCookies(res, { role: 'creator', accessToken });
+      setAuthIdentityCookie(res, normalizedEmail);
+    }
     return res;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Signup failed';
