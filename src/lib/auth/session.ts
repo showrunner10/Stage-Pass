@@ -79,7 +79,14 @@ export async function supabaseSignIn(email: string, password: string) {
   return { access_token, user: json.user as { email?: string } | undefined };
 }
 
-export async function supabaseSignUp(email: string, password: string) {
+export async function supabaseSignUp(
+  email: string,
+  password: string,
+  options?: {
+    emailRedirectTo?: string;
+    data?: Record<string, unknown>;
+  },
+) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) throw new Error('Supabase env missing');
@@ -90,7 +97,12 @@ export async function supabaseSignUp(email: string, password: string) {
       apikey: key,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({
+      email,
+      password,
+      ...(options?.emailRedirectTo ? { email_redirect_to: options.emailRedirectTo } : {}),
+      ...(options?.data ? { data: options.data } : {}),
+    }),
   });
 
   const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;

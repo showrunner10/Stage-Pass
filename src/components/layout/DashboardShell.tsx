@@ -16,6 +16,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from '@/components/ui/toast-store';
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -35,6 +36,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
+    toast.success('Signed out', 'You have been logged out of Stagepass.');
     router.push('/login');
   }
 

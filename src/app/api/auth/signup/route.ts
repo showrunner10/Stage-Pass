@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { accessTokenFromAuthPayload, setAuthCookies, setAuthIdentityCookie, supabaseSignIn, supabaseSignUp } from '@/lib/auth/session';
+import { getAppUrl } from '@/lib/server/app-url';
 
 const BodySchema = z
   .object({
@@ -44,6 +45,7 @@ export async function POST(req: Request) {
     const { email, password, displayName, handle, accountType, orgName } = parsed.data;
     const normalizedEmail = email.toLowerCase();
     const normalizedHandle = handle.toLowerCase();
+    const appUrl = getAppUrl(req);
 
     const existingHandle = await prisma.creatorProfile.findUnique({
       where: { handle: normalizedHandle },
@@ -53,7 +55,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'This handle is already taken. Try another one.' }, { status: 409 });
     }
 
-    const auth = await supabaseSignUp(normalizedEmail, password);
+    const auth = await supabaseSignUp(normalizedEmail, password, {
+      emailRedirectTo: `${appUrl}/login?mode=signin`,
+      data: {
+        display_name: displayName,
+        handle: normalizedHandle,
+        account_type: accountType,
+      },
+    });
     let accessToken = accessTokenFromAuthPayload(auth as Record<string, unknown>);
     if (!accessToken) {
       try {

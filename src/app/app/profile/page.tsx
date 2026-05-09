@@ -4,6 +4,7 @@ import { DashboardShell } from '@/components/layout/DashboardShell';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from '@/components/ui/toast-store';
 
 type ProfileState = {
   displayName: string;
@@ -77,13 +78,17 @@ export default function Profile() {
       });
       const json = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
-        setError(json.error ?? 'Could not save profile.');
+        const message = json.error ?? 'Could not save profile.';
+        setError(message);
+        toast.error('Profile not saved', message);
         return;
       }
       setInitialProfile(profile);
       setMessage('Profile saved.');
+      toast.success('Profile saved', 'Your creator profile has been updated.');
     } catch {
       setError('Could not save profile.');
+      toast.error('Profile not saved', 'Could not save profile.');
     } finally {
       setSaving(false);
     }

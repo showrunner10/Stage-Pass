@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Apple, Eye, EyeOff, LoaderCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/toast-store';
 
 type Mode = 'signin' | 'signup';
 
@@ -131,6 +132,18 @@ function LoginPageContent() {
     const oauthError = search.get('error');
     if (oauthError) {
       setError(oauthError);
+      toast.error('Authentication failed', oauthError);
+    }
+  }, [search]);
+
+  useEffect(() => {
+    const authStatus = search.get('auth');
+    if (authStatus === 'signed_out') {
+      toast.success('Signed out', 'You have been logged out successfully.');
+    }
+    if (authStatus === 'confirmed') {
+      toast.success('Email confirmed', 'Your account is ready. Sign in to continue.');
+      setMode('signin');
     }
   }, [search]);
 
@@ -167,18 +180,23 @@ function LoginPageContent() {
     };
 
     if (!res.ok) {
-      setError(json.error ?? 'Request failed');
+      const message = json.error ?? 'Request failed';
+      setError(message);
+      toast.error(mode === 'signin' ? 'Sign in failed' : 'Sign up failed', message);
       setLoading(false);
       return;
     }
 
     if (mode === 'signup' && json.sessionEstablished === false) {
-      setInfo(json.message ?? 'Account created. Confirm your email if required, then sign in with the same email and password.');
+      const message = json.message ?? 'Account created. Confirm your email if required, then sign in with the same email and password.';
+      setInfo(message);
+      toast.success('Account created', 'Check your email to confirm your account, then sign in.');
       setMode('signin');
       setLoading(false);
       return;
     }
 
+    toast.success(mode === 'signin' ? 'Signed in' : 'Account created', mode === 'signin' ? 'Welcome back to Stagepass.' : 'Your account is ready.');
     const role = json.role ?? 'creator';
     if (role === 'creator') {
       router.push(next.startsWith('/admin') ? '/app/dashboard' : next);
@@ -205,13 +223,17 @@ function LoginPageContent() {
     setSendingResetCode(false);
 
     if (!res.ok) {
-      setError(json.error ?? 'Could not send reset code.');
+      const message = json.error ?? 'Could not send reset code.';
+      setError(message);
+      toast.error('Reset failed', message);
       return;
     }
 
     setShowReset(true);
     setResetCodeSent(true);
-    setInfo(json.message ?? 'Reset code sent.');
+    const message = json.message ?? 'Reset code sent.';
+    setInfo(message);
+    toast.success('Reset code sent', 'Check your email for the verification code.');
   }
 
   async function confirmReset() {
@@ -232,11 +254,14 @@ function LoginPageContent() {
     setResettingPassword(false);
 
     if (!res.ok) {
-      setError(json.error ?? 'Could not reset password.');
+      const message = json.error ?? 'Could not reset password.';
+      setError(message);
+      toast.error('Password reset failed', message);
       return;
     }
 
     setInfo(json.message ?? 'Password updated. You can now sign in.');
+    toast.success('Password updated', 'You can now sign in with your new password.');
     setShowReset(false);
     setResetCode('');
     setNewPassword('');

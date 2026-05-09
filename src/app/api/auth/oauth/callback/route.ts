@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { normalizeNextPath, oauthCookieConfig } from '@/lib/auth/oauth';
 import { setAuthCookies, setAuthIdentityCookie, type AppRole } from '@/lib/auth/session';
+import { getAppUrl } from '@/lib/server/app-url';
 
 function dbRoleToAppRole(role?: string | null): AppRole {
   if (role === 'ADMIN') return 'admin';
@@ -41,7 +42,7 @@ function redirectToLogin(appUrl: string, message: string) {
 
 export async function GET(req: NextRequest, context: { params: Promise<Record<string, string>> }) {
   void context;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const appUrl = getAppUrl(req);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPkceChallenge, createPkceVerifier, normalizeNextPath, oauthCookieConfig } from '@/lib/auth/oauth';
+import { getAppUrl } from '@/lib/server/app-url';
 
 const allowedProviders = new Set(['google', 'apple']);
 
 export async function GET(req: NextRequest, context: { params: Promise<Record<string, string>> }) {
   void context;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const appUrl = getAppUrl(req);
   if (!url) {
     return NextResponse.json({ error: 'Supabase URL missing' }, { status: 500 });
   }
