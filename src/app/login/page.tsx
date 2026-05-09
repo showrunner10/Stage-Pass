@@ -133,8 +133,15 @@ function LoginPageContent() {
     if (oauthError) {
       setError(oauthError);
       toast.error('Authentication failed', oauthError);
+
+      const params = new URLSearchParams(search.toString());
+      params.delete('error');
+      params.delete('error_code');
+      params.delete('error_description');
+      const nextQuery = params.toString();
+      router.replace(nextQuery ? `/login?${nextQuery}` : '/login');
     }
-  }, [search]);
+  }, [router, search]);
 
   useEffect(() => {
     const authStatus = search.get('auth');
