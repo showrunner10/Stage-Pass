@@ -60,7 +60,7 @@ export default function AdminCreators() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-black text-white">Creators</h1>
-          <p className="text-offwhite/40">Approve creators, assign tiers, and review performance mock data.</p>
+          <p className="text-offwhite/40">Approve creators, assign tiers, and review creator performance.</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/5 p-5">

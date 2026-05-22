@@ -5,7 +5,7 @@ import { Check, Facebook, Sparkles, Ticket, Twitter } from 'lucide-react';
 export function PublicFooter() {
   return (
     <footer className="bg-dark border-t border-white/10 py-20">
-      <div className="page-shell">
+      <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="space-y-4">
             <Link href="/" className="flex items-center">

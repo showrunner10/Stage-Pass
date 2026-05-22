@@ -74,7 +74,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="text-xl font-bold text-white mb-2">Event performance</h2>
-            <p className="text-sm text-offwhite/40 mb-6">Inventory cap visualisation (mock)</p>
+            <p className="text-sm text-offwhite/40 mb-6">Inventory cap visualisation and event progress overview.</p>
 
             <div className="space-y-4">
               {performance.map((e) => (
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
               <div className="p-6 flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white">Top creators</h2>
-                  <p className="text-sm text-offwhite/40">Mock ranking</p>
+                  <p className="text-sm text-offwhite/40">Current creator ranking snapshot</p>
                 </div>
                 <Button asChild variant="ghost" className="text-primary hover:text-primary/80">
                   <Link href="/admin/creators">Manage</Link>

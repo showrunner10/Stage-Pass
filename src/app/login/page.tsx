@@ -4,17 +4,67 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Apple, Eye, EyeOff, LoaderCircle, X } from 'lucide-react';
+import { Eye, EyeOff, LoaderCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast-store';
+import { passwordPolicyMessage } from '@/lib/auth/password-policy';
 
 type Mode = 'signin' | 'signup';
+
+type PasswordStrength = {
+  label: 'Too weak' | 'Weak' | 'Medium' | 'Strong';
+  score: 1 | 2 | 3 | 4;
+  color: string;
+  textColor: string;
+};
 
 const slides = [
   'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=2070&q=80',
   'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop',
 ];
+
+function getPasswordStrength(password: string): PasswordStrength {
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password) || password.length >= 12) score += 1;
+
+  if (score <= 1) {
+    return {
+      label: 'Too weak',
+      score: 1,
+      color: 'bg-red-500',
+      textColor: 'text-red-600',
+    };
+  }
+
+  if (score === 2) {
+    return {
+      label: 'Weak',
+      score: 2,
+      color: 'bg-orange-500',
+      textColor: 'text-orange-600',
+    };
+  }
+
+  if (score === 3) {
+    return {
+      label: 'Medium',
+      score: 3,
+      color: 'bg-yellow-500',
+      textColor: 'text-yellow-700',
+    };
+  }
+
+  return {
+    label: 'Strong',
+    score: 4,
+    color: 'bg-emerald-500',
+    textColor: 'text-emerald-700',
+  };
+}
 
 function GoogleMark() {
   return (
@@ -28,14 +78,12 @@ function GoogleMark() {
 }
 
 function SsoButton({
-  provider,
   label,
   description,
   loading,
   disabled,
   onClick,
 }: {
-  provider: 'google' | 'apple';
   label: string;
   description: string;
   loading: boolean;
@@ -50,7 +98,7 @@ function SsoButton({
       className="group flex h-14 w-full items-center rounded-2xl border border-[#d4dae5] bg-white px-4 text-left shadow-[0_10px_20px_-18px_rgba(16,19,26,0.45)] transition-all hover:-translate-y-0.5 hover:border-[#c3cbdb] hover:shadow-[0_18px_30px_-20px_rgba(16,19,26,0.5)] disabled:cursor-not-allowed disabled:opacity-60"
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f7fb] text-[#111827]">
-        {provider === 'google' ? <GoogleMark /> : <Apple className="h-4.5 w-4.5" />}
+        <GoogleMark />
       </span>
       <span className="ml-3 flex min-w-0 flex-1 flex-col">
         <span className="text-sm font-semibold text-[#111827]">{label}</span>
@@ -104,7 +152,10 @@ function LoginPageContent() {
   const [resettingPassword, setResettingPassword] = useState(false);
   const [resetCodeSent, setResetCodeSent] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<'google' | 'apple' | null>(null);
+  const [oauthLoading, setOauthLoading] = useState<'google' | null>(null);
+  const passwordHint = passwordPolicyMessage();
+  const signupStrength = getPasswordStrength(password);
+  const resetStrength = getPasswordStrength(newPassword);
 
   const next = search.get('next') ?? '/app/dashboard';
 
@@ -301,7 +352,7 @@ function LoginPageContent() {
     }
   }
 
-  function startOauth(provider: 'google' | 'apple') {
+  function startOauth(provider: 'google') {
     setError(null);
     setInfo(null);
     setOauthLoading(provider);
@@ -389,6 +440,22 @@ function LoginPageContent() {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
+            {mode === 'signup' ? (
+              <div className="space-y-2">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map((bar) => (
+                    <div
+                      key={bar}
+                      className={`h-1.5 flex-1 rounded-full ${
+                        signupStrength.score >= bar ? signupStrength.color : 'bg-[#d7dce3]'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className={`text-xs font-medium ${signupStrength.textColor}`}>{signupStrength.label}</div>
+                <div className="text-xs text-[#6b7386]">{passwordHint}</div>
+              </div>
+            ) : null}
           </div>
 
           {error && <div className="mt-3 text-sm text-red-600">{error}</div>}
@@ -406,20 +473,11 @@ function LoginPageContent() {
 
           <div className="space-y-3">
             <SsoButton
-              provider="google"
               label={mode === 'signin' ? 'Sign in with Google' : 'Continue with Google'}
               description="Use your Google identity for a secure one-tap flow"
               loading={oauthLoading === 'google'}
               disabled={oauthLoading !== null}
               onClick={() => startOauth('google')}
-            />
-            <SsoButton
-              provider="apple"
-              label={mode === 'signin' ? 'Sign in with Apple' : 'Continue with Apple'}
-              description="Use Face ID, Touch ID, or your Apple account"
-              loading={oauthLoading === 'apple'}
-              disabled={oauthLoading !== null}
-              onClick={() => startOauth('apple')}
             />
           </div>
 
@@ -457,6 +515,20 @@ function LoginPageContent() {
                   {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+              <div className="space-y-2">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map((bar) => (
+                    <div
+                      key={bar}
+                      className={`h-1.5 flex-1 rounded-full ${
+                        resetStrength.score >= bar ? resetStrength.color : 'bg-[#d7dce3]'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className={`text-xs font-medium ${resetStrength.textColor}`}>{resetStrength.label}</p>
+                <p className="text-xs text-[#4d5565]">{passwordHint}</p>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" className="h-11 bg-white" onClick={forgotPassword} disabled={sendingResetCode}>
                   Resend code
@@ -474,7 +546,7 @@ function LoginPageContent() {
 
           {devBypass && (
             <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
-              <div className="text-xs font-semibold uppercase tracking-wide text-amber-900">Local test (no Supabase)</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-amber-900">Local access (development only)</div>
               <p className="mt-1 text-xs text-amber-950/80">
                 <code className="rounded bg-amber-100/80 px-1">STAGEPASS_DEV_AUTH_BYPASS=1</code> is on. Quick entry:
               </p>

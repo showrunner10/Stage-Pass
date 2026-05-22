@@ -3,11 +3,12 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { accessTokenFromAuthPayload, setAuthCookies, setAuthIdentityCookie, supabaseSignIn, supabaseSignUp } from '@/lib/auth/session';
 import { getAppUrl } from '@/lib/server/app-url';
+import { isStrongPassword, passwordPolicyMessage } from '@/lib/auth/password-policy';
 
 const BodySchema = z
   .object({
     email: z.string().trim().email('Enter a valid email.'),
-    password: z.string().min(6, 'Password must be at least 6 characters.'),
+    password: z.string().refine(isStrongPassword, passwordPolicyMessage()),
     displayName: z.string().trim().min(2, 'Display name must be at least 2 characters.').max(80),
     handle: z
       .string()
@@ -140,7 +141,7 @@ export async function POST(req: Request) {
         ? {}
         : {
             message:
-              'Account created. If email confirmation is on in Supabase, open the link in your email, then sign in below.',
+              'Account created. Check your email for a confirmation link, then sign in below.',
           }),
     });
     if (accessToken) {

@@ -3,11 +3,13 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { hashWithSalt } from '@/lib/tracking/crypto';
 import { updateSupabasePasswordByEmail } from '@/lib/server/supabase-admin';
+import { supabaseSignIn } from '@/lib/auth/session';
+import { isStrongPassword, passwordPolicyMessage } from '@/lib/auth/password-policy';
 
 const BodySchema = z.object({
   email: z.string().trim().email(),
   code: z.string().trim().regex(/^\d{6}$/, 'Enter the 6-digit code.'),
-  newPassword: z.string().min(6, 'Password must be at least 6 characters.'),
+  newPassword: z.string().refine(isStrongPassword, passwordPolicyMessage()),
 });
 
 export async function POST(req: Request) {
@@ -53,6 +55,13 @@ export async function POST(req: Request) {
         },
       });
       return NextResponse.json({ error: 'Incorrect reset code.' }, { status: 400 });
+    }
+
+    try {
+      await supabaseSignIn(email, parsed.data.newPassword);
+      return NextResponse.json({ error: 'Choose a new password different from your current password.' }, { status: 400 });
+    } catch {
+      // If sign-in fails, the new password is not the current password, so reset can continue.
     }
 
     await updateSupabasePasswordByEmail(email, parsed.data.newPassword);

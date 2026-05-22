@@ -74,8 +74,6 @@ export default function Home() {
         </div>
       </section>
 
-      <CategoryDiscoverStrip />
-
       <section className="border-y border-white/10 bg-black/45 overflow-hidden">
         <div className="page-shell pt-10 md:pt-12 pb-4">
           <p className="text-center text-offwhite/40 text-sm font-semibold uppercase tracking-[0.22em]">
@@ -84,6 +82,8 @@ export default function Home() {
         </div>
         <PromoterBrandMarquee />
       </section>
+
+      <CategoryDiscoverStrip />
 
       <div className="section-stack">
         <section className="app-section bg-dark">

@@ -33,6 +33,7 @@ function CampaignBuilderContent() {
   const didLoadRef = useRef(false);
 
   const [events, setEvents] = useState(seedEvents);
+  const [eventsSource, setEventsSource] = useState<'database' | 'fallback-mock'>('fallback-mock');
   const [selectedEventId, setSelectedEventId] = useState(seedEvents[0]?.id ?? '');
   const [format, setFormat] = useState<BuilderFormat>('Tracked link');
   const [slug, setSlug] = useState('maya-solstice');
@@ -58,6 +59,7 @@ function CampaignBuilderContent() {
   const checkedChannels = Object.entries(channels)
     .filter(([, v]) => v)
     .map(([k]) => k);
+  const usingPrototypeEvents = eventsSource !== 'database';
 
   const liveBase = `https://stagepass.app/go/${creatorHandle}/${slug}`;
   const liveLanding = `https://stagepass.app/c/${creatorHandle}/${slug}`;
@@ -86,9 +88,10 @@ function CampaignBuilderContent() {
     (async () => {
       const res = await fetch('/api/public/events', { cache: 'no-store' });
       if (!res.ok) return;
-      const json = (await res.json()) as { items?: typeof seedEvents };
+      const json = (await res.json()) as { items?: typeof seedEvents; source?: 'database' | 'fallback-mock' };
       const items = json.items ?? [];
       if (!active || items.length === 0) return;
+      setEventsSource(json.source === 'database' ? 'database' : 'fallback-mock');
       setEvents(items);
       setSelectedEventId((prev) => prev || items[0].id);
     })();
@@ -462,7 +465,7 @@ function CampaignBuilderContent() {
                   <div className="rounded-xl border border-white/10 bg-dark p-5">
                     <div className="text-white font-bold mb-4">Earnings projection</div>
                     <div className="text-sm text-offwhite/60">
-                      Based on mock benchmarks and the selected channels.
+                      Based on current benchmark assumptions and the selected channels.
                     </div>
                     <div className="mt-6 space-y-4">
                       <div className="flex justify-between">
@@ -484,7 +487,7 @@ function CampaignBuilderContent() {
                 </div>
 
                 <div className="rounded-xl border border-white/10 bg-dark p-5">
-                  <div className="text-white font-bold mb-4">Generated UTM links (mock)</div>
+                  <div className="text-white font-bold mb-4">Generated UTM links</div>
                   <div className="space-y-3">
                     {utmLinks.length === 0 ? (
                       <div className="text-sm text-offwhite/40">Select at least one channel.</div>
@@ -533,7 +536,7 @@ function CampaignBuilderContent() {
                 </div>
 
                 <div className="rounded-xl border border-white/10 bg-dark p-5">
-                  <div className="text-white font-bold mb-3">Generated URLs (prototype)</div>
+                  <div className="text-white font-bold mb-3">Generated URLs</div>
                   <div className="space-y-3">
                     <div>
                       <div className="text-xs font-bold text-offwhite/40 uppercase tracking-widest">Short link</div>
@@ -552,9 +555,20 @@ function CampaignBuilderContent() {
                   </div>
                 </div>
 
+                {usingPrototypeEvents ? (
+                  <div className="rounded-xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100">
+                    You are previewing an event that is not yet live in the database. To launch a campaign, create the event in the admin panel and set it live first.
+                  </div>
+                ) : null}
+
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button variant="premium" className="h-12 px-8 font-bold" onClick={publishCampaign} disabled={publishing}>
-                    {publishing ? 'Publishing...' : 'Publish campaign'}
+                  <Button
+                    variant="premium"
+                    className="h-12 px-8 font-bold"
+                    onClick={publishCampaign}
+                    disabled={publishing || usingPrototypeEvents}
+                  >
+                    {publishing ? 'Publishing...' : usingPrototypeEvents ? 'Create event in admin first' : 'Publish campaign'}
                   </Button>
                   <Link href={`/go/${creatorHandle}/${slug}`} className="w-full sm:w-auto">
                     <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5">
