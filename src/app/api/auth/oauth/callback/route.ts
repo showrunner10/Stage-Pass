@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { normalizeNextPath, oauthCookieConfig } from '@/lib/auth/oauth';
 import { setAuthCookies, setAuthIdentityCookie, type AppRole } from '@/lib/auth/session';
 import { getAppUrl } from '@/lib/server/app-url';
+import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/server/supabase-env';
 
 function dbRoleToAppRole(role?: string | null): AppRole {
   if (role === 'ADMIN') return 'admin';
@@ -43,8 +44,8 @@ function redirectToLogin(appUrl: string, message: string) {
 export async function GET(req: NextRequest, context: { params: Promise<Record<string, string>> }) {
   void context;
   const appUrl = getAppUrl(req);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const supabaseUrl = getSupabaseUrl();
+  const publishableKey = getSupabasePublishableKey();
 
   if (!supabaseUrl || !publishableKey) {
     return redirectToLogin(appUrl, 'Supabase env missing');

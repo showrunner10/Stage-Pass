@@ -53,6 +53,8 @@ These must exist in production:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+# Optional fallback if the key is named this way in Supabase/Vercel:
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 DATABASE_URL=
 DIRECT_URL=
@@ -268,4 +270,3 @@ Before handing over:
   - Tixr partner account
   - SMTP/email provider
 - Deliver this checklist with the repo
-

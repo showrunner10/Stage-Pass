@@ -1,5 +1,7 @@
 ﻿import { NextResponse } from 'next/server';
 
+import { requireSupabaseAuthEnv } from '@/lib/server/supabase-env';
+
 export type AppRole = 'creator' | 'promoter' | 'admin';
 
 /** Supabase Auth may return access_token at root or under `session`. */
@@ -53,9 +55,7 @@ export function clearAuthCookies(res: NextResponse) {
 }
 
 export async function supabaseSignIn(email: string, password: string) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error('Supabase env missing');
+  const { url, key } = requireSupabaseAuthEnv();
 
   const res = await fetch(`${url}/auth/v1/token?grant_type=password`, {
     method: 'POST',
@@ -87,9 +87,7 @@ export async function supabaseSignUp(
     data?: Record<string, unknown>;
   },
 ) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error('Supabase env missing');
+  const { url, key } = requireSupabaseAuthEnv();
 
   const res = await fetch(`${url}/auth/v1/signup`, {
     method: 'POST',

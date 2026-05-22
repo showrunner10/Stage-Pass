@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
+import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/server/supabase-env';
 
 type AuthIdentity = {
   email: string | null;
@@ -29,8 +30,8 @@ async function getCurrentAuthIdentity(): Promise<AuthIdentity> {
     };
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const supabaseUrl = getSupabaseUrl();
+  const publishableKey = getSupabasePublishableKey();
   if (!supabaseUrl || !publishableKey) {
     return {
       email: emailCookie,
