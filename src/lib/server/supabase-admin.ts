@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma';
+import { getSupabaseServiceRoleKey, getSupabaseUrl } from '@/lib/server/supabase-env';
 
 function getAdminConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = getSupabaseUrl();
+  const serviceRole = getSupabaseServiceRoleKey();
   if (!url || !serviceRole) {
     throw new Error('Supabase admin env missing');
   }
@@ -87,5 +88,5 @@ export async function updateSupabasePasswordByEmail(email: string, password: str
 }
 
 export function canUseSupabaseAdmin() {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+  return Boolean(getSupabaseUrl() && getSupabaseServiceRoleKey());
 }
