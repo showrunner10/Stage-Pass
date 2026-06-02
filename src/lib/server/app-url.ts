@@ -11,12 +11,10 @@ function isLocalUrl(value: string) {
 export function getAppUrl(req?: Request | NextRequest) {
   if (req) {
     const url = new URL(req.url);
-    const forwardedProto =
-      req instanceof NextRequest ? req.headers.get('x-forwarded-proto') : null;
-    const forwardedHost =
-      req instanceof NextRequest ? req.headers.get('x-forwarded-host') : null;
+    const forwardedProto = req.headers.get('x-forwarded-proto');
+    const forwardedHost = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
 
-    if (forwardedHost) {
+    if (forwardedHost && !isLocalUrl(forwardedHost)) {
       return normalizeUrl(`${forwardedProto ?? url.protocol.replace(':', '')}://${forwardedHost}`);
     }
 

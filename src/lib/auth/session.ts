@@ -88,8 +88,12 @@ export async function supabaseSignUp(
   },
 ) {
   const { url, key } = requireSupabaseAuthEnv();
+  const signupUrl = new URL('/auth/v1/signup', url);
+  if (options?.emailRedirectTo) {
+    signupUrl.searchParams.set('redirect_to', options.emailRedirectTo);
+  }
 
-  const res = await fetch(`${url}/auth/v1/signup`, {
+  const res = await fetch(signupUrl.toString(), {
     method: 'POST',
     headers: {
       apikey: key,
