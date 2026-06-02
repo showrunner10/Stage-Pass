@@ -76,7 +76,7 @@ SUPPORT_INBOX=
 
 Production values:
 - `NEXT_PUBLIC_APP_URL` should be the live app URL
-- Example: `https://www.stagepass.com`
+- Example: `https://stagepass.com.au`
 
 ## 4. Supabase Setup
 
@@ -84,6 +84,10 @@ Production values:
 - Confirm Google provider is enabled
 - Confirm correct Google Client ID is set
 - Confirm correct Google Client Secret is set
+- Supabase Authentication -> URL Configuration:
+  - Site URL must be the live app URL from `NEXT_PUBLIC_APP_URL`
+  - Redirect URLs must include `https://stagepass.com.au/api/auth/oauth/callback`
+  - Keep `http://localhost:3000/api/auth/oauth/callback` only for local developer testing
 - Confirm email/password auth is enabled
 - Confirm redirect flow works from live domain
 
@@ -105,8 +109,8 @@ In Google Cloud OAuth Client:
 
 ### Authorized JavaScript origins
 - `http://localhost:3000`
-- `https://stagepass.com`
-- `https://www.stagepass.com`
+- `https://stagepass.com.au`
+- `https://www.stagepass.com.au`
 
 ### Authorized redirect URIs
 - `https://<your-supabase-project-ref>.supabase.co/auth/v1/callback`
@@ -134,7 +138,7 @@ npm.cmd run build
 
 For production launch:
 - Connect main domain in Vercel
-- Point `stagepass.com` and `www.stagepass.com`
+- Point `stagepass.com.au` and `www.stagepass.com.au`
 - Update `NEXT_PUBLIC_APP_URL` to production domain
 
 If subdomain creator pages are required for launch:

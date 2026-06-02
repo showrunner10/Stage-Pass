@@ -7,15 +7,39 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+const approvalsStorageKey = 'stagepass_admin_creator_approvals_v1';
+const auditStorageKey = 'stagepass_admin_audit_log_v1';
+type ApprovalDecision = 'Pending' | 'Approved' | 'Rejected';
+type PendingApproval = (typeof creators)[number] & { decision: ApprovalDecision };
+
+function loadApprovalDecisions() {
+  if (typeof window === 'undefined') return {} as Record<string, ApprovalDecision>;
+  try {
+    return JSON.parse(window.localStorage.getItem(approvalsStorageKey) ?? '{}') as Record<string, ApprovalDecision>;
+  } catch {
+    return {};
+  }
+}
+
+function loadAuditLog() {
+  if (typeof window === 'undefined') return [] as Array<{ id: string; action: string; at: string }>;
+  try {
+    return JSON.parse(window.localStorage.getItem(auditStorageKey) ?? '[]') as Array<{ id: string; action: string; at: string }>;
+  } catch {
+    return [];
+  }
+}
+
 export default function AdminDashboard() {
   const totalSales = 642_250;
   const commissionPayable = 38_420;
   const activeCreators = 34;
   const conversionRate = 5.7;
 
-  const [pendingApprovals, setPendingApprovals] = useState<Array<(typeof creators)[number] & { decision: 'Pending' | 'Approved' | 'Rejected' }>>(() =>
+  const [pendingApprovals, setPendingApprovals] = useState<PendingApproval[]>(() =>
     creators.slice(0, 3).map((c) => ({ ...c, decision: 'Pending' as const }))
   );
+  const [approvalsReady, setApprovalsReady] = useState(false);
   const [selectedCreatorIds, setSelectedCreatorIds] = useState<string[]>([]);
   const [auditLog, setAuditLog] = useState<Array<{ id: string; action: string; at: string }>>([]);
 
@@ -31,25 +55,53 @@ export default function AdminDashboard() {
     });
   }, []);
 
+  useEffect(() => {
+    const decisions = loadApprovalDecisions();
+    setPendingApprovals(creators.slice(0, 3).map((c) => ({ ...c, decision: decisions[c.id] ?? 'Pending' })));
+    setAuditLog(loadAuditLog());
+    setApprovalsReady(true);
+  }, []);
+
   function pushAudit(action: string) {
-    setAuditLog((prev) => [{ id: `${Date.now()}-${Math.random()}`, action, at: new Date().toLocaleString() }, ...prev].slice(0, 10));
+    setAuditLog((prev) => {
+      const next = [{ id: `${Date.now()}-${Math.random()}`, action, at: new Date().toLocaleString() }, ...prev].slice(0, 10);
+      window.localStorage.setItem(auditStorageKey, JSON.stringify(next));
+      return next;
+    });
   }
 
-  function setDecision(id: string, decision: 'Approved' | 'Rejected') {
-    setPendingApprovals((prev) => prev.map((c) => (c.id === id ? { ...c, decision } : c)));
-    pushAudit(`${decision} creator ${id}`);
+  function saveDecisions(next: PendingApproval[]) {
+    const decisions = Object.fromEntries(next.map((creator) => [creator.id, creator.decision]));
+    window.localStorage.setItem(approvalsStorageKey, JSON.stringify(decisions));
+  }
+
+  function setDecision(id: string, decision: Exclude<ApprovalDecision, 'Pending'>) {
+    setPendingApprovals((prev) => {
+      const next = prev.map((c) => (c.id === id ? { ...c, decision } : c));
+      saveDecisions(next);
+      return next;
+    });
+    const creator = pendingApprovals.find((entry) => entry.id === id);
+    pushAudit(`${decision} ${creator?.name ?? 'creator'}`);
+    setSelectedCreatorIds((prev) => prev.filter((selectedId) => selectedId !== id));
   }
 
   function toggleSelect(id: string, checked: boolean) {
     setSelectedCreatorIds((prev) => (checked ? Array.from(new Set([...prev, id])) : prev.filter((x) => x !== id)));
   }
 
-  function bulkDecision(decision: 'Approved' | 'Rejected') {
+  function bulkDecision(decision: Exclude<ApprovalDecision, 'Pending'>) {
     if (selectedCreatorIds.length === 0) return;
-    setPendingApprovals((prev) => prev.map((c) => (selectedCreatorIds.includes(c.id) ? { ...c, decision } : c)));
+    setPendingApprovals((prev) => {
+      const next = prev.map((c) => (selectedCreatorIds.includes(c.id) ? { ...c, decision } : c));
+      saveDecisions(next);
+      return next;
+    });
     pushAudit(`Bulk ${decision.toLowerCase()} ${selectedCreatorIds.length} creators`);
     setSelectedCreatorIds([]);
   }
+
+  const visiblePendingApprovals = pendingApprovals.filter((creator) => creator.decision === 'Pending');
 
   return (
     <AdminShell>
@@ -110,7 +162,15 @@ export default function AdminDashboard() {
                 </Button>
               </div>
               <div className="space-y-4">
-                {pendingApprovals.map((c) => (
+                {!approvalsReady ? (
+                  <div className="rounded-xl border border-white/10 bg-dark/60 p-4 text-sm text-offwhite/50">
+                    Loading creator approvals...
+                  </div>
+                ) : visiblePendingApprovals.length === 0 ? (
+                  <div className="rounded-xl border border-white/10 bg-dark/60 p-4 text-sm text-offwhite/50">
+                    No pending creator approvals.
+                  </div>
+                ) : visiblePendingApprovals.map((c) => (
                   <div key={c.id} className="grid grid-cols-1 gap-3 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-center">
                     <div className="min-w-0 flex items-start gap-3">
                       <input type="checkbox" className="mt-1 accent-primary" checked={selectedCreatorIds.includes(c.id)} onChange={(e) => toggleSelect(c.id, e.target.checked)} />

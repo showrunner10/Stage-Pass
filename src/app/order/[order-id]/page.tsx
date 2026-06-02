@@ -4,16 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Download, Share2, CheckCircle, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { use } from 'react';
 
 interface OrderConfirmationProps {
-  params: {
+  params: Promise<{
     'order-id': string;
-  };
+  }>;
 }
 
 export default function OrderConfirmationPage({ params }: OrderConfirmationProps) {
+  const resolvedParams = use(params);
+
   const mockOrder = {
-    id: params['order-id'],
+    id: resolvedParams['order-id'],
     event: 'Solstice Festival 2026',
     date: 'Dec 22, 2026',
     location: 'Centennial Park, Sydney',

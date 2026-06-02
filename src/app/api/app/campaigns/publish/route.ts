@@ -63,14 +63,14 @@ export async function POST(req: Request) {
 
     if (!event) {
       return NextResponse.json(
-        { error: 'Selected event is not in the live database yet. Create the event from admin first.' },
+        { error: 'Selected event is not available in the live database yet.' },
         { status: 404 }
       );
     }
 
     if (event.status !== 'LIVE') {
       return NextResponse.json(
-        { error: 'Selected event is not live yet. Publish the event from admin before launching a campaign.' },
+        { error: 'Selected event is not live yet. Choose a live event before launching a campaign.' },
         { status: 400 }
       );
     }

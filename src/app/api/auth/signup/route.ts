@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { accessTokenFromAuthPayload, setAuthCookies, setAuthIdentityCookie, supabaseSignIn, supabaseSignUp } from '@/lib/auth/session';
+import { accessTokenFromAuthPayload, setAuthCookies, setAuthIdentityCookie, supabaseSignIn, supabaseSignUp, type AppRole } from '@/lib/auth/session';
 import { getAppUrl } from '@/lib/server/app-url';
 import { isStrongPassword, passwordPolicyMessage } from '@/lib/auth/password-policy';
 
@@ -34,6 +34,27 @@ const BodySchema = z
     }
   });
 
+function slugify(input: string) {
+  return (
+    input
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 60) || `org-${Date.now()}`
+  );
+}
+
+async function buildUniqueOrgSlug(name: string) {
+  const base = slugify(name);
+  let slug = base;
+  let counter = 1;
+  while (await prisma.promoterOrg.findUnique({ where: { slug }, select: { id: true } }).catch(() => null)) {
+    counter += 1;
+    slug = `${base.slice(0, Math.max(1, 60 - String(counter).length - 1))}-${counter}`;
+  }
+  return slug;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => null);
@@ -48,12 +69,14 @@ export async function POST(req: Request) {
     const normalizedHandle = handle.toLowerCase();
     const appUrl = getAppUrl(req);
 
-    const existingHandle = await prisma.creatorProfile.findUnique({
-      where: { handle: normalizedHandle },
-      select: { id: true },
-    }).catch(() => null);
-    if (existingHandle) {
-      return NextResponse.json({ error: 'This handle is already taken. Try another one.' }, { status: 409 });
+    if (accountType === 'creator') {
+      const existingHandle = await prisma.creatorProfile.findUnique({
+        where: { handle: normalizedHandle },
+        select: { id: true },
+      }).catch(() => null);
+      if (existingHandle) {
+        return NextResponse.json({ error: 'This handle is already taken. Try another one.' }, { status: 409 });
+      }
     }
 
     const auth = await supabaseSignUp(normalizedEmail, password, {
@@ -76,54 +99,76 @@ export async function POST(req: Request) {
 
     // Best-effort app DB registration. If DB isn't ready, auth login still works.
     try {
-      const existing = await prisma.user.findUnique({ where: { email: normalizedEmail }, select: { id: true } });
+      const targetRole = accountType === 'promoter' ? 'PROMOTER' : 'CREATOR';
+      const existing = await prisma.user.findUnique({ where: { email: normalizedEmail }, select: { id: true, role: true } });
+      if (existing && existing.role !== targetRole) {
+        return NextResponse.json(
+          { error: `This email already belongs to a ${existing.role.toLowerCase()} account. Sign in with that account instead.` },
+          { status: 409 }
+        );
+      }
+
       let userId = existing?.id;
       if (!userId) {
         const created = await prisma.user.create({
           data: {
             clerkId: auth.user?.id ?? `supabase_${normalizedHandle}_${Date.now()}`,
             email: normalizedEmail,
-            role: 'CREATOR',
+            role: targetRole,
           },
           select: { id: true },
         });
         userId = created.id;
       }
 
-      await prisma.creatorProfile.upsert({
-        where: { handle: normalizedHandle },
-        update: { displayName },
-        create: {
-          userId: userId!,
-          handle: normalizedHandle,
-          displayName,
-          tier: 'DEFAULT',
-        },
-      });
-
-      if (accountType === 'promoter') {
-        await prisma.campaignDraft.upsert({
-          where: { sessionKey: `promoter_request:${userId}` },
+      if (accountType === 'creator') {
+        await prisma.creatorProfile.upsert({
+          where: { handle: normalizedHandle },
+          update: { displayName },
           create: {
-            sessionKey: `promoter_request:${userId}`,
-            creatorId: userId,
+            userId: userId!,
+            handle: normalizedHandle,
+            displayName,
+            tier: 'DEFAULT',
+          },
+        });
+      } else {
+        const orgDisplayName = orgName ?? `${displayName} Events`;
+        const org = await prisma.promoterOrg.create({
+          data: {
+            name: orgDisplayName,
+            slug: await buildUniqueOrgSlug(orgDisplayName),
+            createdById: userId!,
+          },
+          select: { id: true },
+        });
+
+        await prisma.promoterOrgMember.upsert({
+          where: { orgId_userId: { orgId: org.id, userId: userId! } },
+          create: { orgId: org.id, userId: userId!, role: 'OWNER' },
+          update: { role: 'OWNER' },
+        });
+
+        await prisma.campaignDraft.upsert({
+          where: { sessionKey: `promoter_onboarding:${userId}` },
+          create: {
+            sessionKey: `promoter_onboarding:${userId}`,
+            creatorId: userId!,
             data: {
               email: normalizedEmail,
               displayName,
-              requestedRole: 'PROMOTER',
-              orgName: orgName ?? `${displayName} Events`,
-              status: 'PENDING',
-              requestedAt: new Date().toISOString(),
+              orgName: orgDisplayName,
+              status: 'CREATED',
+              createdAt: new Date().toISOString(),
             },
           },
           update: {
             data: {
               email: normalizedEmail,
               displayName,
-              requestedRole: 'PROMOTER',
-              orgName: orgName ?? `${displayName} Events`,
-              status: 'PENDING',
-              requestedAt: new Date().toISOString(),
+              orgName: orgDisplayName,
+              status: 'CREATED',
+              createdAt: new Date().toISOString(),
             },
           },
         });
@@ -133,9 +178,10 @@ export async function POST(req: Request) {
     }
 
     const sessionEstablished = Boolean(accessToken);
+    const responseRole = accountType as AppRole;
     const res = NextResponse.json({
       ok: true,
-      role: 'creator' as const,
+      role: responseRole,
       sessionEstablished,
       ...(sessionEstablished
         ? {}
@@ -145,7 +191,7 @@ export async function POST(req: Request) {
           }),
     });
     if (accessToken) {
-      setAuthCookies(res, { role: 'creator', accessToken });
+      setAuthCookies(res, { role: responseRole, accessToken });
       setAuthIdentityCookie(res, normalizedEmail);
     }
     return res;

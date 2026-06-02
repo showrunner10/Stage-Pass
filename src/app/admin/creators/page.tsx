@@ -16,10 +16,31 @@ type PromoterRequest = {
   requestedAt: string;
 };
 
+const creatorRowsStorageKey = 'stagepass_admin_creators_v1';
+type CreatorRow = (typeof creators)[number] & { approval: 'Pending' | 'Approved' | 'Rejected' };
+
+function loadCreatorRows(): CreatorRow[] {
+  if (typeof window === 'undefined') return creators.map((c) => ({ ...c, approval: 'Pending' as const }));
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(creatorRowsStorageKey) ?? '{}') as Record<string, Partial<CreatorRow>>;
+    return creators.map((c) => ({
+      ...c,
+      approval: saved[c.id]?.approval ?? 'Pending',
+      tier: saved[c.id]?.tier ?? c.tier,
+    }));
+  } catch {
+    return creators.map((c) => ({ ...c, approval: 'Pending' as const }));
+  }
+}
+
+function saveCreatorRows(rows: CreatorRow[]) {
+  const payload = Object.fromEntries(rows.map((row) => [row.id, { approval: row.approval, tier: row.tier }]));
+  window.localStorage.setItem(creatorRowsStorageKey, JSON.stringify(payload));
+}
+
 export default function AdminCreators() {
-  const [rows, setRows] = useState<Array<(typeof creators)[number] & { approval: 'Pending' | 'Approved' | 'Rejected' }>>(() =>
-    creators.map((c) => ({ ...c, approval: 'Pending' as const }))
-  );
+  const [rows, setRows] = useState<CreatorRow[]>(() => creators.map((c) => ({ ...c, approval: 'Pending' as const })));
+  const [approvalsReady, setApprovalsReady] = useState(false);
   const [promoterRequests, setPromoterRequests] = useState<PromoterRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
 
@@ -35,6 +56,8 @@ export default function AdminCreators() {
   }
 
   useEffect(() => {
+    setRows(loadCreatorRows());
+    setApprovalsReady(true);
     loadPromoterRequests();
   }, []);
 
@@ -48,11 +71,19 @@ export default function AdminCreators() {
   }
 
   function setApproval(id: string, approval: 'Approved' | 'Rejected') {
-    setRows((prev) => prev.map((c) => (c.id === id ? { ...c, approval } : c)));
+    setRows((prev) => {
+      const next = prev.map((c) => (c.id === id ? { ...c, approval } : c));
+      saveCreatorRows(next);
+      return next;
+    });
   }
 
   function setTier(id: string, tier: 'Default' | 'Established' | 'Headline') {
-    setRows((prev) => prev.map((c) => (c.id === id ? { ...c, tier } : c)));
+    setRows((prev) => {
+      const next = prev.map((c) => (c.id === id ? { ...c, tier } : c));
+      saveCreatorRows(next);
+      return next;
+    });
   }
 
   return (
@@ -65,7 +96,7 @@ export default function AdminCreators() {
 
         <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white">Promoter Access Requests</h2>
+            <h2 className="text-xl font-bold text-white">Promoter access activity</h2>
             <Button variant="outline" className="text-white border-white/10 hover:bg-white/5" onClick={loadPromoterRequests}>
               Refresh
             </Button>
@@ -73,7 +104,7 @@ export default function AdminCreators() {
           {loadingRequests ? (
             <div className="text-sm text-offwhite/50">Loading requests...</div>
           ) : promoterRequests.length === 0 ? (
-            <div className="text-sm text-offwhite/50">No promoter requests yet.</div>
+            <div className="text-sm text-offwhite/50">No promoter requests or onboarding activity yet.</div>
           ) : (
             <div className="space-y-3">
               {promoterRequests.map((r) => (
@@ -105,7 +136,11 @@ export default function AdminCreators() {
         </div>
 
         <div className="lg:hidden space-y-3">
-          {rows.map((c) => (
+          {!approvalsReady ? (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-offwhite/50">
+              Loading creator approvals...
+            </div>
+          ) : rows.map((c) => (
             <div key={c.id} className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -180,7 +215,13 @@ export default function AdminCreators() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.map((c) => (
+              {!approvalsReady ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-offwhite/50">
+                    Loading creator approvals...
+                  </TableCell>
+                </TableRow>
+              ) : rows.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell>
                     <div className="flex flex-col">

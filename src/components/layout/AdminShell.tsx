@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -15,10 +16,12 @@ import {
   User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { NotificationBell } from '@/components/layout/NotificationBell';
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [role, setRole] = useState<'creator' | 'promoter' | 'admin' | null>(null);
 
   const nav = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -33,6 +36,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
   }
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/auth/session', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((json: { role?: 'creator' | 'promoter' | 'admin' | null }) => {
+        if (active) setRole(json.role ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const roleLabel = role === 'admin' ? 'Stagepass admin' : 'Promoter admin';
 
   return (
     <div className="min-h-screen bg-dark text-white">
@@ -52,6 +70,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <span className="text-xs text-offwhite/40 font-medium">Promoter Admin</span>
               </div>
             </Link>
+            <div className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary w-fit">
+              {roleLabel}
+            </div>
 
             <nav className="space-y-1">
               {nav.map((item) => {
@@ -97,6 +118,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <NotificationBell scope="admin" />
+              <div className="hidden md:flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                {roleLabel}
+              </div>
               <div className="hidden sm:flex flex-col items-end">
                 <span className="text-[10px] font-bold text-offwhite/40 uppercase tracking-widest">Admin</span>
                 <span className="text-sm font-semibold text-white">Secret Sounds</span>

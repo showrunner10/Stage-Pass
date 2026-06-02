@@ -3,11 +3,11 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { canSendMail, sendMail, supportInbox } from '@/lib/server/mail';
 
-function requireAdmin(req: Request) {
+function requirePromoterAdmin(req: Request) {
   const cookie = req.headers.get('cookie') ?? '';
   const roleMatch = cookie.split(';').map((v) => v.trim()).find((v) => v.startsWith('sp_role='));
   const role = roleMatch?.split('=')[1];
-  return role === 'admin';
+  return role === 'admin' || role === 'promoter';
 }
 
 function slugify(input: string) {
@@ -19,13 +19,18 @@ function slugify(input: string) {
 }
 
 export async function GET(req: Request) {
-  if (!requireAdmin(req)) {
+  if (!requirePromoterAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const rows = await prisma.campaignDraft.findMany({
-      where: { sessionKey: { startsWith: 'promoter_request:' } },
+      where: {
+        OR: [
+          { sessionKey: { startsWith: 'promoter_request:' } },
+          { sessionKey: { startsWith: 'promoter_onboarding:' } },
+        ],
+      },
       orderBy: { updatedAt: 'desc' },
       select: { sessionKey: true, creatorId: true, data: true, updatedAt: true },
     });
@@ -39,7 +44,7 @@ export async function GET(req: Request) {
         displayName: String(data.displayName ?? ''),
         orgName: String(data.orgName ?? ''),
         status: String(data.status ?? 'PENDING'),
-        requestedAt: String(data.requestedAt ?? row.updatedAt.toISOString()),
+        requestedAt: String(data.requestedAt ?? data.createdAt ?? row.updatedAt.toISOString()),
       };
     });
 
@@ -55,7 +60,7 @@ const DecisionSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  if (!requireAdmin(req)) {
+  if (!requirePromoterAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, Oswald } from "next/font/google";
+import { AuthHashRedirect } from "@/components/auth/AuthHashRedirect";
 import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
+import { ScrollToTopButton } from "@/components/layout/ScrollToTopButton";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
@@ -37,8 +39,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${editorial.variable} ${display.variable}`} suppressHydrationWarning>
+        <AuthHashRedirect />
         {children}
         <Toaster />
+        <ScrollToTopButton />
         <CookieConsentBanner />
       </body>
     </html>

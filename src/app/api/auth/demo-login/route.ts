@@ -7,6 +7,11 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const nodeEnv: string | undefined = process.env.NODE_ENV;
+  if (nodeEnv !== 'development' || process.env.STAGEPASS_DEV_AUTH_BYPASS !== '1') {
+    return NextResponse.json({ error: 'Demo login is disabled' }, { status: 404 });
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(body);
   if (!parsed.success) {

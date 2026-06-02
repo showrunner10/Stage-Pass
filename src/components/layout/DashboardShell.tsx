@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,10 +14,10 @@ import {
   Wallet,
   User,
   Search,
-  Bell,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui/toast-store';
+import { NotificationBell } from '@/components/layout/NotificationBell';
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [role, setRole] = useState<'creator' | 'promoter' | 'admin' | null>(null);
 
   const navigation = [
     { name: 'Dashboard', href: '/app/dashboard', icon: LayoutDashboard },
@@ -39,6 +41,21 @@ export function DashboardShell({ children }: DashboardShellProps) {
     toast.success('Signed out', 'You have been logged out of Stagepass.');
     router.push('/login');
   }
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/auth/session', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((json: { role?: 'creator' | 'promoter' | 'admin' | null }) => {
+        if (active) setRole(json.role ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const roleLabel = role === 'admin' ? 'Admin viewing creator app' : 'Creator workspace';
 
   return (
     <div className="min-h-screen bg-dark text-white bg-[radial-gradient(circle_at_8%_0%,rgba(83,74,183,0.22),transparent_34%),radial-gradient(circle_at_88%_100%,rgba(83,74,183,0.16),transparent_40%)]">
@@ -67,15 +84,16 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </div>
 
         <div className="flex items-center gap-6">
+          <div className="hidden lg:flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+            {roleLabel}
+          </div>
           <div className="hidden sm:flex flex-col items-end">
             <span className="text-[10px] font-bold text-offwhite/40 uppercase tracking-widest">Available Balance</span>
             <span className="text-sm font-bold text-accent-green">$4,250.00</span>
           </div>
 
           <div className="flex items-center gap-3 pl-6 border-l border-white/10">
-            <Button variant="ghost" size="icon" className="text-offwhite/60 hover:text-white">
-              <Bell className="w-5 h-5" />
-            </Button>
+            <NotificationBell scope="creator" />
             <Link href="/app/profile">
               <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center overflow-hidden">
                 <User className="w-5 h-5 text-primary" />

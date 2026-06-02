@@ -9,15 +9,17 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { assetPackUrlForSlug } from '@/lib/asset-pack';
+import { use } from 'react';
 
 interface EventDetailProps {
-  params: {
+  params: Promise<{
     'event-id': string;
-  };
+  }>;
 }
 
 export default function EventDetailPage({ params }: EventDetailProps) {
-  const event = events.find((e) => e.id.toString() === params['event-id']);
+  const resolvedParams = use(params);
+  const event = events.find((e) => e.id.toString() === resolvedParams['event-id']);
 
   if (!event) {
     notFound();

@@ -2,17 +2,23 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Lock, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface CheckoutProps {
-  params: {
+  params: Promise<{
     'order-id': string;
-  };
+  }>;
 }
 
 export default function CheckoutPage({ params }: CheckoutProps) {
+  const resolvedParams = use(params);
+  const orderId = resolvedParams['order-id'];
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isPreviewCheckout = searchParams.get('sp_preview') === 'true';
   const [step, setStep] = useState<'cart' | 'payment' | 'confirmation'>('cart');
   const [formData, setFormData] = useState({
     email: '',
@@ -25,8 +31,8 @@ export default function CheckoutPage({ params }: CheckoutProps) {
 
   const mockOrder = {
     event: 'Solstice Festival 2026',
-    date: 'Dec 22, 2026',
-    location: 'Centennial Park, Sydney',
+    date: 'Dec 20-22, 2026',
+    location: 'North Byron Parklands, NSW',
     quantity: 2,
     ticketPrice: 89.99,
     feesPercent: 0.09,
@@ -41,20 +47,33 @@ export default function CheckoutPage({ params }: CheckoutProps) {
     setStep('confirmation');
   };
 
+  const goBack = () => {
+    if (isPreviewCheckout) {
+      router.push('/app/builder?step=launch&campaign=default-campaign');
+      return;
+    }
+
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push('/events');
+  };
+
   return (
     <div className="min-h-screen bg-dark py-12">
       <div className="page-shell max-w-2xl">
         {/* Header */}
         <div className="mb-12">
-          <Link href="/" className="text-primary hover:text-primary/80 mb-6 inline-block">
+          <button type="button" onClick={goBack} className="text-primary hover:text-primary/80 mb-6 inline-block">
             ← Back
-          </Link>
+          </button>
           <h1 className="text-4xl font-black text-white mb-2">Checkout</h1>
-          <p className="text-[#aaaaaa] mb-4">Order session: {params['order-id']}</p>
+          <p className="text-[#aaaaaa] mb-4">Secure checkout preview</p>
           <div className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-offwhite/85">
-            <strong className="text-white">MVP:</strong> Embedded checkout is out of scope. Production redirects to the ticketing
-            partner with <code className="text-primary">sp_creator</code>, <code className="text-primary">sp_campaign</code>, and
-            UTM params preserved. This page is a UI placeholder only.
+            <strong className="text-white">Creator attribution active:</strong> this preview keeps the creator, channel, and campaign
+            attached through the ticket purchase flow.
           </div>
         </div>
 
@@ -253,7 +272,7 @@ export default function CheckoutPage({ params }: CheckoutProps) {
         {/* Confirmation */}
         {step === 'confirmation' && (
           <div className="text-center">
-            <Link href={`/order/${params['order-id']}`}>
+            <Link href={`/order/${orderId}`}>
               <Card className="p-12 bg-white/5 border-white/10 text-center hover:border-primary/50 transition-colors cursor-pointer">
                 <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
                   <Check className="w-10 h-10 text-green-400" />

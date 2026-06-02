@@ -63,6 +63,13 @@ export async function getPublicEvents(): Promise<PublicEventCard[]> {
       },
     });
 
+    if (rows.length === 0) {
+      return mockEvents.map((e) => ({
+        ...e,
+        assetPackUrl: e.assetPackUrl ?? assetPackUrlForSlug(e.slug),
+      }));
+    }
+
     return rows.map((row) => {
       const firstTier = row.ticketTiers[0];
       const firstTierPrice = firstTier ? firstTier.priceCents / 100 : 0;
@@ -110,7 +117,14 @@ export async function getPublicEventBySlug(slug: string): Promise<PublicEventCar
       },
     });
 
-    if (!row) return null;
+    if (!row) {
+      const found = mockEvents.find((e) => e.slug === slug);
+      if (!found) return null;
+      return {
+        ...found,
+        assetPackUrl: found.assetPackUrl ?? assetPackUrlForSlug(found.slug),
+      };
+    }
 
     const firstTier = row.ticketTiers[0];
     const firstTierPrice = firstTier ? firstTier.priceCents / 100 : 0;

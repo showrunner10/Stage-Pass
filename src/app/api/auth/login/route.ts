@@ -20,12 +20,12 @@ export async function POST(req: Request) {
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
 
-    const { email, password } = parsed.data;
-    const auth = await supabaseSignIn(email, password);
+    const normalizedEmail = parsed.data.email.trim().toLowerCase();
+    const auth = await supabaseSignIn(normalizedEmail, parsed.data.password);
 
     let role: AppRole = 'creator';
     try {
-      const user = await prisma.user.findUnique({ where: { email }, select: { role: true } });
+      const user = await prisma.user.findUnique({ where: { email: normalizedEmail }, select: { role: true } });
       role = dbRoleToAppRole(user?.role ?? null);
     } catch {
       role = 'creator';
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
     const res = NextResponse.json({ ok: true, role });
     setAuthCookies(res, { role, accessToken: auth.access_token });
-    setAuthIdentityCookie(res, email);
+    setAuthIdentityCookie(res, normalizedEmail);
     return res;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Login failed';

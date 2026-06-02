@@ -17,6 +17,18 @@ function buildPartnerUrl(
     const utmSource = search.get('utm_source') ?? 'direct';
     const utmMedium = search.get('utm_medium') ?? 'creator';
     const utmCampaign = search.get('utm_campaign') ?? campaignSlug;
+
+    if (u.hostname === 'tickets.example.com') {
+      const localCheckout = new URLSearchParams();
+      localCheckout.set('utm_source', utmSource);
+      localCheckout.set('utm_medium', utmMedium);
+      localCheckout.set('utm_campaign', utmCampaign);
+      localCheckout.set('sp_creator', creatorHandle);
+      localCheckout.set('sp_campaign', campaignSlug);
+      localCheckout.set('sp_preview', 'true');
+      return `/checkout/demo-${campaignSlug}?${localCheckout.toString()}`;
+    }
+
     u.searchParams.set('utm_source', utmSource);
     u.searchParams.set('utm_medium', utmMedium);
     u.searchParams.set('utm_campaign', utmCampaign);
@@ -41,6 +53,7 @@ function ShortLinkRedirect() {
     if (!event.ticketingUrl) return null;
     return buildPartnerUrl(event.ticketingUrl, creator.handle, campaign.slug, search);
   }, [event.ticketingUrl, creator.handle, campaign.slug, search]);
+  const isLocalCheckoutPreview = destination?.startsWith('/checkout/');
 
   useEffect(() => {
     if (!destination) {
@@ -108,7 +121,9 @@ function ShortLinkRedirect() {
     <div className="min-h-screen bg-[#0a0b10] text-white flex flex-col items-center justify-center px-6 py-16">
       <div className="w-12 h-12 rounded-2xl bg-primary/30 border border-primary/50 animate-pulse mb-6" />
       <p className="text-xs font-bold uppercase tracking-[0.25em] text-offwhite/45 mb-2">Redirecting</p>
-      <h1 className="text-xl font-black text-center">Taking you to {event.ticketingPartner ?? 'checkout'}</h1>
+      <h1 className="text-xl font-black text-center">
+        Taking you to {isLocalCheckoutPreview ? 'Stagepass checkout preview' : event.ticketingPartner ?? 'checkout'}
+      </h1>
       <p className="text-sm text-offwhite/50 mt-2 text-center max-w-sm">
         Attribution params are appended for order matching. If nothing happens,{' '}
         <Link href={destination} className="text-primary underline underline-offset-2">

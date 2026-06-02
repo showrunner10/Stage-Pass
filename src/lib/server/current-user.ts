@@ -132,6 +132,7 @@ export async function getCurrentCreatorProfile() {
     if (identity.email) {
       const ensured = await ensureCurrentCreatorProfile(identity.email, identity.authUserId);
       if (ensured) return ensured;
+      return null;
     }
 
     return await prisma.creatorProfile.findFirst({
@@ -154,6 +155,7 @@ export async function getCurrentPromoterOrg() {
         orderBy: { createdAt: 'asc' },
       });
       if (membership?.org) return membership.org;
+      return null;
     }
 
     return await prisma.promoterOrg.findFirst({

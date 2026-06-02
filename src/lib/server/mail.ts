@@ -50,5 +50,5 @@ export async function sendMail(payload: MailPayload) {
 }
 
 export function supportInbox() {
-  return process.env.SUPPORT_INBOX || process.env.SMTP_USER || 'hello@stagepass.com.au';
+  return process.env.SUPPORT_INBOX || process.env.SMTP_USER || 'showrunner2026.io@gmail.com';
 }

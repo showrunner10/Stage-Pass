@@ -41,6 +41,7 @@ function CampaignBuilderContent() {
   const [note, setNote] = useState('My personal pick — great lineup, great crowd.');
   const [accent, setAccent] = useState<'Primary' | 'Green'>('Primary');
   const [creatorHandle, setCreatorHandle] = useState('creator');
+  const [appOrigin, setAppOrigin] = useState('');
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [channels, setChannels] = useState<Record<string, boolean>>({
@@ -61,8 +62,8 @@ function CampaignBuilderContent() {
     .map(([k]) => k);
   const usingPrototypeEvents = eventsSource !== 'database';
 
-  const liveBase = `https://stagepass.app/go/${creatorHandle}/${slug}`;
-  const liveLanding = `https://stagepass.app/c/${creatorHandle}/${slug}`;
+  const liveBase = `${appOrigin}/go/${creatorHandle}/${slug}`;
+  const liveLanding = `${appOrigin}/c/${creatorHandle}/${slug}`;
 
   const utmLinks = checkedChannels.map((ch) => ({
     channel: ch,
@@ -93,11 +94,15 @@ function CampaignBuilderContent() {
       if (!active || items.length === 0) return;
       setEventsSource(json.source === 'database' ? 'database' : 'fallback-mock');
       setEvents(items);
-      setSelectedEventId((prev) => prev || items[0].id);
+      setSelectedEventId((prev) => (items.some((item) => item.id === prev) ? prev : items[0].id));
     })();
     return () => {
       active = false;
     };
+  }, []);
+
+  useEffect(() => {
+    setAppOrigin(window.location.origin);
   }, []);
 
   useEffect(() => {
@@ -557,7 +562,8 @@ function CampaignBuilderContent() {
 
                 {usingPrototypeEvents ? (
                   <div className="rounded-xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100">
-                    You are previewing an event that is not yet live in the database. To launch a campaign, create the event in the admin panel and set it live first.
+                    Preview mode: this sample event is ready for demo links. Publishing turns on automatically when a live event is available
+                    from the database.
                   </div>
                 ) : null}
 
@@ -568,11 +574,11 @@ function CampaignBuilderContent() {
                     onClick={publishCampaign}
                     disabled={publishing || usingPrototypeEvents}
                   >
-                    {publishing ? 'Publishing...' : usingPrototypeEvents ? 'Create event in admin first' : 'Publish campaign'}
+                    {publishing ? 'Publishing...' : usingPrototypeEvents ? 'Publish requires live event' : 'Publish campaign'}
                   </Button>
                   <Link href={`/go/${creatorHandle}/${slug}`} className="w-full sm:w-auto">
                     <Button variant="outline" className="w-full h-12 text-white border-white/10 hover:bg-white/5">
-                      Preview redirect demo
+                      Preview tracked link
                     </Button>
                   </Link>
                   <Link href={`/c/${creatorHandle}/${slug}`} className="w-full sm:w-auto">

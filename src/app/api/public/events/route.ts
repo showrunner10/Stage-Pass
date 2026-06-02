@@ -17,7 +17,7 @@ export async function GET() {
     return NextResponse.json({
       items: events,
       dbConnected,
-      source: dbConnected ? 'database' : 'fallback-mock',
+      source: dbConnected && events.length > 0 && !events[0]?.id?.match(/^\d+$/) ? 'database' : 'fallback-mock',
     });
   } catch {
     return NextResponse.json({ error: 'Failed to load events' }, { status: 500 });

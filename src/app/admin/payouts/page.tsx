@@ -4,13 +4,40 @@ import { AdminShell } from '@/components/layout/AdminShell';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/utils';
+import { useState } from 'react';
+
+const rows = [
+  { id: 'p1', date: '2026-04-25', creator: 'Maya Rodriguez', amount: 1250, status: 'Paid' },
+  { id: 'p2', date: '2026-04-18', creator: 'Sarah Jenkins', amount: 640, status: 'Processing' },
+  { id: 'p3', date: '2026-04-12', creator: 'Alex Chen', amount: 320, status: 'Pending' },
+];
+
+function csvEscape(value: string | number) {
+  const text = String(value);
+  return `"${text.replace(/"/g, '""')}"`;
+}
 
 export default function AdminPayouts() {
-  const rows = [
-    { id: 'p1', date: '2026-04-25', creator: 'Maya Rodriguez', amount: 1250, status: 'Paid' },
-    { id: 'p2', date: '2026-04-18', creator: 'Sarah Jenkins', amount: 640, status: 'Processing' },
-    { id: 'p3', date: '2026-04-12', creator: 'Alex Chen', amount: 320, status: 'Pending' },
-  ];
+  const [exported, setExported] = useState(false);
+
+  function exportCsv() {
+    const header = ['Date', 'Creator', 'Status', 'Amount AUD'];
+    const lines = [
+      header.map(csvEscape).join(','),
+      ...rows.map((row) => [row.date, row.creator, row.status, row.amount.toFixed(2)].map(csvEscape).join(',')),
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `stagepass-payouts-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    setExported(true);
+    window.setTimeout(() => setExported(false), 2500);
+  }
 
   return (
     <AdminShell>
@@ -20,7 +47,10 @@ export default function AdminPayouts() {
             <h1 className="text-3xl font-black text-white">Payouts</h1>
             <p className="text-offwhite/40">Prototype view. Stripe Connect and payout engine planned for production.</p>
           </div>
-          <Button variant="premium">Export</Button>
+          <div className="flex flex-col items-end gap-2">
+            <Button variant="premium" onClick={exportCsv}>Export</Button>
+            {exported ? <div className="text-xs text-accent-green">CSV exported</div> : null}
+          </div>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
@@ -53,4 +83,3 @@ export default function AdminPayouts() {
     </AdminShell>
   );
 }
-
