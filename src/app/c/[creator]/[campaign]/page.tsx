@@ -4,10 +4,9 @@ import Link from 'next/link';
 import { campaigns, creators, events } from '@/data/mock';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
+import { getAppUrl } from '@/lib/server/app-url';
 
 type PageParams = { creator: string; campaign: string };
-
-const SITE = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -16,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
   const event = events.find((e) => e.id === campaign.eventId) ?? events[0];
   const title = `${creator.name} recommends ${event.title} | Stagepass`;
   const description = `${campaign.headline} · ${event.venue}, ${event.city}. ${event.description.slice(0, 140)}…`;
-  const canonical = `${SITE}/c/${resolvedParams.creator}/${resolvedParams.campaign}`;
+  const canonical = `${getAppUrl()}/c/${resolvedParams.creator}/${resolvedParams.campaign}`;
   return {
     title,
     description,
@@ -243,5 +242,5 @@ export default async function WhiteLabelLanding({ params }: { params: Promise<Pa
 }
 
 function canonicalUrl(p: PageParams) {
-  return `${SITE}/c/${p.creator}/${p.campaign}`;
+  return `${getAppUrl()}/c/${p.creator}/${p.campaign}`;
 }

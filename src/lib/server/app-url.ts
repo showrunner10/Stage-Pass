@@ -9,6 +9,20 @@ function isLocalUrl(value: string) {
 }
 
 export function getAppUrl(req?: Request | NextRequest) {
+  if (req) {
+    const url = new URL(req.url);
+    const forwardedProto =
+      req instanceof NextRequest ? req.headers.get('x-forwarded-proto') : null;
+    const forwardedHost =
+      req instanceof NextRequest ? req.headers.get('x-forwarded-host') : null;
+
+    if (forwardedHost) {
+      return normalizeUrl(`${forwardedProto ?? url.protocol.replace(':', '')}://${forwardedHost}`);
+    }
+
+    return normalizeUrl(`${url.protocol}//${url.host}`);
+  }
+
   const configured = [
     process.env.NEXT_PUBLIC_APP_URL,
     process.env.NEXT_PUBLIC_SITE_URL,
@@ -22,20 +36,6 @@ export function getAppUrl(req?: Request | NextRequest) {
 
   if (process.env.VERCEL_URL?.trim()) {
     return normalizeUrl(`https://${process.env.VERCEL_URL}`);
-  }
-
-  if (req) {
-    const url = new URL(req.url);
-    const forwardedProto =
-      req instanceof NextRequest ? req.headers.get('x-forwarded-proto') : null;
-    const forwardedHost =
-      req instanceof NextRequest ? req.headers.get('x-forwarded-host') : null;
-
-    if (forwardedHost) {
-      return normalizeUrl(`${forwardedProto ?? url.protocol.replace(':', '')}://${forwardedHost}`);
-    }
-
-    return normalizeUrl(`${url.protocol}//${url.host}`);
   }
 
   return configured ? normalizeUrl(configured) : 'http://localhost:3000';
