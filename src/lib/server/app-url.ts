@@ -1,5 +1,7 @@
 import { NextRequest } from 'next/server';
 
+const DEFAULT_PUBLIC_APP_URL = 'https://www.stagepass.com';
+
 function normalizeUrl(value: string) {
   return value.trim().replace(/\/+$/, '');
 }
@@ -30,6 +32,12 @@ export function getAppUrl(req?: Request | NextRequest) {
     const url = new URL(req.url);
     const forwardedProto = req.headers.get('x-forwarded-proto');
     const forwardedHost = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
+    const requestHost = forwardedHost ?? url.host;
+    const requestIsLocal = isLocalUrl(requestHost);
+
+    if (configured && !isLocalUrl(configured) && !requestIsLocal) {
+      return normalizeUrl(configured);
+    }
 
     if (forwardedHost && !isLocalUrl(forwardedHost)) {
       return normalizeUrl(`${forwardedProto ?? url.protocol.replace(':', '')}://${forwardedHost}`);
@@ -50,5 +58,5 @@ export function getAppUrl(req?: Request | NextRequest) {
     return normalizeUrl(vercelAppUrl);
   }
 
-  return configured ? normalizeUrl(configured) : 'http://localhost:3000';
+  return configured ? normalizeUrl(configured) : DEFAULT_PUBLIC_APP_URL;
 }
