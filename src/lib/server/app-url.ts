@@ -17,8 +17,14 @@ function getConfiguredAppUrl() {
   ].find((value) => value?.trim());
 }
 
+function getVercelAppUrl() {
+  const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  return vercelHost?.trim() ? `https://${vercelHost}` : null;
+}
+
 export function getAppUrl(req?: Request | NextRequest) {
   const configured = getConfiguredAppUrl();
+  const vercelAppUrl = getVercelAppUrl();
 
   if (req) {
     const url = new URL(req.url);
@@ -29,6 +35,10 @@ export function getAppUrl(req?: Request | NextRequest) {
       return normalizeUrl(`${forwardedProto ?? url.protocol.replace(':', '')}://${forwardedHost}`);
     }
 
+    if (isLocalUrl(url.host) && vercelAppUrl) {
+      return normalizeUrl(vercelAppUrl);
+    }
+
     return normalizeUrl(`${url.protocol}//${url.host}`);
   }
 
@@ -36,8 +46,8 @@ export function getAppUrl(req?: Request | NextRequest) {
     return normalizeUrl(configured);
   }
 
-  if (process.env.VERCEL_URL?.trim()) {
-    return normalizeUrl(`https://${process.env.VERCEL_URL}`);
+  if (vercelAppUrl) {
+    return normalizeUrl(vercelAppUrl);
   }
 
   return configured ? normalizeUrl(configured) : 'http://localhost:3000';
