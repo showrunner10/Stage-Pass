@@ -356,7 +356,12 @@ function LoginPageContent() {
     setError(null);
     setInfo(null);
     setOauthLoading(provider);
-    window.location.href = `/api/auth/oauth/start?provider=${provider}&next=${encodeURIComponent(next)}`;
+    const params = new URLSearchParams({
+      provider,
+      next,
+      origin: window.location.origin,
+    });
+    window.location.href = `/api/auth/oauth/start?${params.toString()}`;
   }
 
   return (

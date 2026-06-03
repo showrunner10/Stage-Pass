@@ -5,15 +5,30 @@ import { getSupabaseUrl } from '@/lib/server/supabase-env';
 
 const allowedProviders = new Set(['google']);
 
+function normalizeOrigin(origin: string | null) {
+  if (!origin) return null;
+
+  try {
+    const url = new URL(origin);
+    const isLocal = ['localhost', '127.0.0.1'].includes(url.hostname);
+    const isAllowedProtocol = url.protocol === 'https:' || (isLocal && url.protocol === 'http:');
+
+    if (!isAllowedProtocol) return null;
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest, context: { params: Promise<Record<string, string>> }) {
   void context;
   const url = getSupabaseUrl();
-  const appUrl = getAppUrl(req);
   if (!url) {
     return NextResponse.json({ error: 'Supabase URL missing' }, { status: 500 });
   }
 
   const requestUrl = new URL(req.url);
+  const appUrl = normalizeOrigin(requestUrl.searchParams.get('origin')) ?? getAppUrl(req);
   const provider = (requestUrl.searchParams.get('provider') ?? '').toLowerCase();
   const next = normalizeNextPath(requestUrl.searchParams.get('next'));
 
