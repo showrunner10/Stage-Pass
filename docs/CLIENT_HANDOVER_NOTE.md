@@ -19,13 +19,14 @@ Stagepass is delivered as a functional MVP SaaS foundation for a creator marketp
 ## Required Production Owner Actions
 
 - Rotate all secrets before final public launch if they were ever exposed in chat, screenshots, recordings, or shared files.
-- Set `NEXT_PUBLIC_APP_URL` in Vercel to the live domain, for example `https://stagepass.com.au`.
+- Set `NEXT_PUBLIC_APP_URL` in Vercel to the exact deployed Vercel URL you will share with the client, for example `https://your-project.vercel.app`.
 - Configure Supabase Authentication URL settings:
-  - Site URL: `https://stagepass.com.au`
-  - Redirect URL: `https://stagepass.com.au/api/auth/oauth/callback`
+  - Site URL: the same Vercel URL from `NEXT_PUBLIC_APP_URL`
+  - Redirect URL: `<NEXT_PUBLIC_APP_URL>/api/auth/oauth/callback`
 - Configure Google OAuth:
-  - JavaScript origins: `https://stagepass.com.au`, `https://www.stagepass.com.au`
+  - JavaScript origins: the same Vercel URL origin
   - Redirect URI: `https://<supabase-project-ref>.supabase.co/auth/v1/callback`
+- Do not use `localhost` in Vercel, Supabase, or Google OAuth settings for the client demo.
 - Run schema setup and seed data against the production Supabase database.
 - Complete final smoke testing on the live deployment before inviting external users.
 

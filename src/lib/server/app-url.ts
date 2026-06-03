@@ -24,12 +24,6 @@ export function getAppUrl(req?: Request | NextRequest) {
     const url = new URL(req.url);
     const forwardedProto = req.headers.get('x-forwarded-proto');
     const forwardedHost = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
-    const requestHost = forwardedHost ?? url.host;
-    const requestIsLocal = isLocalUrl(requestHost);
-
-    if (configured?.trim() && !isLocalUrl(configured) && !requestIsLocal) {
-      return normalizeUrl(configured);
-    }
 
     if (forwardedHost && !isLocalUrl(forwardedHost)) {
       return normalizeUrl(`${forwardedProto ?? url.protocol.replace(':', '')}://${forwardedHost}`);

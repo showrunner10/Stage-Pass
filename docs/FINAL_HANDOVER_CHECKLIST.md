@@ -75,8 +75,9 @@ SUPPORT_INBOX=
 ```
 
 Production values:
-- `NEXT_PUBLIC_APP_URL` should be the live app URL
-- Example: `https://stagepass.com.au`
+- For a client demo without a custom domain, `NEXT_PUBLIC_APP_URL` should be the exact Vercel deployment URL you will share.
+- Example: `https://your-project.vercel.app`
+- Do not set `NEXT_PUBLIC_APP_URL` to `localhost` in Vercel.
 
 ## 4. Supabase Setup
 
@@ -85,11 +86,11 @@ Production values:
 - Confirm correct Google Client ID is set
 - Confirm correct Google Client Secret is set
 - Supabase Authentication -> URL Configuration:
-  - Site URL must be the live app URL from `NEXT_PUBLIC_APP_URL`
-  - Redirect URLs must include `https://stagepass.com.au/api/auth/oauth/callback`
-  - Keep `http://localhost:3000/api/auth/oauth/callback` only for local developer testing
+  - Site URL must be the exact Vercel URL from `NEXT_PUBLIC_APP_URL`
+  - Redirect URLs must include `<NEXT_PUBLIC_APP_URL>/api/auth/oauth/callback`
+  - Do not use localhost for the client demo environment
 - Confirm email/password auth is enabled
-- Confirm redirect flow works from live domain
+- Confirm redirect flow works from the Vercel URL shared with the client
 
 ### 4.2 Database
 Run before launch:
@@ -108,9 +109,7 @@ Health check:
 In Google Cloud OAuth Client:
 
 ### Authorized JavaScript origins
-- `http://localhost:3000`
-- `https://stagepass.com.au`
-- `https://www.stagepass.com.au`
+- The exact Vercel deployment origin, for example `https://your-project.vercel.app`
 
 ### Authorized redirect URIs
 - `https://<your-supabase-project-ref>.supabase.co/auth/v1/callback`
@@ -137,9 +136,9 @@ npm.cmd run build
 ## 7. Domain + DNS
 
 For production launch:
-- Connect main domain in Vercel
-- Point `stagepass.com.au` and `www.stagepass.com.au`
-- Update `NEXT_PUBLIC_APP_URL` to production domain
+- A custom domain is optional for client demo.
+- If no custom domain is connected, share the Vercel deployment URL and keep `NEXT_PUBLIC_APP_URL`, Supabase Site URL, Supabase Redirect URL, and Google JavaScript origin aligned to that same Vercel URL.
+- When a custom domain is added later, update those same settings to the custom domain.
 
 If subdomain creator pages are required for launch:
 - Configure wildcard DNS
