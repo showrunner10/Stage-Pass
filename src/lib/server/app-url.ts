@@ -3,7 +3,9 @@ import { NextRequest } from 'next/server';
 const DEFAULT_PUBLIC_APP_URL = 'https://www.stagepass.com';
 
 function normalizeUrl(value: string) {
-  return value.trim().replace(/\/+$/, '');
+  const trimmed = value.trim();
+  const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  return withProtocol.replace(/\/+$/, '');
 }
 
 function isLocalUrl(value: string) {
