@@ -156,6 +156,7 @@ function LoginPageContent() {
   const passwordHint = passwordPolicyMessage();
   const signupStrength = getPasswordStrength(password);
   const resetStrength = getPasswordStrength(newPassword);
+  const enableGoogleOauth = false;
 
   const next = search.get('next') ?? '/app/dashboard';
 
@@ -470,21 +471,25 @@ function LoginPageContent() {
             {loading ? 'Please wait...' : mode === 'signin' ? 'Continue' : 'Create account'}
           </Button>
 
-          <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b93a5]">
-            <div className="h-px flex-1 bg-[#d2d7e2]" />
-            <span>Or continue with</span>
-            <div className="h-px flex-1 bg-[#d2d7e2]" />
-          </div>
+          {enableGoogleOauth && (
+            <>
+              <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b93a5]">
+                <div className="h-px flex-1 bg-[#d2d7e2]" />
+                <span>Or continue with</span>
+                <div className="h-px flex-1 bg-[#d2d7e2]" />
+              </div>
 
-          <div className="space-y-3">
-            <SsoButton
-              label={mode === 'signin' ? 'Sign in with Google' : 'Continue with Google'}
-              description="Use your Google identity for a secure one-tap flow"
-              loading={oauthLoading === 'google'}
-              disabled={oauthLoading !== null}
-              onClick={() => startOauth('google')}
-            />
-          </div>
+              <div className="space-y-3">
+                <SsoButton
+                  label={mode === 'signin' ? 'Sign in with Google' : 'Continue with Google'}
+                  description="Use your Google identity for a secure one-tap flow"
+                  loading={oauthLoading === 'google'}
+                  disabled={oauthLoading !== null}
+                  onClick={() => startOauth('google')}
+                />
+              </div>
+            </>
+          )}
 
           <button type="button" onClick={forgotPassword} className="mt-3 w-full text-sm text-[#3d4f7c] hover:underline" disabled={sendingResetCode}>
             {sendingResetCode ? 'Sending code...' : 'Forgot password?'}
@@ -548,6 +553,23 @@ function LoginPageContent() {
           <div className="mt-5 text-center text-sm text-[#4d5565]">
             Promoter access requires Stagepass Ops approval after application.
           </div>
+
+          {mode === 'signin' && (
+            <div className="mt-5 rounded-2xl border border-[#cbd3df] bg-white px-4 py-3 text-left">
+              <div className="text-xs font-semibold uppercase tracking-wide text-[#2d3340]">Preview access</div>
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <Button type="button" variant="outline" className="h-9 bg-white text-xs" disabled={loading} onClick={() => devTestLogin('creator')}>
+                  Creator
+                </Button>
+                <Button type="button" variant="outline" className="h-9 bg-white text-xs" disabled={loading} onClick={() => devTestLogin('promoter')}>
+                  Promoter
+                </Button>
+                <Button type="button" variant="outline" className="h-9 bg-white text-xs" disabled={loading} onClick={() => devTestLogin('admin')}>
+                  Admin
+                </Button>
+              </div>
+            </div>
+          )}
 
           {devBypass && (
             <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
