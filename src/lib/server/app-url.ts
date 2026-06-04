@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-const DEFAULT_PUBLIC_APP_URL = 'https://www.stagepass.com';
+const DEFAULT_PUBLIC_APP_URL = 'https://stage-pass-27yn.vercel.app';
 
 function normalizeUrl(value: string) {
   const trimmed = value.trim();
