@@ -1,4 +1,4 @@
-﻿const { PrismaClient, CampaignFormat, CampaignStatus, Channel, LandingType, CreatorTier, EventStatus, OrgMemberRole, TicketingProvider, UserRole } = require('@prisma/client');
+const { PrismaClient, CampaignFormat, CampaignStatus, Channel, LandingType, CreatorTier, EventStatus, OrgMemberRole, TicketingProvider, UserRole } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -73,6 +73,21 @@ async function main() {
   }
 
   const eventSeeds = [
+    {
+      slug: 'neon-tide-festival-2026',
+      title: 'Neon Tide Festival 2026',
+      description: 'A brand-new two-day coastal music festival on the Gold Coast. Sunset sets, beachfront stages, and headline acts across electronic, indie, and live performance.',
+      image: '/images/neon-tide-festival.png',
+      city: 'Gold Coast',
+      venue: 'Coolangatta Beachfront',
+      startsAt: '2026-03-14T07:00:00.000Z',
+      endsAt: '2026-03-15T13:00:00.000Z',
+      commissionBps: 1200,
+      tiers: [
+        { name: 'GA 2-Day Pass', priceCents: 19900, sortOrder: 0, description: 'Full weekend access to all beachfront stages' },
+        { name: 'VIP Sunset Deck', priceCents: 37900, sortOrder: 1, description: 'Elevated ocean-view deck, premium bars & fast-track entry' },
+      ],
+    },
     {
       slug: 'solstice-festival-2026',
       title: 'Solstice Festival 2026',
@@ -203,10 +218,14 @@ async function main() {
     createdEvents.push(event);
   }
 
+  const eventsBySlug = Object.fromEntries(createdEvents.map((e) => [e.slug, e]));
+  const neonTide = eventsBySlug['neon-tide-festival-2026'];
+  const solstice = eventsBySlug['solstice-festival-2026'];
+
   const campaign = await prisma.campaign.upsert({
     where: { creatorId_slug: { creatorId: creators[0].id, slug: 'maya-solstice' } },
     update: {
-      eventId: createdEvents[0].id,
+      eventId: solstice.id,
       status: CampaignStatus.LIVE,
       format: CampaignFormat.LANDING_PAGE,
       headline: 'Join me at this one.',
@@ -215,7 +234,7 @@ async function main() {
     },
     create: {
       creatorId: creators[0].id,
-      eventId: createdEvents[0].id,
+      eventId: solstice.id,
       slug: 'maya-solstice',
       status: CampaignStatus.LIVE,
       format: CampaignFormat.LANDING_PAGE,
@@ -238,6 +257,118 @@ async function main() {
       utmCampaign: 'maya-solstice',
     },
   });
+
+  // Dummy LIVE festival: full campaign with tracked links + simulated clicks and orders.
+  const neonCampaign = await prisma.campaign.upsert({
+    where: { creatorId_slug: { creatorId: creators[0].id, slug: 'maya-neon-tide' } },
+    update: {
+      eventId: neonTide.id,
+      status: CampaignStatus.LIVE,
+      format: CampaignFormat.LANDING_PAGE,
+      headline: 'My favourite new festival just dropped — Neon Tide.',
+      description: 'Two days on the beach with the best lineup of the summer. Grab tickets through my link.',
+      accentColor: '#0FB5BA',
+    },
+    create: {
+      creatorId: creators[0].id,
+      eventId: neonTide.id,
+      slug: 'maya-neon-tide',
+      status: CampaignStatus.LIVE,
+      format: CampaignFormat.LANDING_PAGE,
+      headline: 'My favourite new festival just dropped — Neon Tide.',
+      description: 'Two days on the beach with the best lineup of the summer. Grab tickets through my link.',
+      accentColor: '#0FB5BA',
+    },
+  });
+
+  const neonChannelSeeds = [
+    { channel: Channel.INSTAGRAM, landingType: LandingType.LANDING, code: 'maya-neon-ig', utmSource: 'instagram', clicks: 360 },
+    { channel: Channel.TIKTOK, landingType: LandingType.LANDING, code: 'maya-neon-tt', utmSource: 'tiktok', clicks: 180 },
+    { channel: Channel.NEWSLETTER, landingType: LandingType.SHORT, code: 'maya-neon-news', utmSource: 'newsletter', clicks: 72 },
+  ];
+
+  const neonChannels = [];
+  for (const link of neonChannelSeeds) {
+    const channelLink = await prisma.channelLink.upsert({
+      where: { campaignId_channel_landingType: { campaignId: neonCampaign.id, channel: link.channel, landingType: link.landingType } },
+      update: { code: link.code },
+      create: {
+        campaignId: neonCampaign.id,
+        channel: link.channel,
+        landingType: link.landingType,
+        code: link.code,
+        utmSource: link.utmSource,
+        utmMedium: 'creator',
+        utmCampaign: 'maya-neon-tide',
+      },
+    });
+    neonChannels.push({ ...link, id: channelLink.id });
+  }
+
+  // Only simulate clicks/orders the first time (avoid duplicating on re-seed).
+  const existingNeonClicks = await prisma.clickEvent.count({ where: { campaignId: neonCampaign.id } });
+  if (existingNeonClicks === 0) {
+    const neonTiers = await prisma.ticketTier.findMany({ where: { eventId: neonTide.id }, orderBy: { sortOrder: 'asc' } });
+    let orderSeq = 0;
+    for (const link of neonChannels) {
+      const clickRows = Array.from({ length: link.clicks }).map((_, i) => ({
+        channelLinkId: link.id,
+        campaignId: neonCampaign.id,
+        creatorId: creators[0].id,
+        eventId: neonTide.id,
+        ipHash: `seed-${link.code}-${i}`,
+        uaHash: `seed-ua-${link.code}-${i}`,
+        referrer: link.utmSource,
+        landingUrl: `https://stagepass.app/c/maya.rodriguez/maya-neon-tide`,
+      }));
+      await prisma.clickEvent.createMany({ data: clickRows });
+
+      // ~7% of clicks convert to an attributed order.
+      const orderCount = Math.round(link.clicks * 0.07);
+      const channelClicks = await prisma.clickEvent.findMany({
+        where: { channelLinkId: link.id },
+        take: orderCount,
+        select: { id: true },
+      });
+      for (const click of channelClicks) {
+        const tier = neonTiers[orderSeq % neonTiers.length];
+        const gross = tier.priceCents;
+        const commissionBps = neonTide.defaultCommissionBps;
+        const commissionAmountCents = Math.round((gross * commissionBps) / 10000);
+        const order = await prisma.order.create({
+          data: {
+            eventId: neonTide.id,
+            ticketingProvider: TicketingProvider.TIXR,
+            externalId: `neon-tide-seed-${orderSeq}`,
+            grossAmountCents: gross,
+            purchasedAt: new Date(Date.now() - orderSeq * 36e5),
+            attributedCampaignId: neonCampaign.id,
+            attributedClickId: click.id,
+            attributedCreatorId: creators[0].id,
+          },
+        });
+        await prisma.commissionLedger.create({
+          data: {
+            creatorId: creators[0].id,
+            eventId: neonTide.id,
+            campaignId: neonCampaign.id,
+            orderId: order.id,
+            status: orderSeq % 3 === 0 ? LedgerStatus.PENDING : LedgerStatus.CLEARED,
+            commissionAmountCents,
+            commissionBps,
+            availableAt: new Date(Date.now() + 7 * 24 * 36e5),
+          },
+        });
+        orderSeq += 1;
+      }
+    }
+
+    await prisma.event.update({
+      where: { id: neonTide.id },
+      data: { soldCount: orderSeq, inventoryUpdatedAt: new Date() },
+    });
+    console.log(`Neon Tide demo: seeded clicks across ${neonChannels.length} channels and ${orderSeq} attributed orders`);
+  }
 
   console.log('Seed completed');
 }

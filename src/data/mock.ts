@@ -60,6 +60,31 @@ export interface Campaign {
 
 export const events: Event[] = [
   {
+    id: '13',
+    slug: 'neon-tide-festival-2026',
+    title: 'Neon Tide Festival 2026',
+    description: 'A brand-new two-day coastal music festival on the Gold Coast. Sunset sets, beachfront stages, and headline acts across electronic, indie, and live performance.',
+    image: '/images/neon-tide-festival.png',
+    date: 'Mar 14-15, 2026',
+    location: 'Coolangatta Beachfront',
+    city: 'Gold Coast',
+    venue: 'Coolangatta Beachfront',
+    promoter: 'Secret Sounds',
+    commission: 12,
+    commissionFixed: 24,
+    category: 'Festival',
+    status: 'Live',
+    inventoryCap: 8000,
+    soldCount: 640,
+    ticketTiers: [
+      { name: 'GA 2-Day Pass', price: 199, description: 'Full weekend access to all beachfront stages' },
+      { name: 'VIP Sunset Deck', price: 379, description: 'Elevated ocean-view deck, premium bars & fast-track entry' },
+    ],
+    ticketingUrl: 'https://tickets.example.com/neon-tide-festival-2026',
+    ticketingPartner: 'Moshtix',
+    assetPackUrl: '/assets/packs/solstice-festival-2026-asset-pack.txt',
+  },
+  {
     id: '1',
     slug: 'solstice-festival-2026',
     title: 'Solstice Festival 2026',
@@ -411,6 +436,28 @@ export const creators: Creator[] = [
 ];
 
 export const campaigns: Campaign[] = [
+  {
+    id: 'camp7',
+    creatorId: 'c1',
+    eventId: '13',
+    name: 'Neon Tide Launch',
+    status: 'Live',
+    format: 'Landing Page',
+    slug: 'maya-neon-tide',
+    headline: 'My favourite new festival just dropped — Neon Tide.',
+    note: "Two days on the beach with the best lineup of the summer. I helped curate the sunset sets — grab tickets through my link and I'll see you on the sand.",
+    accentColor: '#0FB5BA',
+    testimonial: {
+      quote: 'Booked the VIP deck off Maya’s link in about a minute — easiest festival purchase I’ve made.',
+      attribution: 'Jordan T., early buyer (survey)',
+    },
+    clicks: 612,
+    ticketsSold: 41,
+    revenue: 9959,
+    commission: 1195.08,
+    conversionRate: 6.7,
+    createdAt: '2026-01-12'
+  },
   {
     id: 'camp1',
     creatorId: 'c1',
