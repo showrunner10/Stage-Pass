@@ -219,8 +219,8 @@ function LoginPageContent() {
             email,
             password,
             displayName,
-            handle: normalizedHandle,
             accountType,
+            ...(accountType === 'creator' ? { handle: normalizedHandle } : {}),
             ...(accountType === 'promoter' && orgName.trim() ? { orgName: orgName.trim() } : {}),
           };
 
@@ -413,7 +413,9 @@ function LoginPageContent() {
                   </button>
                 </div>
                 <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Display name" className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]" />
-                <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="Handle (e.g. maya.rodriguez)" className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]" />
+                {accountType === 'creator' && (
+                  <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="Handle (e.g. maya.rodriguez)" className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white px-4 text-[#111827]" />
+                )}
                 {accountType === 'promoter' && (
                   <input
                     value={orgName}
