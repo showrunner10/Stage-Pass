@@ -41,6 +41,13 @@ export default function EventDetailsPage() {
     return Math.round(total / event.ticketTiers.length);
   }, [event]);
 
+  const galleryImages = useMemo(() => {
+    if (!event) return [];
+    const pool = event.gallery && event.gallery.length > 0 ? event.gallery : galleryFallback(event.category);
+    // Show photos distinct from the hero image; mosaic needs 5 (1 feature + 4 tiles).
+    return pool.filter((src) => src !== event.image).slice(0, 5);
+  }, [event]);
+
   const estimatedPerSale = useMemo(() => {
     if (!event) return 0;
     return Math.max(event.commissionFixed, Math.round(avgTicketPrice * (event.commission / 100)));
@@ -57,15 +64,15 @@ export default function EventDetailsPage() {
     <div className="min-h-screen bg-dark">
       <PublicNavbar />
       <main className="pb-20">
-        <section className="relative min-h-[500px] border-b border-white/10">
+        <section className="relative border-b border-white/10 overflow-hidden">
           <Image src={event.image} alt={event.title} fill sizes="100vw" className="object-cover" priority />
           <div className="absolute inset-0 premium-hero-overlay" />
-          <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/65 to-black/25" />
-          <div className="page-shell relative z-10 pt-24 pb-14 md:pt-32 md:pb-20">
+          <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/70 to-dark/40" />
+          <div className="page-shell relative z-10 pt-24 pb-10 md:pt-28 md:pb-12">
             <Badge variant="premium" className="mb-5 bg-primary text-white border-primary/20">
               {event.category}
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-black text-white max-w-4xl leading-tight">{event.title}</h1>
+            <h1 className="text-4xl md:text-6xl font-black text-white max-w-4xl leading-tight text-balance">{event.title}</h1>
             <div className="mt-5 flex flex-wrap gap-5 text-offwhite/85">
               <div className="inline-flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" />{event.date}</div>
               <div className="inline-flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" />{event.city} · {event.venue}</div>
@@ -73,6 +80,8 @@ export default function EventDetailsPage() {
             </div>
           </div>
         </section>
+
+        <EventGallery title={event.title} images={galleryImages} />
 
         <div className="page-shell mt-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-8">
@@ -160,4 +169,62 @@ function Meta({ label, value }: { label: string; value: string }) {
       <p className="text-white font-semibold">{value}</p>
     </div>
   );
+}
+
+function EventGallery({ title, images }: { title: string; images: string[] }) {
+  if (images.length === 0) return null;
+  const [feature, ...rest] = images;
+  return (
+    <section className="page-shell mt-6 md:mt-8" aria-label="Event photos">
+      <div className="grid grid-cols-2 gap-3 md:h-[460px] md:grid-cols-4 md:grid-rows-2 md:gap-4">
+        <div className="relative col-span-2 row-span-2 aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 md:aspect-auto">
+          <Image
+            src={feature}
+            alt={`${title} highlight`}
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-cover transition-transform duration-500 hover:scale-105"
+          />
+        </div>
+        {rest.map((src, i) => (
+          <div
+            key={src}
+            className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 md:aspect-auto"
+          >
+            <Image
+              src={src}
+              alt={`${title} photo ${i + 2}`}
+              fill
+              sizes="(min-width: 768px) 25vw, 50vw"
+              className="object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// Curated, category-aware event photos used when an event has no custom gallery.
+const GALLERY_POOLS: Record<string, string[]> = {
+  Festival: [
+    'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=1600&auto=format&fit=crop',
+  ],
+  default: [
+    'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1600&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=1600&auto=format&fit=crop',
+  ],
+};
+
+function galleryFallback(category: string): string[] {
+  return GALLERY_POOLS[category] ?? GALLERY_POOLS.default;
 }
