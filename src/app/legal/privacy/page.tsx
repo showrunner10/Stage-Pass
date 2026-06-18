@@ -19,10 +19,10 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">1. Introduction</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                StagePass (&quot;we,&quot; &quot;us,&quot; &quot;our,&quot; or &quot;Company&quot;) operates the stagepass.com.au website and related services (the &quot;Service&quot;). This Privacy Policy explains our data practices and your rights.
+                Hypelist (&quot;we,&quot; &quot;us,&quot; &quot;our,&quot; or &quot;Company&quot;) operates the hypelist.com.au website and related services (the &quot;Service&quot;). This Privacy Policy explains our data practices and your rights.
               </p>
               <p className="text-[#aaaaaa] leading-relaxed mt-4">
-                By accessing or using StagePass, you agree to this Privacy Policy. If you do not agree, please do not use our Service.
+                By accessing or using Hypelist, you agree to this Privacy Policy. If you do not agree, please do not use our Service.
               </p>
             </section>
 
@@ -82,12 +82,12 @@ export default function PrivacyPage() {
                 <li>Data portability (export your data)</li>
               </ul>
               <p className="text-[#aaaaaa] leading-relaxed mt-4">
-                Contact us at <span className="text-primary">privacy@stagepass.com.au</span> to exercise these rights.
+                Contact us at <span className="text-primary">privacy@hypelist.com.au</span> to exercise these rights.
               </p>
               <h3 className="text-xl font-bold text-white mb-3 mt-8">Data deletion requests</h3>
               <p className="text-[#aaaaaa] leading-relaxed">
                 To request deletion of your personal information (subject to legal and accounting retention requirements), email{' '}
-                <span className="text-primary">privacy@stagepass.com.au</span> with the subject line &quot;Data deletion request&quot;
+                <span className="text-primary">privacy@hypelist.com.au</span> with the subject line &quot;Data deletion request&quot;
                 and the email address on your account. We respond within applicable Australian Privacy Principles and GDPR timelines.
               </p>
             </section>
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">7. Contact Us</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                For privacy questions, contact: <span className="text-primary">privacy@stagepass.com.au</span>
+                For privacy questions, contact: <span className="text-primary">privacy@hypelist.com.au</span>
               </p>
             </section>
           </div>

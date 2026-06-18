@@ -20,9 +20,9 @@ export async function POST(req: Request) {
   const inbox = supportInbox();
   await sendMail({
     to: inbox,
-    subject: 'Stagepass SMTP test',
-    text: 'This is a Stagepass SMTP test email.',
-    html: '<div style="font-family:Arial,sans-serif"><h2>Stagepass SMTP test</h2><p>This is a Stagepass SMTP test email.</p></div>',
+    subject: 'Hypelist SMTP test',
+    text: 'This is a Hypelist SMTP test email.',
+    html: '<div style="font-family:Arial,sans-serif"><h2>Hypelist SMTP test</h2><p>This is a Hypelist SMTP test email.</p></div>',
   });
 
   return NextResponse.json({ ok: true, sentTo: inbox });

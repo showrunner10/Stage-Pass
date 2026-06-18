@@ -19,7 +19,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                By accessing and using StagePass (stagepass.com.au), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using Hypelist (hypelist.com.au), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
             </section>
 
@@ -85,17 +85,17 @@ export default function TermsPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">6. Intellectual Property</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                All content on StagePass (text, graphics, logos, images, code) is owned by or licensed to StagePass and protected by copyright laws.
+                All content on Hypelist (text, graphics, logos, images, code) is owned by or licensed to Hypelist and protected by copyright laws.
               </p>
               <p className="text-[#aaaaaa] leading-relaxed mt-4">
-                You retain ownership of content you create (campaigns, creative assets) and grant StagePass a license to display and distribute it on the platform.
+                You retain ownership of content you create (campaigns, creative assets) and grant Hypelist a license to display and distribute it on the platform.
               </p>
             </section>
 
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">7. Limitation of Liability</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                StagePass is provided &quot;as is&quot; without warranty. We are not liable for indirect, incidental, or consequential damages arising from your use of the Service.
+                Hypelist is provided &quot;as is&quot; without warranty. We are not liable for indirect, incidental, or consequential damages arising from your use of the Service.
               </p>
             </section>
 
@@ -116,7 +116,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">10. Contact</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                For questions about these Terms, contact: <span className="text-primary">legal@stagepass.com.au</span>
+                For questions about these Terms, contact: <span className="text-primary">legal@hypelist.com.au</span>
               </p>
             </section>
           </div>

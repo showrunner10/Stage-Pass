@@ -1,4 +1,4 @@
-# Stagepass Non-Payment Delivery Status
+# Hypelist Non-Payment Delivery Status
 
 Prepared for handover review  
 Scope: Non-payment work only (excluding Stripe / payout API completion)

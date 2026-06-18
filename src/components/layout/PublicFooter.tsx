@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Check, Facebook, Sparkles, Ticket, Twitter } from 'lucide-react';
 
@@ -11,7 +11,7 @@ export function PublicFooter() {
             <Link href="/" className="flex items-center">
               <Image
                 src="/assets/branding/logo-wordmark.svg"
-                alt="Stagepass logo"
+                alt="Hypelist logo"
                 width={264}
                 height={70}
                 sizes="264px"
@@ -78,24 +78,24 @@ export function PublicFooter() {
         </div>
 
         <div className="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-offwhite/40 text-sm">© 2026 Stagepass. All rights reserved. Made in Australia.</p>
+          <p className="text-offwhite/40 text-sm">© 2026 Hypelist. All rights reserved. Made in Australia.</p>
           <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-4 py-2">
             <span className="text-xs uppercase tracking-widest text-offwhite/45">Follow</span>
             <a
-              href="https://www.facebook.com/stagepass/?fref=ts"
+              href="https://www.facebook.com/hypelist/?fref=ts"
               target="_blank"
               rel="noopener noreferrer"
               className="text-offwhite/60 hover:text-primary transition-colors"
-              aria-label="Stagepass on Facebook"
+              aria-label="Hypelist on Facebook"
             >
               <Facebook className="w-5 h-5" />
             </a>
             <a
-              href="https://x.com/stagepasscom"
+              href="https://x.com/hypelist"
               target="_blank"
               rel="noopener noreferrer"
               className="text-offwhite/60 hover:text-primary transition-colors"
-              aria-label="Stagepass on X"
+              aria-label="Hypelist on X"
             >
               <Twitter className="w-5 h-5" />
             </a>

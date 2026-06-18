@@ -16,7 +16,7 @@ type PromoterRequest = {
   requestedAt: string;
 };
 
-const creatorRowsStorageKey = 'stagepass_admin_creators_v1';
+const creatorRowsStorageKey = 'hypelist_admin_creators_v1';
 type CreatorRow = (typeof creators)[number] & { approval: 'Pending' | 'Approved' | 'Rejected' };
 
 function loadCreatorRows(): CreatorRow[] {

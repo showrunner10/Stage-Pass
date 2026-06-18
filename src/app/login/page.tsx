@@ -254,7 +254,7 @@ function LoginPageContent() {
       return;
     }
 
-    toast.success(mode === 'signin' ? 'Signed in' : 'Account created', mode === 'signin' ? 'Welcome back to Stagepass.' : 'Your account is ready.');
+    toast.success(mode === 'signin' ? 'Signed in' : 'Account created', mode === 'signin' ? 'Welcome back to Hypelist.' : 'Your account is ready.');
     const role = json.role ?? 'creator';
     if (role === 'creator') {
       router.push(next.startsWith('/admin') ? '/app/dashboard' : next);
@@ -367,7 +367,7 @@ function LoginPageContent() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-dark text-white">
       <div className="absolute inset-0">
-        <Image key={slides[slideIndex]} src={slides[slideIndex]} alt="Stagepass login background" fill sizes="100vw" className="object-cover transition-opacity duration-1000" priority />
+        <Image key={slides[slideIndex]} src={slides[slideIndex]} alt="Hypelist login background" fill sizes="100vw" className="object-cover transition-opacity duration-1000" priority />
       </div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(25,105,255,0.22),transparent_30%),linear-gradient(180deg,rgba(6,9,14,0.62),rgba(6,8,12,0.92))]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(255,255,255,0.1)_1px,transparent_1px)] [background-size:8px_8px] opacity-20" />
@@ -377,7 +377,7 @@ function LoginPageContent() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <div className="text-sm font-bold uppercase tracking-[0.12em] text-[#2d3340]">Log In or Sign Up</div>
-              <div className="mt-1 text-sm text-[#6b7386]">Secure access for creators, promoter teams, and Stagepass Ops.</div>
+              <div className="mt-1 text-sm text-[#6b7386]">Secure access for creators, promoter teams, and Hypelist Ops.</div>
             </div>
             <Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#d6dae2] transition-colors hover:bg-[#cfd4de]">
               <X className="h-4 w-4" />
@@ -548,7 +548,7 @@ function LoginPageContent() {
           )}
 
           <div className="mt-5 text-center text-sm text-[#4d5565]">
-            Promoter access requires Stagepass Ops approval after application.
+            Promoter access requires Hypelist Ops approval after application.
           </div>
 
           {devBypass && (

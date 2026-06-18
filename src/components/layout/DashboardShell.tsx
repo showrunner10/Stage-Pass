@@ -38,7 +38,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST' });
-    toast.success('Signed out', 'You have been logged out of Stagepass.');
+    toast.success('Signed out', 'You have been logged out of Hypelist.');
     router.push('/login');
   }
 
@@ -64,7 +64,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <Link href="/" className="flex items-center gap-2">
             <Image
               src="/assets/branding/logo-wordmark.svg"
-              alt="Stagepass logo"
+              alt="Hypelist logo"
               width={200}
               height={52}
               sizes="200px"

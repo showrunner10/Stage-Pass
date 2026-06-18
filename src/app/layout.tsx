@@ -22,7 +22,7 @@ const display = Oswald({
 });
 
 export const metadata: Metadata = {
-  title: "Stagepass | Earn from what you love going to",
+  title: "Hypelist | Earn from what you love going to",
   description: "A premium creator marketplace for live events.",
   icons: {
     icon: "/assets/branding/logo-icon.svg",

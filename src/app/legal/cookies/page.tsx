@@ -19,7 +19,7 @@ export default function CookiesPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">1. What Are Cookies?</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                Cookies are small text files stored on your device when you visit a website. They help us remember your preferences and understand how you use StagePass.
+                Cookies are small text files stored on your device when you visit a website. They help us remember your preferences and understand how you use Hypelist.
               </p>
             </section>
 
@@ -48,7 +48,7 @@ export default function CookiesPage() {
 
               <h3 className="text-xl font-bold text-white mb-3 mt-6">2.5 Attribution Tracking</h3>
               <p className="text-[#aaaaaa] leading-relaxed">
-                StagePass uses cookies to track which creator link led to a ticket sale, ensuring accurate commission attribution.
+                Hypelist uses cookies to track which creator link led to a ticket sale, ensuring accurate commission attribution.
               </p>
             </section>
 
@@ -84,7 +84,7 @@ export default function CookiesPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">6. Contact Us</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                For cookie or privacy questions: <span className="text-primary">privacy@stagepass.com.au</span>
+                For cookie or privacy questions: <span className="text-primary">privacy@hypelist.com.au</span>
               </p>
             </section>
           </div>

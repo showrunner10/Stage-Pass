@@ -31,8 +31,8 @@ export async function POST(req: Request) {
     parsed.data.role === 'promoter'
       ? 'admin@secretsounds.com'
       : parsed.data.role === 'admin'
-        ? 'admin@stagepass.app'
-        : 'maya@stagepass.app',
+        ? 'admin@hypelist.app'
+        : 'maya@hypelist.app',
   );
 
   return res;

@@ -38,9 +38,9 @@ async function main() {
   });
 
   const creatorSeeds = [
-    { email: 'maya@stagepass.app', clerkId: 'seed_creator_maya', handle: 'maya.rodriguez', displayName: 'Maya Rodriguez', niche: 'Music & Lifestyle', audienceSize: 125000, tier: CreatorTier.HEADLINE },
-    { email: 'alex@stagepass.app', clerkId: 'seed_creator_alex', handle: 'alextalksevents', displayName: 'Alex Chen', niche: 'Nightlife & Culture', audienceSize: 45000, tier: CreatorTier.ESTABLISHED },
-    { email: 'sarah@stagepass.app', clerkId: 'seed_creator_sarah', handle: 'sarah.j', displayName: 'Sarah Jenkins', niche: 'Food & Wine', audienceSize: 82000, tier: CreatorTier.ESTABLISHED },
+    { email: 'maya@hypelist.app', clerkId: 'seed_creator_maya', handle: 'maya.rodriguez', displayName: 'Maya Rodriguez', niche: 'Music & Lifestyle', audienceSize: 125000, tier: CreatorTier.HEADLINE },
+    { email: 'alex@hypelist.app', clerkId: 'seed_creator_alex', handle: 'alextalksevents', displayName: 'Alex Chen', niche: 'Nightlife & Culture', audienceSize: 45000, tier: CreatorTier.ESTABLISHED },
+    { email: 'sarah@hypelist.app', clerkId: 'seed_creator_sarah', handle: 'sarah.j', displayName: 'Sarah Jenkins', niche: 'Food & Wine', audienceSize: 82000, tier: CreatorTier.ESTABLISHED },
   ];
 
   const creators = [];
@@ -319,7 +319,7 @@ async function main() {
         ipHash: `seed-${link.code}-${i}`,
         uaHash: `seed-ua-${link.code}-${i}`,
         referrer: link.utmSource,
-        landingUrl: `https://stagepass.app/c/maya.rodriguez/maya-neon-tide`,
+        landingUrl: `https://hypelist.app/c/maya.rodriguez/maya-neon-tide`,
       }));
       await prisma.clickEvent.createMany({ data: clickRows });
 

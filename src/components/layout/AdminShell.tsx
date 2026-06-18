@@ -50,7 +50,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const roleLabel = role === 'admin' ? 'Stagepass admin' : 'Promoter admin';
+  const roleLabel = role === 'admin' ? 'Hypelist admin' : 'Promoter admin';
 
   return (
     <div className="min-h-screen bg-dark text-white">
@@ -60,7 +60,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/assets/branding/logo-wordmark.svg"
-                alt="Stagepass logo"
+                alt="Hypelist logo"
                 width={192}
                 height={50}
                 sizes="192px"
@@ -104,7 +104,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <Link href="/" className="flex items-center">
                   <Image
                     src="/assets/branding/logo-wordmark.svg"
-                    alt="Stagepass logo"
+                    alt="Hypelist logo"
                     width={180}
                     height={48}
                     sizes="180px"

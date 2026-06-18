@@ -1,4 +1,4 @@
-﻿# Stagepass Final Backend Setup (Supabase + Vercel)
+﻿# Hypelist Final Backend Setup (Supabase + Vercel)
 
 This project is ready to run on Supabase Postgres with Vercel.
 

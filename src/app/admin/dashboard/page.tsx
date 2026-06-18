@@ -7,8 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-const approvalsStorageKey = 'stagepass_admin_creator_approvals_v1';
-const auditStorageKey = 'stagepass_admin_audit_log_v1';
+const approvalsStorageKey = 'hypelist_admin_creator_approvals_v1';
+const auditStorageKey = 'hypelist_admin_audit_log_v1';
 type ApprovalDecision = 'Pending' | 'Approved' | 'Rejected';
 type PendingApproval = (typeof creators)[number] & { decision: ApprovalDecision };
 

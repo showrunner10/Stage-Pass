@@ -1,4 +1,4 @@
-# Stagepass MVP Integrations Playbook
+# Hypelist MVP Integrations Playbook
 
 This playbook is the "do this next" list for your current PostgreSQL setup.
 

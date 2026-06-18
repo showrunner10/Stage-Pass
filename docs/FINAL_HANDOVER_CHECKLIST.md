@@ -1,8 +1,8 @@
-# Stagepass Final Handover Checklist
+# Hypelist Final Handover Checklist
 
 Last updated: 2026-05-21
 
-This checklist is the final production handover guide for the current Stagepass build. Follow this in order before client delivery.
+This checklist is the final production handover guide for the current Hypelist build. Follow this in order before client delivery.
 
 ## 1. Current Status
 
@@ -260,7 +260,7 @@ These should be clearly disclosed if handing over immediately:
 
 Use this wording if needed:
 
-> Stagepass is delivered as a functional MVP foundation with working auth, marketplace, campaign publishing, click tracking, Tixr ingestion, and core admin/event setup. Before full public launch, production secrets rotation, payout hardening, cron setup, and final QA on remaining mock-backed surfaces should be completed.
+> Hypelist is delivered as a functional MVP foundation with working auth, marketplace, campaign publishing, click tracking, Tixr ingestion, and core admin/event setup. Before full public launch, production secrets rotation, payout hardening, cron setup, and final QA on remaining mock-backed surfaces should be completed.
 
 ## 15. Final Owner Actions
 

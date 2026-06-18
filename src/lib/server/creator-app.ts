@@ -115,9 +115,9 @@ function fallbackLedgerRows(): CreatorLedgerRow[] {
 export async function getCreatorAppSnapshot() {
   const fallbackCreator = mockCreators[0] ?? {
     id: 'fallback-creator',
-    name: 'Stagepass Creator',
-    handle: 'stagepass.creator',
-    avatar: 'https://i.pravatar.cc/150?u=stagepass-creator',
+    name: 'Hypelist Creator',
+    handle: 'hypelist.creator',
+    avatar: 'https://i.pravatar.cc/150?u=hypelist-creator',
     niche: 'Live events',
     audienceSize: 'Unverified',
     socialLinks: [],
