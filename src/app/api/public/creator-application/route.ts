@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         sendMail({
           to: inbox,
           replyTo: email,
-          subject: `[Stagepass Creator Application] ${parsed.data.fullName}`,
+          subject: `[Hypelist Creator Application] ${parsed.data.fullName}`,
           text:
             `New creator application\n\n` +
             `Name: ${parsed.data.fullName}\n` +
@@ -78,19 +78,19 @@ export async function POST(req: Request) {
         }),
         sendMail({
           to: email,
-          subject: 'Your Stagepass creator application is in',
+          subject: 'Your Hypelist creator application is in',
           text:
             `Hi ${parsed.data.fullName},\n\n` +
-            `We received your Stagepass creator application. ` +
+            `We received your Hypelist creator application. ` +
             `Our team will review it and reply from ${inbox} when there is an update.\n\n` +
-            `Stagepass`,
+            `Hypelist`,
           html: `
             <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
-              <h2>Your Stagepass creator application is in</h2>
+              <h2>Your Hypelist creator application is in</h2>
               <p>Hi ${escapeHtml(parsed.data.fullName)},</p>
-              <p>We received your Stagepass creator application.</p>
+              <p>We received your Hypelist creator application.</p>
               <p>Our team will review it and reply from <strong>${escapeHtml(inbox)}</strong> when there is an update.</p>
-              <p style="margin-top:24px">Stagepass</p>
+              <p style="margin-top:24px">Hypelist</p>
             </div>
           `,
         }),

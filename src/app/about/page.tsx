@@ -61,7 +61,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-dark page-fade-in">
       <PublicNavbar />
 
-      <PublicInteriorHero eyebrow="About Stagepass" title="The live-event creator marketplace.">
+      <PublicInteriorHero eyebrow="About Hypelist" title="The live-event creator marketplace.">
         <p className="text-lg md:text-xl text-offwhite/70 leading-relaxed max-w-3xl text-balance">
           We connect ticketed events with creators who already influence the right audiences—tracking, inventory discipline,
           and payouts that don&apos;t depend on spreadsheets.
@@ -91,7 +91,7 @@ export default function AboutPage() {
                 platforms bolt on referrals, but they aren&apos;t a creator marketplace with approvals and channel truth.
               </p>
               <p className="text-offwhite/65 leading-relaxed relative">
-                Stagepass sits at the intersection: <span className="text-white font-semibold">event inventory</span> +{' '}
+                Hypelist sits at the intersection: <span className="text-white font-semibold">event inventory</span> +{' '}
                 <span className="text-white font-semibold">creator distribution</span> +{' '}
                 <span className="text-white font-semibold">commercial-grade attribution</span>.
               </p>
@@ -188,7 +188,7 @@ export default function AboutPage() {
         <div className="page-shell max-w-6xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4 text-center">Team</h2>
           <p className="text-center text-offwhite/55 max-w-xl mx-auto mb-4">
-            People behind Stagepass—official names and bios ship with public launch. Below uses stock photography so the page
+            People behind Hypelist—official names and bios ship with public launch. Below uses stock photography so the page
             doesn&apos;t look empty while comms are prepared.
           </p>
           <p className="text-center text-xs text-offwhite/40 uppercase tracking-widest mb-14">Placeholder portraits · not implied endorsements</p>

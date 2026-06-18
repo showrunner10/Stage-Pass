@@ -36,7 +36,7 @@ export function NotificationBell({ scope }: { scope: 'creator' | 'admin' }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>(scope === 'creator' ? creatorItems : []);
   const unreadCount = useMemo(() => items.filter((item) => item.unread).length, [items]);
-  const readStorageKey = `stagepass_${scope}_read_notifications_v1`;
+  const readStorageKey = `hypelist_${scope}_read_notifications_v1`;
 
   function applyReadState(nextItems: NotificationItem[]) {
     try {

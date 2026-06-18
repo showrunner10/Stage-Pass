@@ -90,7 +90,7 @@ export default function PromotersPage() {
         <div className="page-shell max-w-4xl">
           <h2 className="text-3xl md:text-4xl font-black text-white mb-6">The solution</h2>
           <p className="text-lg text-[#aaaaaa] leading-relaxed mb-8">
-            Stagepass is a creator marketplace built for live events: inventory-aware listings, approvals, attribution down to
+            Hypelist is a creator marketplace built for live events: inventory-aware listings, approvals, attribution down to
             channel, and commission tiers that match how festivals actually sell.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -143,7 +143,7 @@ export default function PromotersPage() {
               <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Festival · AU</p>
               <h3 className="text-2xl font-bold text-white mb-3">Camping &amp; VIP upsell</h3>
               <p className="text-[#aaaaaa] leading-relaxed">
-                Promoter wanted audience-fit creators for add-on inventory—not just top-of-funnel awareness. Stagepass routes
+                Promoter wanted audience-fit creators for add-on inventory—not just top-of-funnel awareness. Hypelist routes
                 approvals and caps per tier so creators stay inside allocation.
               </p>
             </div>

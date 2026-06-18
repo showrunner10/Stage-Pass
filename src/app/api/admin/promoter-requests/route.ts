@@ -132,13 +132,13 @@ export async function POST(req: Request) {
     const approved = decision === 'approve';
     await sendMail({
       to: email,
-      subject: approved ? 'Your Stagepass promoter access is approved' : 'Your Stagepass promoter request update',
+      subject: approved ? 'Your Hypelist promoter access is approved' : 'Your Hypelist promoter request update',
       text: approved
-        ? `Hi ${displayName},\n\nYour Stagepass promoter request for ${orgName} has been approved. You can now sign in and access promoter admin.\n\nQuestions? Reply to ${inbox}.\n\nStagepass`
-        : `Hi ${displayName},\n\nWe reviewed your Stagepass promoter request for ${orgName}. It was not approved at this stage.\n\nIf you need help or want to provide more context, reply to ${inbox}.\n\nStagepass`,
+        ? `Hi ${displayName},\n\nYour Hypelist promoter request for ${orgName} has been approved. You can now sign in and access promoter admin.\n\nQuestions? Reply to ${inbox}.\n\nHypelist`
+        : `Hi ${displayName},\n\nWe reviewed your Hypelist promoter request for ${orgName}. It was not approved at this stage.\n\nIf you need help or want to provide more context, reply to ${inbox}.\n\nHypelist`,
       html: approved
-        ? `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>Promoter access approved</h2><p>Hi ${escapeHtml(displayName)},</p><p>Your Stagepass promoter request for <strong>${escapeHtml(orgName)}</strong> has been approved.</p><p>You can now sign in and access promoter admin.</p><p>Questions? Reply to <strong>${escapeHtml(inbox)}</strong>.</p><p style="margin-top:24px">Stagepass</p></div>`
-        : `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>Promoter request update</h2><p>Hi ${escapeHtml(displayName)},</p><p>We reviewed your Stagepass promoter request for <strong>${escapeHtml(orgName)}</strong>. It was not approved at this stage.</p><p>If you need help or want to provide more context, reply to <strong>${escapeHtml(inbox)}</strong>.</p><p style="margin-top:24px">Stagepass</p></div>`,
+        ? `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>Promoter access approved</h2><p>Hi ${escapeHtml(displayName)},</p><p>Your Hypelist promoter request for <strong>${escapeHtml(orgName)}</strong> has been approved.</p><p>You can now sign in and access promoter admin.</p><p>Questions? Reply to <strong>${escapeHtml(inbox)}</strong>.</p><p style="margin-top:24px">Hypelist</p></div>`
+        : `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827"><h2>Promoter request update</h2><p>Hi ${escapeHtml(displayName)},</p><p>We reviewed your Hypelist promoter request for <strong>${escapeHtml(orgName)}</strong>. It was not approved at this stage.</p><p>If you need help or want to provide more context, reply to <strong>${escapeHtml(inbox)}</strong>.</p><p style="margin-top:24px">Hypelist</p></div>`,
     }).catch(() => null);
   }
 

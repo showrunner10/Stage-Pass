@@ -1,4 +1,4 @@
-# Stagepass Non-Payment Action Checklist
+# Hypelist Non-Payment Action Checklist
 
 Use this as the exact execution checklist before handover.
 

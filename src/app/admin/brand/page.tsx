@@ -14,7 +14,7 @@ type BrandAsset = {
   uploadedAt: string;
 };
 
-const storageKey = 'stagepass_admin_brand_assets_v1';
+const storageKey = 'hypelist_admin_brand_assets_v1';
 
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;

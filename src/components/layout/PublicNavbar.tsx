@@ -57,7 +57,7 @@ export function PublicNavbar() {
         <Link href="/" className="flex items-center shrink-0">
           <Image
             src="/assets/branding/logo-wordmark.svg"
-            alt="Stagepass logo"
+            alt="Hypelist logo"
             width={248}
             height={64}
             sizes="248px"

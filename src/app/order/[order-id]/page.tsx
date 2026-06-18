@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Download, Share2, CheckCircle, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { use } from 'react';
+import { use, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { events } from '@/data/mock';
 
 interface OrderConfirmationProps {
   params: Promise<{
@@ -13,17 +15,41 @@ interface OrderConfirmationProps {
 }
 
 export default function OrderConfirmationPage({ params }: OrderConfirmationProps) {
+  return (
+    <Suspense
+      fallback={<div className="min-h-screen bg-dark flex items-center justify-center text-[#aaaaaa]">Loading order…</div>}
+    >
+      <OrderConfirmation params={params} />
+    </Suspense>
+  );
+}
+
+function OrderConfirmation({ params }: OrderConfirmationProps) {
   const resolvedParams = use(params);
+  const searchParams = useSearchParams();
+
+  const eventSlug = searchParams.get('event');
+  const event = events.find((e) => e.slug === eventSlug);
+  const quantity = Number(searchParams.get('qty')) || 2;
+  const totalParam = Number(searchParams.get('total'));
+  const tierName = searchParams.get('tier') ?? 'General Admission';
+
+  const fallbackTotal = (event?.ticketTiers[0]?.price ?? 89.99) * quantity * 1.09;
+  const totalPrice = totalParam > 0 ? totalParam : fallbackTotal;
+  const slugPrefix = (event?.slug ?? 'slo').slice(0, 3).toUpperCase();
 
   const mockOrder = {
     id: resolvedParams['order-id'],
-    event: 'Solstice Festival 2026',
-    date: 'Dec 22, 2026',
-    location: 'Centennial Park, Sydney',
-    quantity: 2,
-    totalPrice: 197.98,
+    event: event?.title ?? 'Solstice Festival 2026',
+    date: event?.date ?? 'Dec 22, 2026',
+    location: event ? `${event.venue}, ${event.city}` : 'Centennial Park, Sydney',
+    quantity,
+    totalPrice,
+    tierName,
     purchaseDate: 'May 2, 2026',
-    ticketNumbers: ['SLO-001-A234', 'SLO-001-A235'],
+    ticketNumbers: Array.from({ length: quantity }).map(
+      (_, i) => `${slugPrefix}-001-A${(234 + i).toString()}`,
+    ),
   };
 
   return (
@@ -90,11 +116,11 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationProps
                     <div>
                       <p className="text-white/60 text-sm mb-1">Ticket {idx + 1}</p>
                       <p className="text-2xl font-black text-white font-mono">{ticket}</p>
-                      <p className="text-[#aaaaaa] text-sm mt-2">General Admission</p>
+                      <p className="text-[#aaaaaa] text-sm mt-2">{mockOrder.tierName}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-primary font-bold">Valid</p>
-                      <p className="text-[#aaaaaa] text-sm">Dec 22, 2026</p>
+                      <p className="text-[#aaaaaa] text-sm">{mockOrder.date}</p>
                     </div>
                   </div>
                 </div>

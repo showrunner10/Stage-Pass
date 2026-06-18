@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-const STORAGE_KEY = 'stagepass_cookie_consent_v1';
+const STORAGE_KEY = 'hypelist_cookie_consent_v1';
 
 export function CookieConsentBanner() {
   const pathname = usePathname();

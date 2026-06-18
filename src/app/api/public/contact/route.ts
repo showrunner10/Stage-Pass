@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       sendMail({
         to: inbox,
         replyTo: data.email,
-        subject: `[Stagepass Contact] ${data.subject}`,
+        subject: `[Hypelist Contact] ${data.subject}`,
         text:
           `New contact submission\n\n` +
           `Name: ${data.name}\n` +
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
           `${data.message}`,
         html: `
           <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
-            <h2 style="margin:0 0 16px">New Stagepass contact submission</h2>
+            <h2 style="margin:0 0 16px">New Hypelist contact submission</h2>
             <p><strong>Name:</strong> ${escapeHtml(data.name)}</p>
             <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
             <p><strong>Company / Role:</strong> ${escapeHtml(data.companyRole)}</p>
@@ -54,19 +54,19 @@ export async function POST(req: Request) {
       }),
       sendMail({
         to: data.email,
-        subject: 'We received your Stagepass message',
+        subject: 'We received your Hypelist message',
         text:
           `Hi ${data.name},\n\n` +
           `We received your message about "${data.subject}". ` +
           `Our team will reply from ${inbox} as soon as possible.\n\n` +
-          `Stagepass`,
+          `Hypelist`,
         html: `
           <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
             <h2 style="margin:0 0 16px">We received your message</h2>
             <p>Hi ${escapeHtml(data.name)},</p>
             <p>We received your message about <strong>${escapeHtml(data.subject)}</strong>.</p>
             <p>Our team will reply from <strong>${escapeHtml(inbox)}</strong> as soon as possible.</p>
-            <p style="margin-top:24px">Stagepass</p>
+            <p style="margin-top:24px">Hypelist</p>
           </div>
         `,
       }),

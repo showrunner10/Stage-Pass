@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
   const creator = creators.find((c) => c.handle === resolvedParams.creator) ?? creators[0];
   const campaign = campaigns.find((c) => c.slug === resolvedParams.campaign) ?? campaigns[0];
   const event = events.find((e) => e.id === campaign.eventId) ?? events[0];
-  const title = `${creator.name} recommends ${event.title} | Stagepass`;
+  const title = `${creator.name} recommends ${event.title} | Hypelist`;
   const description = `${campaign.headline} · ${event.venue}, ${event.city}. ${event.description.slice(0, 140)}…`;
   const canonical = `${getAppUrl()}/c/${resolvedParams.creator}/${resolvedParams.campaign}`;
   return {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
       title,
       description,
       url: canonical,
-      siteName: 'Stagepass',
+      siteName: 'Hypelist',
       locale: 'en_AU',
       images: [{ url: event.image, width: 1200, height: 630, alt: event.title }],
       type: 'website',
@@ -100,7 +100,7 @@ export default async function WhiteLabelLanding({ params }: { params: Promise<Pa
             >
               S
             </div>
-            <span className="font-black tracking-tight text-white truncate text-sm sm:text-base">Stagepass</span>
+            <span className="font-black tracking-tight text-white truncate text-sm sm:text-base">Hypelist</span>
           </Link>
           <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-offwhite/45 shrink-0 text-right leading-tight">
             Creator pick
@@ -190,7 +190,7 @@ export default async function WhiteLabelLanding({ params }: { params: Promise<Pa
           <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-offwhite/45 mb-3">Social proof</div>
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {[
-              { k: 'Sold via Stagepass', v: '1,240+' },
+              { k: 'Sold via Hypelist', v: '1,240+' },
               { k: 'Satisfaction', v: '4.8/5' },
               { k: 'Repeat buyers', v: '34%' },
             ].map((item) => (
@@ -217,7 +217,7 @@ export default async function WhiteLabelLanding({ params }: { params: Promise<Pa
         <section className="rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-4">
           <p className="text-sm text-offwhite/75 text-center leading-relaxed">
             <span className="text-white font-semibold">Secure checkout</span> via {partner}. You complete purchase on the official
-            ticketing site — Stagepass records attribution for this creator campaign.
+            ticketing site — Hypelist records attribution for this creator campaign.
           </p>
         </section>
       </main>

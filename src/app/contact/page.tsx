@@ -33,7 +33,7 @@ function ContactFormInner() {
         subject: p.subject || 'Book a demo - promoter',
         message:
           p.message ||
-          'I would like to book a demo to list events on Stagepass and discuss creator approvals + attribution.',
+          'I would like to book a demo to list events on Hypelist and discuss creator approvals + attribution.',
       }));
     }
   }, [intent]);
@@ -74,8 +74,8 @@ function ContactFormInner() {
       <PublicInteriorHero eyebrow="Contact" title="Let’s talk events & creators." narrow>
         <p className="text-lg md:text-xl text-offwhite/70 leading-relaxed">
           Demos for promoters, support for creators, press & partnerships. Email{' '}
-          <a href="mailto:hello@stagepass.com.au" className="text-primary font-semibold hover:underline">
-            hello@stagepass.com.au
+          <a href="mailto:hello@hypelist.com.au" className="text-primary font-semibold hover:underline">
+            hello@hypelist.com.au
           </a>
         </p>
         {intent === 'demo' ? (
@@ -94,8 +94,8 @@ function ContactFormInner() {
                 <Mail className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2">Support email</h3>
-              <a href="mailto:hello@stagepass.com.au" className="text-lg text-primary font-semibold hover:underline">
-                hello@stagepass.com.au
+              <a href="mailto:hello@hypelist.com.au" className="text-lg text-primary font-semibold hover:underline">
+                hello@hypelist.com.au
               </a>
               <p className="text-offwhite/55 text-sm mt-3">Creators &amp; promoters</p>
             </div>
@@ -111,7 +111,7 @@ function ContactFormInner() {
               <h3 className="text-lg font-bold text-white mb-5">Social</h3>
               <div className="flex items-center justify-center lg:justify-start gap-3">
                 <a
-                  href="https://www.facebook.com/stagepass/?fref=ts"
+                  href="https://www.facebook.com/hypelist/?fref=ts"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 rounded-xl border border-white/15 text-offwhite/70 hover:text-primary hover:border-primary/40 transition-colors"
@@ -120,7 +120,7 @@ function ContactFormInner() {
                   <Facebook className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://x.com/stagepasscom"
+                  href="https://x.com/hypelist"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 rounded-xl border border-white/15 text-offwhite/70 hover:text-primary hover:border-primary/40 transition-colors"

@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { accessTokenFromAuthPayload, setAuthCookies, setAuthIdentityCookie, supabaseSignIn, supabaseSignUp, type AppRole } from '@/lib/auth/session';
@@ -15,7 +15,8 @@ const BodySchema = z
       .trim()
       .min(2, 'Handle must be at least 2 characters.')
       .max(40)
-      .regex(/^[a-zA-Z0-9._-]+$/, 'Handle: use letters, numbers, dots, underscores or hyphens only.'),
+      .regex(/^[a-zA-Z0-9._-]+$/, 'Handle: use letters, numbers, dots, underscores or hyphens only.')
+      .optional(),
     accountType: z.enum(['creator', 'promoter']).default('creator'),
     /** Client often sends ""; treat as missing for creators */
     orgName: z.string().max(120).optional(),
@@ -25,6 +26,13 @@ const BodySchema = z
     orgName: data.orgName?.trim() ? data.orgName.trim() : undefined,
   }))
   .superRefine((data, ctx) => {
+    if (data.accountType === 'creator' && (!data.handle || data.handle.length < 2)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Handle is required for creator accounts (min 2 characters).',
+        path: ['handle'],
+      });
+    }
     if (data.accountType === 'promoter' && (!data.orgName || data.orgName.length < 2)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -66,12 +74,12 @@ export async function POST(req: Request) {
 
     const { email, password, displayName, handle, accountType, orgName } = parsed.data;
     const normalizedEmail = email.toLowerCase();
-    const normalizedHandle = handle.toLowerCase();
+    const normalizedHandle = handle ? handle.toLowerCase() : undefined;
     const appUrl = getAppUrl(req);
 
     if (accountType === 'creator') {
       const existingHandle = await prisma.creatorProfile.findUnique({
-        where: { handle: normalizedHandle },
+        where: { handle: normalizedHandle! },
         select: { id: true },
       }).catch(() => null);
       if (existingHandle) {
@@ -112,7 +120,7 @@ export async function POST(req: Request) {
       if (!userId) {
         const created = await prisma.user.create({
           data: {
-            clerkId: auth.user?.id ?? `supabase_${normalizedHandle}_${Date.now()}`,
+            clerkId: auth.user?.id ?? `supabase_${normalizedHandle ?? slugify(displayName)}_${Date.now()}`,
             email: normalizedEmail,
             role: targetRole,
           },
@@ -123,11 +131,11 @@ export async function POST(req: Request) {
 
       if (accountType === 'creator') {
         await prisma.creatorProfile.upsert({
-          where: { handle: normalizedHandle },
+          where: { handle: normalizedHandle! },
           update: { displayName },
           create: {
             userId: userId!,
-            handle: normalizedHandle,
+            handle: normalizedHandle!,
             displayName,
             tier: 'DEFAULT',
           },

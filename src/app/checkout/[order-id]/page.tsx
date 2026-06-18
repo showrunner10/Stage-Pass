@@ -2,10 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { use, useState } from 'react';
+import { use, useMemo, useState } from 'react';
 import { Lock, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { campaigns, creators, events } from '@/data/mock';
 
 interface CheckoutProps {
   params: Promise<{
@@ -19,6 +20,8 @@ export default function CheckoutPage({ params }: CheckoutProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isPreviewCheckout = searchParams.get('sp_preview') === 'true';
+  const campaignSlug = searchParams.get('sp_campaign');
+  const creatorHandle = searchParams.get('sp_creator');
   const [step, setStep] = useState<'cart' | 'payment' | 'confirmation'>('cart');
   const [formData, setFormData] = useState({
     email: '',
@@ -29,12 +32,26 @@ export default function CheckoutPage({ params }: CheckoutProps) {
     cvc: '',
   });
 
+  // Resolve the actual festival the customer arrived from via the tracking link.
+  const { campaign, creator, event } = useMemo(() => {
+    const campaign =
+      campaigns.find((c) => c.slug === campaignSlug) ??
+      campaigns.find((c) => `demo-${c.slug}` === orderId) ??
+      campaigns[0];
+    const creator = creators.find((c) => c.handle === creatorHandle) ?? creators.find((c) => c.id === campaign.creatorId) ?? creators[0];
+    const event = events.find((e) => e.id === campaign.eventId) ?? events[0];
+    return { campaign, creator, event };
+  }, [campaignSlug, creatorHandle, orderId]);
+
+  const primaryTier = event.ticketTiers[0];
+
   const mockOrder = {
-    event: 'Solstice Festival 2026',
-    date: 'Dec 20-22, 2026',
-    location: 'North Byron Parklands, NSW',
+    event: event.title,
+    date: event.date,
+    location: `${event.venue}, ${event.city}`,
     quantity: 2,
-    ticketPrice: 89.99,
+    ticketName: primaryTier?.name ?? 'General Admission',
+    ticketPrice: primaryTier?.price ?? 89.99,
     feesPercent: 0.09,
   };
 
@@ -72,8 +89,10 @@ export default function CheckoutPage({ params }: CheckoutProps) {
           <h1 className="text-4xl font-black text-white mb-2">Checkout</h1>
           <p className="text-[#aaaaaa] mb-4">Secure checkout preview</p>
           <div className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-offwhite/85">
-            <strong className="text-white">Creator attribution active:</strong> this preview keeps the creator, channel, and campaign
-            attached through the ticket purchase flow.
+            <strong className="text-white">Creator attribution active:</strong> this purchase is attributed to{' '}
+            <span className="text-white font-semibold">{creator.name}</span>
+            {campaignSlug ? ` via the “${campaign.name}” campaign` : ''}. The creator, channel, and campaign stay attached through the
+            ticket purchase flow.
           </div>
         </div>
 
@@ -115,7 +134,7 @@ export default function CheckoutPage({ params }: CheckoutProps) {
 
                 <div className="bg-white/5 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-white">General Admission Ticket</span>
+                    <span className="text-white">{mockOrder.ticketName}</span>
                     <span className="text-white font-semibold">x{mockOrder.quantity}</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -272,7 +291,7 @@ export default function CheckoutPage({ params }: CheckoutProps) {
         {/* Confirmation */}
         {step === 'confirmation' && (
           <div className="text-center">
-            <Link href={`/order/${orderId}`}>
+            <Link href={`/order/${orderId}?event=${encodeURIComponent(event.slug)}&qty=${mockOrder.quantity}&total=${total.toFixed(2)}&tier=${encodeURIComponent(mockOrder.ticketName)}`}>
               <Card className="p-12 bg-white/5 border-white/10 text-center hover:border-primary/50 transition-colors cursor-pointer">
                 <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
                   <Check className="w-10 h-10 text-green-400" />

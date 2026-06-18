@@ -1,6 +1,6 @@
-# Stagepass Client Handover Note
+# Hypelist Client Handover Note
 
-Stagepass is delivered as a functional MVP SaaS foundation for a creator marketplace around live events.
+Hypelist is delivered as a functional MVP SaaS foundation for a creator marketplace around live events.
 
 ## Delivered
 
@@ -40,4 +40,4 @@ Stagepass is delivered as a functional MVP SaaS foundation for a creator marketp
 
 ## Recommended Handover Wording
 
-Stagepass is ready for MVP handover as a functional SaaS foundation. It should be treated as pre-launch software until production secrets are rotated, live OAuth is verified, payout operations are hardened, cron jobs are configured, and the remaining mock-backed reporting surfaces are replaced or accepted as MVP scope.
+Hypelist is ready for MVP handover as a functional SaaS foundation. It should be treated as pre-launch software until production secrets are rotated, live OAuth is verified, payout operations are hardened, cron jobs are configured, and the remaining mock-backed reporting surfaces are replaced or accepted as MVP scope.

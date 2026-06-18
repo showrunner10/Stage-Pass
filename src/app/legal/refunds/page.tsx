@@ -11,7 +11,7 @@ export default function RefundsPolicyPage() {
       <PublicNavbar />
 
       <PublicInteriorHero eyebrow="Legal" title="Refunds, chargebacks & commissions" narrow>
-        <p className="text-offwhite/55 text-sm font-medium">Last updated: May 2026 · Stagepass marketplace</p>
+        <p className="text-offwhite/55 text-sm font-medium">Last updated: May 2026 · Hypelist marketplace</p>
       </PublicInteriorHero>
 
       <section className="app-section border-b border-white/10">
@@ -21,7 +21,7 @@ export default function RefundsPolicyPage() {
               <h2 className="text-3xl font-bold text-white mb-4">1. Ticketing &amp; refunds</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
                 Ticket purchases are fulfilled by the event&apos;s ticketing partner (e.g. Tixr, Moshtix). Refund and consumer
-                rights follow that partner&apos;s terms and Australian Consumer Law. Stagepass does not hold ticket inventory or
+                rights follow that partner&apos;s terms and Australian Consumer Law. Hypelist does not hold ticket inventory or
                 process card payments for the underlying ticket in the MVP flow.
               </p>
             </section>
@@ -60,7 +60,7 @@ export default function RefundsPolicyPage() {
             <section>
               <h2 className="text-3xl font-bold text-white mb-4">5. Contact</h2>
               <p className="text-[#aaaaaa] leading-relaxed">
-                Questions: <span className="text-primary">hello@stagepass.com.au</span>
+                Questions: <span className="text-primary">hello@hypelist.com.au</span>
               </p>
             </section>
           </div>

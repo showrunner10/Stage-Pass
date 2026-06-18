@@ -38,7 +38,7 @@ export default function Home() {
         <div key={heroImages[heroIndex]} className="absolute inset-0 z-0 transition-opacity duration-[1400ms] opacity-100">
           <Image
             src={heroImages[heroIndex]}
-            alt="Stagepass event hero"
+            alt="Hypelist event hero"
             fill
             sizes="100vw"
             className="object-cover hero-zoom blur-[1.5px]"
@@ -112,16 +112,16 @@ export default function Home() {
           <div className="page-shell">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">Why creators use Stagepass</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.22em] text-dark/50 mb-5">Why creators use Hypelist</h3>
                 <div className="space-y-7">
                   {[
                     {
                       title: 'One payout, every promoter',
-                      body: 'You promote ten events from ten promoters and get one weekly payment from Stagepass. No chasing invoices or ten different bank transfers.',
+                      body: 'You promote ten events from ten promoters and get one weekly payment from Hypelist. No chasing invoices or ten different bank transfers.',
                     },
                     {
                       title: 'Curated supply, not a free-for-all',
-                      body: 'Every campaign is vetted by Stagepass. No dropshipping junk, no scammy events. Built for creators who care what they put their name to.',
+                      body: 'Every campaign is vetted by Hypelist. No dropshipping junk, no scammy events. Built for creators who care what they put their name to.',
                     },
                     {
                       title: 'Built for live events, not generic affiliate',
@@ -192,15 +192,15 @@ export default function Home() {
             <div className="space-y-4">
               <FAQItem
                 question="How and when do I get paid?"
-                answer="Creators receive one weekly payout from Stagepass across all approved promoter campaigns. Payouts settle after the promoter's refund window closes, typically 7 to 14 days after the event."
+                answer="Creators receive one weekly payout from Hypelist across all approved promoter campaigns. Payouts settle after the promoter's refund window closes, typically 7 to 14 days after the event."
               />
               <FAQItem
                 question="Do I need a minimum follower count?"
-                answer="There is no fixed minimum. Stagepass reviews creators based on audience fit, location, content quality, and whether their audience matches active campaigns."
+                answer="There is no fixed minimum. Hypelist reviews creators based on audience fit, location, content quality, and whether their audience matches active campaigns."
               />
               <FAQItem
                 question="What happens if my audience buys and then refunds?"
-                answer="Refunded tickets are excluded from final commission. Stagepass uses the promoter's refund window so creators are not unfairly clawed back after settlement."
+                answer="Refunded tickets are excluded from final commission. Hypelist uses the promoter's refund window so creators are not unfairly clawed back after settlement."
               />
               <FAQItem
                 question="Can I be rejected from a campaign even if I am approved as a creator?"

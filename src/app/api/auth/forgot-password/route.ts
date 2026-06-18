@@ -72,14 +72,14 @@ export async function POST(req: Request) {
 
     await sendMail({
       to: email,
-      subject: 'Your Stagepass password reset code',
+      subject: 'Your Hypelist password reset code',
       text:
-        `Your Stagepass password reset code is ${code}.\n\n` +
+        `Your Hypelist password reset code is ${code}.\n\n` +
         `This code expires in 10 minutes.\n` +
         `If you did not request this, you can ignore this email.`,
       html: `
         <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
-          <h2>Your Stagepass password reset code</h2>
+          <h2>Your Hypelist password reset code</h2>
           <p>Use this code to reset your password:</p>
           <div style="font-size:32px;font-weight:700;letter-spacing:6px;padding:16px 20px;background:#f3f4f6;border-radius:12px;display:inline-block">
             ${code}

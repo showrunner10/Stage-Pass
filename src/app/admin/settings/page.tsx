@@ -9,7 +9,7 @@ type AdminSettingsState = {
   approvalMode: string;
 };
 
-const settingsStorageKey = 'stagepass_admin_settings_v1';
+const settingsStorageKey = 'hypelist_admin_settings_v1';
 const defaultSettings: AdminSettingsState = {
   commissionPct: '12',
   approvalMode: 'Manual approval',

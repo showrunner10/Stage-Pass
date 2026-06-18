@@ -122,7 +122,7 @@ function ShortLinkRedirect() {
       <div className="w-12 h-12 rounded-2xl bg-primary/30 border border-primary/50 animate-pulse mb-6" />
       <p className="text-xs font-bold uppercase tracking-[0.25em] text-offwhite/45 mb-2">Redirecting</p>
       <h1 className="text-xl font-black text-center">
-        Taking you to {isLocalCheckoutPreview ? 'Stagepass checkout preview' : event.ticketingPartner ?? 'checkout'}
+        Taking you to {isLocalCheckoutPreview ? 'Hypelist checkout preview' : event.ticketingPartner ?? 'checkout'}
       </h1>
       <p className="text-sm text-offwhite/50 mt-2 text-center max-w-sm">
         Attribution params are appended for order matching. If nothing happens,{' '}

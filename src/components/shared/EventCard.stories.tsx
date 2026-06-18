@@ -3,7 +3,7 @@ import { EventCard } from './EventCard';
 import { events } from '@/data/mock';
 
 const meta: Meta<typeof EventCard> = {
-  title: 'Stagepass/EventCard',
+  title: 'Hypelist/EventCard',
   component: EventCard,
   args: {
     event: events[0],
