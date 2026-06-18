@@ -4,6 +4,8 @@ export interface Event {
   title: string;
   description: string;
   image: string;
+  /** Optional additional event photos shown in the gallery mosaic */
+  gallery?: string[];
   date: string;
   location: string;
   city: string;
