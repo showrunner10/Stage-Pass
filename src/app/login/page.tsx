@@ -434,7 +434,7 @@ function LoginPageContent() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password (min 6 characters)"
+                placeholder={mode === 'signup' ? 'Password (8+ chars, upper, lower & number)' : 'Password'}
                 autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                 className="h-12 w-full rounded-xl border border-[#d7dce3] bg-white pl-4 pr-12 text-[#111827]"
               />
