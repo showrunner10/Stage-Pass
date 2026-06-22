@@ -1,4 +1,4 @@
-const { PrismaClient, CampaignFormat, CampaignStatus, Channel, LandingType, CreatorTier, EventStatus, OrgMemberRole, TicketingProvider, UserRole } = require('@prisma/client');
+const { PrismaClient, CampaignFormat, CampaignStatus, Channel, LandingType, CreatorTier, EventStatus, LedgerStatus, OrgMemberRole, TicketingProvider, UserRole } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
